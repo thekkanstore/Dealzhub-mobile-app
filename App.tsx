@@ -1,28 +1,36 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import {View} from 'react-native';
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import {KeyboardProvider} from 'react-native-keyboard-controller';
+import Toast from 'react-native-toast-message';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import MainStack from './src/navigation/MainStack';
+import {persistor, store} from './src/redux/store';
+import TKStatusBar from './src/components/TKStatusBar/TKStatusBar';
+import {ToastConfig} from './src/components/TKToastConfig/TKToastConfig';
+import {TKGlobalModalManager} from './src/components/TKGlobalModalManager/TKGlobalModalManager';
+import Config from 'react-native-config';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+function App(): React.JSX.Element {
+  console.log('App started', Config.ENVIRONMENT);
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <TKGlobalModalManager>
+          <KeyboardProvider>
+            <TKStatusBar />
+            <View style={{flex: 1}}>
+              <MainStack />
+              <Toast config={ToastConfig} />
+            </View>
+          </KeyboardProvider>
+        </TKGlobalModalManager>
+      </PersistGate>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

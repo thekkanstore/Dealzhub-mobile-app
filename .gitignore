@@ -73,3 +73,13 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+#environment files
+.env.*
+
+# iOS specific
+ios/build/
+ios/Pods/
+ios/ThekkanVendor.xcworkspace/
+ios/ThekkanVendor.xcodeproj/project.xcworkspace/
+ios/ThekkanVendor.xcodeproj/xcuserdata/
