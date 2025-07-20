@@ -9,6 +9,7 @@ import {hideSplash} from 'react-native-splash-view';
 import TKButton from '../components/TKButton/TKButton';
 import TKHeader from '../components/TKHeader/TKHeader';
 import TKTextInput from '../components/TKTextInput/TKTextInput';
+import TKModal from '../components/TKModal/TKModal';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -19,13 +20,14 @@ export default function MainStack() {
     }, 5000);
   }, []);
   return (
-    <View style={{flex: 1, justifyContent: 'center', gap: 10}}>
-      <TKTextInput label="label" error="error" />
+    <View style={{flex: 1, gap: 10}}>
       <TKHeader header="Header" />
+      <TKTextInput label="label" error="error" />
       <TKButton title="primary" type="primary" />
       <TKButton title="secondary" type="secondary" />
       <TKButton title="tertiary" type="tertiary" />
       <TKButton title="neutral" type="neutral" />
+      <TKModal isVisible={true} onClose={() => { } } children={undefined} />
     </View>
   );
   const isLoggedIn = useAppSelector(state => state.userDetails.isUserLoggedIn);

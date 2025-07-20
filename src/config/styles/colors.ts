@@ -19,4 +19,6 @@ export const colors = {
 
   errorBorder: '#BD343B66',
   errorTextColor: '#BD343B',
+
+  transparent: 'transparent',
 };

@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {use, useEffect} from 'react';
 import {View, StyleSheet, Text, ViewStyle} from 'react-native';
 import Modal from 'react-native-modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 import {getApproximateBottomSafeArea, moderateScale} from '../../config/styles/responsiveSize';
@@ -42,6 +42,7 @@ const TKModal: React.FC<TKModalProps> = ({
   bodyContainerStyle,
   backdropOpacity = 0.7,
 }) => {
+  const insets = useSafeAreaInsets();
   // Handle keyboard dismiss and animation cleanup when modal hides or screen focus changes
   useEffect(() => {
     if (!isVisible) {
@@ -82,12 +83,12 @@ const TKModal: React.FC<TKModalProps> = ({
       </View>
     );
   };
-
+console.log('TKModal rendered with isVisible:', insets);
   return (
     <Modal
       isVisible={isVisible}
       onBackdropPress={backdropDismiss ? onClose : undefined}
-      style={[styles.modalMainContainer, modalStyle]}
+      style={[styles.modalMainContainer, {paddingBottom: insets.bottom + 3}, modalStyle]}
       onSwipeComplete={swipeToClose ? onClose : undefined}
       swipeDirection={swipeToClose ? ['down'] : undefined}
       propagateSwipe={true}

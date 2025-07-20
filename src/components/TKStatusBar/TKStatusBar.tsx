@@ -11,7 +11,7 @@ const TKStatusBar: React.FC<props> = ({barStyle, backgroundColor}) => {
     <StatusBar
       translucent
       barStyle={barStyle ?? 'dark-content'}
-      backgroundColor={backgroundColor ?? colors.transparent}
+      backgroundColor={backgroundColor ?? colors.primaryBackgroundColor}
     />
   );
 };
