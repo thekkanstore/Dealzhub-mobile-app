@@ -28,9 +28,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       in: window,
       launchOptions: launchOptions
     )
-
+    showSplashScreen()
     return true
   }
+
+    private func showSplashScreen() {
+      if let splashClass = NSClassFromString("SplashView") as? NSObject.Type,
+          let splashInstance = splashClass.perform(NSSelectorFromString("sharedInstance"))?.takeUnretainedValue() as? NSObject {
+          splashInstance.perform(NSSelectorFromString("showSplash"))
+          print("✅ Splash Screen Shown Successfully")
+      } else {
+          print("⚠️ SplashView module not found")
+      }
+    }
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
