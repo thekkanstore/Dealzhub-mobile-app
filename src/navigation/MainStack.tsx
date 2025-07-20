@@ -4,8 +4,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {navigationStrings} from './navigationStrings';
 import {RootStackParamList} from './rootparamstypes';
 import {AuthStack} from './AuthStack';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {hideSplash} from 'react-native-splash-view';
+import TKButton from '../components/TKButton/TKButton';
+import TKHeader from '../components/TKHeader/TKHeader';
+import TKTextInput from '../components/TKTextInput/TKTextInput';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -16,8 +19,13 @@ export default function MainStack() {
     }, 5000);
   }, []);
   return (
-    <View style={{flex: 1, backgroundColor: 'red', padding: 100}}>
-      <Text style={{color: 'white', fontSize: 30}}>MainStack</Text>
+    <View style={{flex: 1, justifyContent: 'center', gap: 10}}>
+      <TKTextInput label="label" error="error" />
+      <TKHeader header="Header" />
+      <TKButton title="primary" type="primary" />
+      <TKButton title="secondary" type="secondary" />
+      <TKButton title="tertiary" type="tertiary" />
+      <TKButton title="neutral" type="neutral" />
     </View>
   );
   const isLoggedIn = useAppSelector(state => state.userDetails.isUserLoggedIn);

@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    backgroundColor: colors.secondaryBackgroundColor,
+    backgroundColor: colors.primaryBackgroundColor,
     borderTopLeftRadius: moderateScale(15),
     borderTopRightRadius: moderateScale(15),
   },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: moderateScale(1),
-    borderColor: colors.inputBorder,
+    // borderColor: colors.inputBorder,
     justifyContent: 'space-between',
   },
   headerTextContainer: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: moderateScale(16),
-    color: colors.darkTextColor,
+    color: colors.primaryTextColor,
     textAlign: 'left',
     lineHeight: moderateScale(24),
     fontFamily: fontFamily.regular,

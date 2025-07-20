@@ -12,22 +12,23 @@ import {persistor, store} from './src/redux/store';
 import TKStatusBar from './src/components/TKStatusBar/TKStatusBar';
 import {ToastConfig} from './src/components/TKToastConfig/TKToastConfig';
 import {TKGlobalModalManager} from './src/components/TKGlobalModalManager/TKGlobalModalManager';
-import Config from 'react-native-config';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 function App(): React.JSX.Element {
-  console.log('App started', Config.ENVIRONMENT);
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <TKGlobalModalManager>
-          <KeyboardProvider>
-            <TKStatusBar />
-            <View style={{flex: 1}}>
-              <MainStack />
-              <Toast config={ToastConfig} />
-            </View>
-          </KeyboardProvider>
-        </TKGlobalModalManager>
+        <SafeAreaProvider>
+          <TKGlobalModalManager>
+            <KeyboardProvider>
+              <TKStatusBar />
+              <View style={{flex: 1}}>
+                <MainStack />
+                <Toast config={ToastConfig} />
+              </View>
+            </KeyboardProvider>
+          </TKGlobalModalManager>
+        </SafeAreaProvider>
       </PersistGate>
     </Provider>
   );

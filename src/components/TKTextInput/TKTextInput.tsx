@@ -14,7 +14,7 @@ import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 
-type LXTextInputProps = TextInputProps & {
+type TKTextInputProps = TextInputProps & {
   // Optional label for the input
   label?: string;
   isRequired?: boolean;
@@ -43,7 +43,7 @@ type LXTextInputProps = TextInputProps & {
   isDisabled?: boolean;
 };
 
-const LXTextInput: React.FC<LXTextInputProps> = ({
+const TKTextInput: React.FC<TKTextInputProps> = ({
   label,
   isRequired,
   leftChild,
@@ -113,7 +113,7 @@ const LXTextInput: React.FC<LXTextInputProps> = ({
             !leftChild && !showLeftSpace && styles.inputWithoutLeftPadding,
             !rightChild && !showRightSpace && styles.inputWithoutRightPadding,
             inputStyle,
-            isDisabled && {color: colors.primaryTextColor},
+            isDisabled && {color: colors.darkTextColor},
           ]}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -152,16 +152,16 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: colors.inputBorder,
-    borderRadius: moderateScale(8),
+    borderRadius: moderateScale(30),
     backgroundColor: colors.inputBackground,
     height: verticalScale(45),
     width: '100%',
   },
   disabledContainer: {
-    backgroundColor: colors.backgroundContainerLight,
-    borderColor: colors.inputDisabledBackground,
+    // backgroundColor: colors.backgroundContainerLight,
+    // borderColor: colors.inputDisabledBackground,
   },
   labelContainer: {
     marginBottom: verticalScale(4),
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   helperText: {
     marginTop: verticalScale(4),
     marginLeft: moderateScale(4),
-    fontSize: moderateScale(14),
+    fontSize: moderateScale(16),
     color: colors.secondaryTextColor,
     fontFamily: fontFamily.regular,
   },
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     color: colors.errorTextColor,
   },
   labelText: {
-    fontSize: moderateScale(14),
+    fontSize: moderateScale(16),
     color: colors.primaryTextColor,
     fontFamily: fontFamily.regular,
   },
@@ -226,8 +226,8 @@ const styles = StyleSheet.create({
   requiredText: {
     color: colors.errorTextColor,
     fontFamily: fontFamily.regular,
-    fontSize: moderateScale(14),
+    fontSize: moderateScale(16),
   },
 });
 
-export default LXTextInput;
+export default TKTextInput;
