@@ -12,6 +12,7 @@ export type RootStackParamList = {
 export type AuthStackParamList = {
   Login: undefined;
   ForgotPassword: undefined;
+  GettingStarted: undefined;
 };
 
 // Define the param list for the home stack

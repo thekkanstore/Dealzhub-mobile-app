@@ -4,34 +4,20 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {navigationStrings} from './navigationStrings';
 import {RootStackParamList} from './rootparamstypes';
 import {AuthStack} from './AuthStack';
-import {View} from 'react-native';
 import {hideSplash} from 'react-native-splash-view';
-import TKButton from '../components/TKButton/TKButton';
-import TKHeader from '../components/TKHeader/TKHeader';
-import TKTextInput from '../components/TKTextInput/TKTextInput';
-import TKModal from '../components/TKModal/TKModal';
+import useSafeAreaListner from '../hooks/useSafeAreaListner';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
+  useSafeAreaListner();
   useEffect(() => {
     setTimeout(() => {
       hideSplash(); // Hide after some time
     }, 5000);
   }, []);
-  return (
-    <View style={{flex: 1, gap: 10}}>
-      <TKHeader header="Header" />
-      <TKTextInput label="label" error="error" />
-      <TKButton title="primary" type="primary" />
-      <TKButton title="secondary" type="secondary" />
-      <TKButton title="tertiary" type="tertiary" />
-      <TKButton title="neutral" type="neutral" />
-      <TKModal isVisible={true} onClose={() => { } } children={undefined} />
-    </View>
-  );
-  const isLoggedIn = useAppSelector(state => state.userDetails.isUserLoggedIn);
-  const isHideSplashScreen = useAppSelector(state => state.system.isHideSplashScreen);
+  // const isLoggedIn = useAppSelector(state => state.userDetails.isUserLoggedIn);
+  // const isHideSplashScreen = useAppSelector(state => state.system.isHideSplashScreen);
 
   return (
     <NavigationContainer>

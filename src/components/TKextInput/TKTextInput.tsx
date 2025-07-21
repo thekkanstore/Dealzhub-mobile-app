@@ -14,7 +14,7 @@ import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 
-type LXTextInputProps = TextInputProps & {
+type TKTextInputProps = TextInputProps & {
   // Optional label for the input
   label?: string;
   isRequired?: boolean;
@@ -43,7 +43,7 @@ type LXTextInputProps = TextInputProps & {
   isDisabled?: boolean;
 };
 
-const LXTextInput: React.FC<LXTextInputProps> = ({
+const TKTextInput: React.FC<TKTextInputProps> = ({
   label,
   isRequired,
   leftChild,
@@ -230,4 +230,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LXTextInput;
+export default TKTextInput;

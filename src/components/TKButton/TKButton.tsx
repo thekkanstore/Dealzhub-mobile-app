@@ -12,10 +12,6 @@ import {fontScale, moderateScale, verticalScale} from '../../config/styles/respo
 import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
-import {TKUserIcon} from '../Icons/TKUserIcon';
-import {TKArrowIcon} from '../Icons/TKArrowIcon';
-import {TKBackIcon} from '../Icons/TKBackIcon';
-import {TKSearchIcon} from '../Icons/TKSearchIcon';
 
 // Define the possible button types
 type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'neutral';
@@ -51,10 +47,6 @@ const TKButton: React.FC<Props> = ({title, type = 'primary', buttonTextStyle, ..
       ]}
       disabled={props.isDisabled || props.isLoading}>
       {renderHeader()}
-      <TKUserIcon width={20} height={20} color={buttonStyle.text.color} />
-      <TKArrowIcon width={20} height={20} color={buttonStyle.text.color} />
-      <TKBackIcon width={20} height={20} color={buttonStyle.text.color} />
-      <TKSearchIcon width={20} height={20} color={buttonStyle.text.color} />
       <TKRenderIf isRender={!!props.isLoading}>
         <ActivityIndicator size={20} color={buttonStyle.text.color} style={styles.loader} />
       </TKRenderIf>
