@@ -1,5 +1,3 @@
-import { t } from "i18next";
-
 export const colors = {
   primaryButtonBackgroundColor: '#528E6B',
   secondaryButtonBackgroundColor: '#E6E6E6',
@@ -14,6 +12,7 @@ export const colors = {
   darkTextColor: '#666666',
   placeHolderTextColor: '#999999',
   disabledTextColor: '#CCCCCC',
+  neutralButtonTextColor: '#254030',
 
   inputBorder: '#666666',
   inputBackground: '#FAFAFA',

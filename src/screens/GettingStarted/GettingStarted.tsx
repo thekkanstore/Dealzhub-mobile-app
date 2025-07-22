@@ -8,6 +8,7 @@ import TKButton from '../../components/TKButton/TKButton';
 import {useSafeAreaBottom} from '../../providers/SafeAreaProvider';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '../../config/styles/colors';
+import {updateGettingStarted} from '../../redux/systemSlice';
 
 const {width} = Dimensions.get('window');
 
@@ -42,7 +43,9 @@ const GettingStarted = () => {
         index: nextStep,
         animated: true,
       });
+      return;
     }
+    updateGettingStarted(true);
   };
 
   const onScroll = Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {

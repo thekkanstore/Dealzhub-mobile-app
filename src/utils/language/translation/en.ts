@@ -15,7 +15,9 @@ export const en = {
     next: 'Next',
     done: 'Done',
   },
-  labels: {},
+  labels: {
+    thekkan: 'THEKKAN',
+  },
   notificationPermission: {
     title: 'Enable Notifications',
     message:
@@ -28,5 +30,9 @@ export const en = {
     cancel: 'Cancel',
     permissionDenied:
       'Notification permissions are required to keep you updated about your orders and important alerts',
+  },
+  login: {
+    loginDescription: 'Simple Deals. Smart Living.',
+    signInWithGoogle: 'Sign In With Google',
   },
 };
