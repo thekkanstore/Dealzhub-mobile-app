@@ -11,8 +11,13 @@ buildscript {
         google()
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy {
+            force 'com.android.tools.build:gradle:8.7.0'
+        }
+    }
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:8.7.0")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
