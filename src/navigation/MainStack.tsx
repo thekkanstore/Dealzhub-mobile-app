@@ -7,6 +7,7 @@ import {AuthStack} from './AuthStack';
 import {hideSplash} from 'react-native-splash-view';
 import useSafeAreaListner from '../hooks/useSafeAreaListner';
 import BottomTabBarStack from './BottomTabStack';
+import {useAppSelector} from '../redux/hooks';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -15,24 +16,26 @@ export default function MainStack() {
   useEffect(() => {
     setTimeout(() => {
       hideSplash(); // Hide after some time
-    }, 5000);
+    }, 2000);
   }, []);
-  // const isLoggedIn = useAppSelector(state => state.userDetails.isUserLoggedIn);
-  // const isHideSplashScreen = useAppSelector(state => state.system.isHideSplashScreen);
+  const isUserDetails = useAppSelector(state => state.user.user);
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen
-          name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
-          component={BottomTabBarStack}
-          options={{gestureEnabled: false}}
-        />
-        <Stack.Screen
-          name={navigationStrings.AUTH_STACK}
-          component={AuthStack}
-          options={{gestureEnabled: false}}
-        />
+        {!isUserDetails ? (
+          <Stack.Screen
+            name={navigationStrings.AUTH_STACK}
+            component={AuthStack}
+            options={{gestureEnabled: false}}
+          />
+        ) : (
+          <Stack.Screen
+            name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
+            component={BottomTabBarStack}
+            options={{gestureEnabled: false}}
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

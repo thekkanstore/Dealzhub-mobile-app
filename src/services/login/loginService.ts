@@ -2,6 +2,7 @@ import {GoogleAuthProvider, getAuth, signInWithCredential} from '@react-native-f
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
+import {updateUserInfo} from '../../redux/userSlice';
 
 async function onGoogleButtonPress() {
   try {
@@ -11,15 +12,18 @@ async function onGoogleButtonPress() {
     const signInResult = await GoogleSignin.signIn();
     // Try the new style of google-sign in result, from v13+ of that module
     const idToken = signInResult.data?.idToken;
-    if (idToken) {
+    if (!idToken) {
       throw new Error('No ID token found');
     }
     // Create a Google credential with the token
     const googleCredential = GoogleAuthProvider.credential(idToken);
 
-    // Sign-in the user with the credential
-    return signInWithCredential(getAuth(), googleCredential);
+    const data = await signInWithCredential(getAuth(), googleCredential);
+    updateUserInfo(signInResult.data);
+    return data;
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(error, 'error');
     showErrorToast(strings('login.failedSignIn'));
   }
 }

@@ -31,7 +31,7 @@ const Login = () => {
     return (
       <View style={styles.googleLogoContainer}>
         <Image source={imagePath.googleLogo} style={styles.googleLogo} />
-        <Text style={styles.signInText}>{strings('login.signInWithGoogle')}</Text>;
+        <Text style={styles.signInText}>{strings('login.signInWithGoogle')}</Text>
       </View>
     );
   };
