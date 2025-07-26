@@ -1,13 +1,16 @@
 import React from 'react';
-import {TextStyle, ViewStyle} from 'react-native';
 import {BottomTabBarProps, createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import {colors} from '../config/styles/colors';
-import {moderateScaleVertical} from '../config/styles/responsiveSize';
 import {navigationStrings} from './navigationStrings';
 // import LXIcon from '../components/LxIcon/LXIcon';
 import {HomeStack} from './HomeStack';
 import TKCustomBottomTabBar from '../components/TKCustomBottomTabBar/TKCustomBottomTabBar';
+import {TKHomeSelectedIcon} from '../components/Icons/TKHomeSelectedIcon';
+import {TKHomeUnselectedIcon} from '../components/Icons/TKHomeUnselectedIcon';
+import {TKHeartSelectedIcon} from '../components/Icons/TKHeartSelectedIcon';
+import {TKHeartUnselectedIcon} from '../components/Icons/TKHeartUnselectedIcon';
+import {TKCartUnselectedIcon} from '../components/Icons/TKCartUnselectedIcon';
+import {TKCartIcon} from '../components/Icons/TKCartIcon';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,32 +22,29 @@ const screens = [
   {
     name: navigationStrings.HOME_TAB as 'HomeTab',
     component: HomeStack,
-    label: 'Home',
-    // icon: (focused: boolean) => <LXIcon name={focused ? 'homeBottomSelect' : 'homeBottom'} />,
+    icon: (focused: boolean) =>
+      focused ? (
+        <TKHomeSelectedIcon width={30} height={30} />
+      ) : (
+        <TKHomeUnselectedIcon width={30} height={30} />
+      ),
   },
   {
-    name: navigationStrings.HOME_TAB as 'HomeTab',
+    name: navigationStrings.FAVORITES_TAB as 'FavoritesTab',
     component: HomeStack,
-    label: 'Orders',
-    // icon: (focused: boolean) => (
-    //   <LXIcon name={focused ? 'transactionBottomSelect' : 'transactionBottom'} />
-    // ),
-    options: {
-      tabBarStyle: {
-        display: 'flex',
-        backgroundColor: colors.primaryBackgroundColor,
-        paddingTop: moderateScaleVertical(7),
-      },
-    },
+    icon: (focused: boolean) =>
+      focused ? (
+        <TKHeartSelectedIcon width={30} height={30} />
+      ) : (
+        <TKHeartUnselectedIcon width={30} height={30} />
+      ),
   },
   {
-    name: navigationStrings.HOME_TAB as 'HomeTab',
+    name: navigationStrings.CART_TAB as 'CartTab',
     component: HomeStack,
     label: 'Profile',
-    // icon: (focused: boolean) => <LXIcon name={focused ? 'profileBottom' : 'profileBottom'} />,
-    options: {
-      unmountOnBlur: false,
-    },
+    icon: (focused: boolean) =>
+      focused ? <TKCartIcon width={30} height={30} /> : <TKCartUnselectedIcon />,
   },
 ] as const;
 const BottomTabBarStack: React.FC = () => {
@@ -53,14 +53,6 @@ const BottomTabBarStack: React.FC = () => {
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          color: colors.primaryBackgroundColor,
-        } as TextStyle,
-        tabBarStyle: {
-          backgroundColor: colors.primaryBackgroundColor,
-          paddingTop: moderateScaleVertical(7),
-        } as ViewStyle,
       }}
       tabBar={getCustomTabBar}>
       {screens.map(screen => (
@@ -69,8 +61,7 @@ const BottomTabBarStack: React.FC = () => {
           name={screen.name}
           component={screen.component}
           options={{
-            tabBarLabel: screen.label,
-            // tabBarIcon: ({focused}) => screen.icon(focused),
+            tabBarIcon: ({focused}) => screen.icon(focused),
             ...((screen as any).options || {}),
           }}
         />

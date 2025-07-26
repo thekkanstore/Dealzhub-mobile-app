@@ -26,4 +26,6 @@ export const colors = {
   successButtonBackgroundColor: '#11c92aff',
 
   transparent: 'transparent',
+
+  tabBarBackgroundColor: '#E5EEE9',
 };

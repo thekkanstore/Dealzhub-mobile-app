@@ -6,6 +6,7 @@ import {RootStackParamList} from './rootparamstypes';
 import {AuthStack} from './AuthStack';
 import {hideSplash} from 'react-native-splash-view';
 import useSafeAreaListner from '../hooks/useSafeAreaListner';
+import BottomTabBarStack from './BottomTabStack';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -22,6 +23,11 @@ export default function MainStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen
+          name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
+          component={BottomTabBarStack}
+          options={{gestureEnabled: false}}
+        />
         <Stack.Screen
           name={navigationStrings.AUTH_STACK}
           component={AuthStack}

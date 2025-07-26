@@ -5,7 +5,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 export type RootStackParamList = {
   AuthStack: undefined | {screen?: keyof AuthStackParamList; params?: any};
   HomeStack: {screen?: keyof HomeStackParamList; params?: any};
-  BOTTOM_TAB_STACK: {screen?: keyof BottomTabStackParamList; params?: any};
+  BottomTabStack: {screen?: keyof BottomTabStackParamList; params?: any};
 };
 
 // Define the param list for the auth stack

@@ -4,6 +4,13 @@ export const navigationStrings = {
   FORGOT_PASSWORD: 'ForgotPassword',
   GETTING_STARTED: 'GettingStarted',
 
-  HOME_TAB: 'HomeTab',
   AUTH_STACK: 'AuthStack',
+  BOTTOM_TAB_STACK: 'BottomTabStack',
+
+  // bottom tab
+  HOME_TAB: 'HomeTab',
+  FAVORITES_TAB: 'FavoritesTab',
+  CART_TAB: 'CartTab',
+
+  HOME: 'Home',
 } as const;
