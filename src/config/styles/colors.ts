@@ -22,5 +22,8 @@ export const colors = {
   errorBorder: '#BD343B66',
   errorTextColor: '#BD343B',
 
+  errorToastBackgroundColor: '#BD343B',
+  successButtonBackgroundColor: '#11c92aff',
+
   transparent: 'transparent',
 };

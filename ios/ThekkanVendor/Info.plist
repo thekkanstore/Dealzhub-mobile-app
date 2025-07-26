@@ -56,5 +56,16 @@
 		<string>Nunito-Regular.ttf</string>
 		<string>Nunito-SemiBold.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>googleauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.143958591372-0visfm9govrbikbk2ahmfekdhkav92u5</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

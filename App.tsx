@@ -15,7 +15,12 @@ import {ToastConfig} from './src/components/TKToastConfig/TKToastConfig';
 import {TKGlobalModalManager} from './src/components/TKGlobalModalManager/TKGlobalModalManager';
 import {SafeAreaProvider, initialWindowMetrics} from 'react-native-safe-area-context';
 import {GlobalSafeAreaProvider} from './src/providers/SafeAreaProvider';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import Config from 'react-native-config';
 
+GoogleSignin.configure({
+  webClientId: Config.GOOGLE_CLIENT_ID,
+});
 function App(): React.JSX.Element {
   return (
     <Provider store={store}>

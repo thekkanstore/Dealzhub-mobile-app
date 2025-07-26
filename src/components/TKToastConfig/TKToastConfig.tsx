@@ -18,7 +18,7 @@ export const ToastConfig = {
       }}>
       <Text
         style={{
-          color: colors.primaryTextColor,
+          color: colors.secondaryTextColor,
           fontSize: fontScale(14),
           fontWeight: '400',
           fontFamily: fontFamily.medium,
@@ -41,7 +41,7 @@ export const ToastConfig = {
       }}>
       <Text
         style={{
-          color: colors.primaryTextColor,
+          color: colors.secondaryTextColor,
           fontSize: fontScale(14),
           fontWeight: '400',
           fontFamily: fontFamily.regular,

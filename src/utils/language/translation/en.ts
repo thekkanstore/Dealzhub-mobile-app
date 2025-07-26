@@ -34,5 +34,6 @@ export const en = {
   login: {
     loginDescription: 'Simple Deals. Smart Living.',
     signInWithGoogle: 'Sign In With Google',
+    failedSignIn: 'Failed to Sign In',
   },
 };

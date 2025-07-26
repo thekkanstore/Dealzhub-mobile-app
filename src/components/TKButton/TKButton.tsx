@@ -77,7 +77,7 @@ const getButtonStyles = (type: ButtonType) => {
     case 'neutral':
       return {
         background: {backgroundColor: colors.neutralButtonBackgroundColor},
-        text: {color: colors.primaryTextColor},
+        text: {color: colors.neutralButtonTextColor},
       };
     default:
       return {

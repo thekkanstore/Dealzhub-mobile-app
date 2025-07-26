@@ -11,6 +11,7 @@ declare module 'react-native-config' {
     VERSION_NAME: string;
     GOOGLE_MAPS_API_KEY: string;
     BASE_URL: string;
+    GOOGLE_CLIENT_ID: string;
   }
 
   export const Config: NativeConfig;
