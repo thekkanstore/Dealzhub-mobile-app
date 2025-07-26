@@ -1,59 +1,75 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useCallback, useMemo} from 'react';
 import {Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {
+  getFocusedRouteNameFromRoute,
+  NavigationRoute,
+  ParamListBase,
+} from '@react-navigation/native';
 import {useKeyboardListener} from '../../hooks/useKeyboardListener';
 import {colors} from '../../config/styles/colors';
 import {moderateScale, moderateScaleVertical} from '../../config/styles/responsiveSize';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 
 const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
+  const insets = useSafeAreaInsets();
   const [isKeyboardVisible] = useKeyboardListener();
   const focusedRoute = state.routes[state.index];
 
   const focusedRouteName = getFocusedRouteNameFromRoute(focusedRoute) || 'HomePage';
-  const screensThatShouldShowTabBar = ['HomePage', 'Home', 'TransactionHistory', 'ProfileScreen'];
+  const screensThatShouldShowTabBar = ['HomePage', 'Home'];
   const shouldShowTabBar = screensThatShouldShowTabBar.includes(focusedRouteName);
 
+  const dynamicStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        tabBar: {
+          ...styles.tabBar,
+          height: moderateScaleVertical(55),
+          display: isKeyboardVisible ? 'none' : 'flex',
+        },
+      }),
+    [isKeyboardVisible],
+  );
+
+  const onPress = useCallback(
+    (route: NavigationRoute<ParamListBase, string>, isFocused: boolean) => {
+      const event = navigation.emit({
+        type: 'tabPress',
+        target: route.key,
+        canPreventDefault: true,
+      });
+
+      if (!isFocused && !event.defaultPrevented) {
+        navigation.navigate(route.name);
+      }
+    },
+    [navigation],
+  );
   if (!shouldShowTabBar) {
     return null;
   }
 
-  const dynamicStyles = StyleSheet.create({
-    tabBar: {
-      ...styles.tabBar,
-      height: moderateScaleVertical(55),
-      display: isKeyboardVisible ? 'none' : 'flex',
-    },
-  });
-
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingBottom: Platform.OS === 'ios' ? insets.bottom : insets.bottom + moderateScale(15),
+        },
+      ]}>
       <View style={dynamicStyles.tabBar}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];
           const isFocused = state.index === index;
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.reset({
-                index: 0,
-                routes: [{name: route.name}],
-              });
-            }
-          };
-
           return (
             <Fragment key={route.name}>
               <TouchableOpacity
                 accessibilityRole="button"
                 accessibilityLabel={options.tabBarAccessibilityLabel}
-                onPress={onPress}
-                style={[styles.tabItem]}>
+                onPress={() => onPress(route, isFocused)}
+                style={[styles.tabItem]}
+                activeOpacity={0.7}>
                 {options.tabBarIcon &&
                   options.tabBarIcon({
                     focused: isFocused,
@@ -73,13 +89,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.primaryBackgroundColor,
     alignItems: 'center',
-    paddingBottom: Platform.OS === 'android' ? moderateScale(10) : 0,
   },
   tabBar: {
     flexDirection: 'row',
     backgroundColor: colors.tabBarBackgroundColor,
     marginHorizontal: moderateScale(35),
-    marginBottom: moderateScale(10),
     borderRadius: moderateScale(30),
     justifyContent: 'space-evenly',
     alignItems: 'center',

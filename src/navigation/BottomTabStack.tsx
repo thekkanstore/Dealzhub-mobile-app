@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {BottomTabBarProps, createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import {navigationStrings} from './navigationStrings';
@@ -13,10 +13,6 @@ import {TKCartUnselectedIcon} from '../components/Icons/TKCartUnselectedIcon';
 import {TKCartIcon} from '../components/Icons/TKCartIcon';
 
 const Tab = createBottomTabNavigator();
-
-const getCustomTabBar = (props: BottomTabBarProps) => {
-  return <TKCustomBottomTabBar {...props} />;
-};
 
 const screens = [
   {
@@ -48,11 +44,16 @@ const screens = [
   },
 ] as const;
 const BottomTabBarStack: React.FC = () => {
+  const getCustomTabBar = useCallback((props: BottomTabBarProps) => {
+    return <TKCustomBottomTabBar {...props} />;
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
+        lazy: false,
       }}
       tabBar={getCustomTabBar}>
       {screens.map(screen => (
