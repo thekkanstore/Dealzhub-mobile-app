@@ -20,6 +20,7 @@ import Config from 'react-native-config';
 
 GoogleSignin.configure({
   webClientId: Config.GOOGLE_CLIENT_ID,
+  scopes: ['https://www.googleapis.com/auth/user.phonenumbers.read'],
 });
 function App(): React.JSX.Element {
   return (

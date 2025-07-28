@@ -17,6 +17,17 @@ export const en = {
   },
   labels: {
     thekkan: 'THEKKAN',
+    location: 'Location',
+    home: 'Home',
+    profile: 'Profile',
+    logout: 'Logout',
+    editProfile: 'Edit Profile',
+    help: 'Help',
+    viewOrderHistory: 'View Order History',
+    viewCart: 'View Cart',
+    viewWishlist: 'View Wishlist',
+    settings: 'Settings',
+    notifications: 'Notifications',
   },
   notificationPermission: {
     title: 'Enable Notifications',
@@ -35,5 +46,6 @@ export const en = {
     loginDescription: 'Simple Deals. Smart Living.',
     signInWithGoogle: 'Sign In With Google',
     failedSignIn: 'Failed to Sign In',
+    logoutMessage: 'Logout successful',
   },
 };

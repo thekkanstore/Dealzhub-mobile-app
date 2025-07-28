@@ -3,6 +3,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {navigationStrings} from './navigationStrings';
 import {HomeStackParamList} from './rootparamstypes';
 import Home from '../screens/Home/Home';
+import Profile from '../screens/Profile/Profile';
+import Settings from '../screens/Settings/Settings';
 
 const Stack = createStackNavigator<HomeStackParamList>();
 
@@ -12,6 +14,16 @@ export const HomeStack = () => {
       <Stack.Screen
         name={navigationStrings.HOME as 'Home'}
         component={Home}
+        options={{gestureEnabled: false}}
+      />
+      <Stack.Screen
+        name={navigationStrings.PROFILE as 'Profile'}
+        component={Profile}
+        options={{gestureEnabled: false}}
+      />
+      <Stack.Screen
+        name={navigationStrings.SETTINGS as 'Settings'}
+        component={Settings}
         options={{gestureEnabled: false}}
       />
     </Stack.Navigator>

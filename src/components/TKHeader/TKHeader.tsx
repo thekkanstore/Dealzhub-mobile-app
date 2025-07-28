@@ -1,7 +1,8 @@
 import React from 'react';
 import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import {colors} from '../../config/styles/colors';
 import {useNavigation} from '@react-navigation/native';
+
+import {colors} from '../../config/styles/colors';
 import {fontScale, moderateScale} from '../../config/styles/responsiveSize';
 import {fontFamily} from '../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
@@ -22,13 +23,13 @@ const TKHeader: React.FC<Props> = ({
   onBackPress,
   containerStyle,
 }) => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
 
   const handleBackPress = () => {
     if (onBackPress) {
       onBackPress();
     } else {
-      // navigation.goBack();
+      navigation.goBack();
     }
   };
 
@@ -50,7 +51,7 @@ const TKHeader: React.FC<Props> = ({
       <View style={styles.leftContainer}>
         <TKRenderIf isRender={showBackButton}>
           <Pressable onPress={handleBackPress} style={styles.backButton}>
-            <TKArrowIcon width={20} height={20} color={colors.primaryTextColor} direction="left" />
+            <TKArrowIcon width={14} height={14} color={colors.primaryTextColor} direction="left" />
           </Pressable>
         </TKRenderIf>
 
@@ -72,6 +73,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryBackgroundColor,
     justifyContent: 'space-between',
     paddingVertical: moderateScale(10),
+    borderBottomWidth: 1,
+    borderColor: colors.headerBorder,
   },
   leftContainer: {
     flexDirection: 'row',
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backButton: {
-    padding: moderateScale(10),
+    padding: moderateScale(8),
     marginRight: 8,
     backgroundColor: colors.tertiaryButtonBackgroundColor,
     borderRadius: moderateScale(20),
@@ -88,8 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerText: {
-    fontSize: fontScale(18),
-    fontWeight: '600',
+    fontSize: fontScale(14),
     color: colors.primaryTextColor,
     fontFamily: fontFamily.bold,
     lineHeight: fontScale(20),

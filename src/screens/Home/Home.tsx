@@ -1,19 +1,24 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import { useLocationPermission } from '../../hooks/useLocationPermission';
+import {StyleSheet, View} from 'react-native';
+import LocationBar from './components/LocationBar/LocationBar';
+import {colors} from '../../config/styles/colors';
+import {moderateScale} from '../../config/styles/responsiveSize';
 
 const Home = () => {
-  const {getCurrentLocation, requestLocationPermission} = useLocationPermission();
-
-  React.useEffect(() => {
-    requestLocationPermission();
-  },[])
-
   return (
-    <View style={{flex: 1, backgroundColor: '#fff'}}>
-      <Text>Home</Text>
+    <View style={styles.container}>
+      <LocationBar />
     </View>
   );
 };
 
 export default Home;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.primaryBackgroundColor,
+    paddingHorizontal: moderateScale(16),
+    paddingTop: moderateScale(16),
+  },
+});

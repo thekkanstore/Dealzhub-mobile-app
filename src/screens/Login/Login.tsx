@@ -9,7 +9,7 @@ import {useSafeAreaBottom} from '../../providers/SafeAreaProvider';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '../../config/styles/colors';
 import {styles} from './LoginStyle';
-import loginService from '../../services/login/loginService';
+import authService from '../../services/auth/authService';
 
 const {width} = Dimensions.get('window');
 
@@ -19,7 +19,7 @@ const Login = () => {
   const handleGetStarted = async () => {
     try {
       setIsLoading(true);
-      await loginService.onGoogleSignIn();
+      await authService.onGoogleSignIn();
     } catch (error) {
       //
     } finally {

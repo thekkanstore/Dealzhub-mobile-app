@@ -13,4 +13,6 @@ export const navigationStrings = {
   CART_TAB: 'CartTab',
 
   HOME: 'Home',
+  PROFILE: 'Profile',
+  SETTINGS: 'Settings',
 } as const;

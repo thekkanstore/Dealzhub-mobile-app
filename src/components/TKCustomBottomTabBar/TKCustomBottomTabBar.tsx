@@ -51,13 +51,7 @@ const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProp
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingBottom: Platform.OS === 'ios' ? insets.bottom : insets.bottom + moderateScale(15),
-        },
-      ]}>
+    <View style={[styles.container]}>
       <View style={dynamicStyles.tabBar}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];
@@ -89,6 +83,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.primaryBackgroundColor,
     alignItems: 'center',
+    paddingBottom: Platform.OS === 'ios' ? 0 : moderateScale(15),
   },
   tabBar: {
     flexDirection: 'row',

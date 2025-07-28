@@ -6,10 +6,11 @@ export const colors = {
 
   primaryBackgroundColor: '#FFFFFF',
 
-  primaryTextColor: '#000000',
+  primaryTextColor: '#121212',
   secondaryTextColor: '#ffffff',
   tertiaryTextColor: '#C9DCD1',
-  darkTextColor: '#666666',
+  quaternaryTextColor: '#4D4D4D',
+  greyTextColor: '#666666',
   placeHolderTextColor: '#999999',
   disabledTextColor: '#CCCCCC',
   neutralButtonTextColor: '#254030',
@@ -28,4 +29,9 @@ export const colors = {
   transparent: 'transparent',
 
   tabBarBackgroundColor: '#E5EEE9',
+
+  cardItemBackground: '#F2F2F2',
+  switchBorder: '#C5C5C5',
+
+  headerBorder: '#D9D9D9',
 };

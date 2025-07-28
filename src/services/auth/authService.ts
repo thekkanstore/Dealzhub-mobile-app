@@ -1,4 +1,9 @@
-import {GoogleAuthProvider, getAuth, signInWithCredential} from '@react-native-firebase/auth';
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithCredential,
+  signOut,
+} from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
@@ -28,4 +33,22 @@ async function onGoogleButtonPress() {
   }
 }
 
-export default {onGoogleSignIn: onGoogleButtonPress};
+async function logout() {
+  try {
+    // Sign out from Firebase
+    await signOut(getAuth());
+
+    // Sign out from Google
+    await GoogleSignin.signOut();
+
+    // Clear user info from Redux
+    updateUserInfo(null);
+
+    return {success: true};
+  } catch (error) {
+    showErrorToast('Failed to logout');
+    return {success: false, error};
+  }
+}
+
+export default {onGoogleSignIn: onGoogleButtonPress, logout};

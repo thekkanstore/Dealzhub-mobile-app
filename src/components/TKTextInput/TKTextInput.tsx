@@ -113,7 +113,7 @@ const TKTextInput: React.FC<TKTextInputProps> = ({
             !leftChild && !showLeftSpace && styles.inputWithoutLeftPadding,
             !rightChild && !showRightSpace && styles.inputWithoutRightPadding,
             inputStyle,
-            isDisabled && {color: colors.darkTextColor},
+            isDisabled && {color: colors.greyTextColor},
           ]}
           onFocus={handleFocus}
           onBlur={handleBlur}

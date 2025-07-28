@@ -5,14 +5,17 @@ import {navigationStrings} from './navigationStrings';
 import {RootStackParamList} from './rootparamstypes';
 import {AuthStack} from './AuthStack';
 import {hideSplash} from 'react-native-splash-view';
-import useSafeAreaListner from '../hooks/useSafeAreaListner';
+import useSafeAreaListener from '../hooks/useSafeAreaListener';
 import BottomTabBarStack from './BottomTabStack';
 import {useAppSelector} from '../redux/hooks';
+import {View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
-  useSafeAreaListner();
+  useSafeAreaListener();
+  const insets = useSafeAreaInsets();
   useEffect(() => {
     setTimeout(() => {
       hideSplash(); // Hide after some time
@@ -22,21 +25,28 @@ export default function MainStack() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        {!isUserDetails ? (
-          <Stack.Screen
-            name={navigationStrings.AUTH_STACK}
-            component={AuthStack}
-            options={{gestureEnabled: false}}
-          />
-        ) : (
-          <Stack.Screen
-            name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
-            component={BottomTabBarStack}
-            options={{gestureEnabled: false}}
-          />
-        )}
-      </Stack.Navigator>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: isUserDetails ? insets.top : 0,
+          paddingBottom: isUserDetails ? insets.bottom : 0,
+        }}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          {!isUserDetails ? (
+            <Stack.Screen
+              name={navigationStrings.AUTH_STACK}
+              component={AuthStack}
+              options={{gestureEnabled: false}}
+            />
+          ) : (
+            <Stack.Screen
+              name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
+              component={BottomTabBarStack}
+              options={{gestureEnabled: false}}
+            />
+          )}
+        </Stack.Navigator>
+      </View>
     </NavigationContainer>
   );
 }
