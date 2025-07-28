@@ -5,7 +5,6 @@ import {navigationStrings} from './navigationStrings';
 import {RootStackParamList} from './rootparamstypes';
 import {AuthStack} from './AuthStack';
 import {hideSplash} from 'react-native-splash-view';
-import useSafeAreaListener from '../hooks/useSafeAreaListener';
 import BottomTabBarStack from './BottomTabStack';
 import {useAppSelector} from '../redux/hooks';
 import {View} from 'react-native';
@@ -14,7 +13,6 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
-  useSafeAreaListener();
   const insets = useSafeAreaInsets();
   useEffect(() => {
     setTimeout(() => {
