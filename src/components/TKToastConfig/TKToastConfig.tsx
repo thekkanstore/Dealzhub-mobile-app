@@ -5,29 +5,31 @@ import {fontScale} from '../../config/styles/responsiveSize';
 import {fontFamily} from '../../config/styles/fontFamily';
 
 export const ToastConfig = {
-  customError: ({text1}: any) => (
-    <View
-      style={{
-        height: 60,
-        width: '90%',
-        backgroundColor: colors.errorToastBackgroundColor,
-        borderRadius: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-      }}>
-      <Text
+  customError: ({text1}: any) => {
+    return (
+      <View
         style={{
-          color: colors.secondaryTextColor,
-          fontSize: fontScale(14),
-          fontWeight: '400',
-          fontFamily: fontFamily.medium,
-          flex: 1,
+          height: 60,
+          width: '90%',
+          backgroundColor: colors.errorToastBackgroundColor,
+          borderRadius: 10,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 10,
         }}>
-        {text1}
-      </Text>
-    </View>
-  ),
+        <Text
+          style={{
+            color: colors.secondaryTextColor,
+            fontSize: fontScale(14),
+            fontWeight: '400',
+            fontFamily: fontFamily.medium,
+            flex: 1,
+          }}>
+          {text1}
+        </Text>
+      </View>
+    );
+  },
   customSuccess: ({text1}: any) => (
     <View
       style={{

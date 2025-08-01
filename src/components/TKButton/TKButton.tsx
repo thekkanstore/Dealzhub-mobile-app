@@ -92,15 +92,15 @@ export default TKButton;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    paddingVertical: verticalScale(6),
-    paddingHorizontal: moderateScale(20),
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: moderateScale(25),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: moderateScale(30),
   },
   buttonText: {
     fontSize: fontScale(14),
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.semiBold,
     lineHeight: verticalScale(20),
   },
   loader: {

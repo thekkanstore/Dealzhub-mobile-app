@@ -8,6 +8,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
 import {updateUserInfo} from '../../redux/userSlice';
+import {updateNotificationPermissionModalVisibility} from '../../redux/systemSlice';
 
 async function onGoogleButtonPress() {
   try {
@@ -25,6 +26,7 @@ async function onGoogleButtonPress() {
 
     const data = await signInWithCredential(getAuth(), googleCredential);
     updateUserInfo(signInResult.data);
+    setTimeout(() => updateNotificationPermissionModalVisibility(true), 200);
     return data;
   } catch (error) {
     // eslint-disable-next-line no-console

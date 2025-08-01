@@ -1,4 +1,5 @@
 import {Platform, Alert, PermissionsAndroid} from 'react-native';
+import {RESULTS, requestNotifications} from 'react-native-permissions';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {strings} from '../language/langauageUtils';
@@ -82,12 +83,15 @@ class NotificationPermissionManager {
    */
   private mapPermissionResult(result: string): NotificationPermissionStatus {
     switch (result) {
-      case 'granted':
+      case RESULTS.GRANTED:
         return NotificationPermissionStatus.GRANTED;
-      case 'denied':
+      case RESULTS.DENIED:
         return NotificationPermissionStatus.DENIED;
-      case 'never_ask_again':
+      case RESULTS.BLOCKED:
+      case RESULTS.LIMITED:
         return NotificationPermissionStatus.BLOCKED;
+      case RESULTS.UNAVAILABLE:
+        return NotificationPermissionStatus.UNAVAILABLE;
       default:
         return NotificationPermissionStatus.NOT_REQUESTED;
     }
@@ -99,9 +103,16 @@ class NotificationPermissionManager {
   async checkPermissionStatus(): Promise<NotificationPermissionStatus> {
     try {
       if (Platform.OS === 'ios') {
-        // For iOS, we'll assume notifications are available
-        // In a real implementation, you'd check iOS notification settings
-        return NotificationPermissionStatus.GRANTED;
+        // For iOS, we use requestNotifications to get permission status
+        // Since there's no direct check for notifications, we'll check if it's been requested
+        const hasBeenRequested = await this.hasPermissionBeenRequested();
+        if (!hasBeenRequested) {
+          return NotificationPermissionStatus.NOT_REQUESTED;
+        } else {
+          // If it has been requested, we need to determine current status
+          // This will be handled by the requestNotifications call
+          return NotificationPermissionStatus.NOT_REQUESTED;
+        }
       } else {
         // For Android API 33+, check POST_NOTIFICATIONS permission
         const result = await PermissionsAndroid.check(
@@ -294,9 +305,9 @@ class NotificationPermissionManager {
   private async requestSystemPermission(): Promise<NotificationPermissionStatus> {
     try {
       if (Platform.OS === 'ios') {
-        // For iOS, you'd typically use @react-native-firebase/messaging
-        // For now, we'll return granted
-        return NotificationPermissionStatus.GRANTED;
+        // Use react-native-permissions to request iOS notification permission
+        const {status} = await requestNotifications(['alert', 'sound', 'badge']);
+        return this.mapPermissionResult(status);
       } else {
         // For Android API 33+, request POST_NOTIFICATIONS permission
         const result = await PermissionsAndroid.request(

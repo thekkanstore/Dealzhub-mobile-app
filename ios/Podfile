@@ -20,6 +20,7 @@ setup_permissions([
   'LocationAccuracy',
   'LocationAlways', 
   'LocationWhenInUse',
+  'Notifications',
 ])
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -30,6 +31,17 @@ end
 
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
+
+# Fix for react-native-permissions when using use_frameworks!
+pre_install do |installer|
+  installer.pod_targets.each do |pod|
+    if pod.name.eql?('RNPermissions') || pod.name.start_with?('Permission-')
+      def pod.build_type
+        Pod::BuildType.static_library
+      end
+    end
+  end
+end
 
 target 'ThekkanVendor' do
   config = use_native_modules!
