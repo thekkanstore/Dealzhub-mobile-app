@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
   },
   contentWrapper: {
     position: 'absolute',
-    bottom: '20%',
+    bottom: '15%',
     left: 0,
     right: 0,
     paddingHorizontal: moderateScale(20),

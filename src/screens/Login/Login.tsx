@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ImageBackground, Text, View, Dimensions, Animated, Image} from 'react-native';
+import {ImageBackground, Text, View, Dimensions, Image} from 'react-native';
 
 import {imagePath} from '../../assets/imagePath';
 import TKStatusBar from '../../components/TKStatusBar/TKStatusBar';
@@ -7,7 +7,6 @@ import {strings} from '../../utils/language/langauageUtils';
 import TKButton from '../../components/TKButton/TKButton';
 import {useSafeAreaBottom} from '../../providers/SafeAreaProvider';
 import LinearGradient from 'react-native-linear-gradient';
-import {colors} from '../../config/styles/colors';
 import {styles} from './LoginStyle';
 import authService from '../../services/auth/authService';
 
@@ -52,26 +51,6 @@ const Login = () => {
         </LinearGradient>
       </ImageBackground>
       <View style={styles.bottomContent}>
-        <View style={styles.dotsContainer}>
-          {[...Array(3)].map((_, index) => {
-            return (
-              <Animated.View
-                key={index}
-                style={[
-                  styles.dot,
-                  {
-                    width: index === 2 ? 30 : 8,
-                    backgroundColor:
-                      index === 2
-                        ? colors.primaryButtonBackgroundColor
-                        : colors.neutralButtonBackgroundColor,
-                  },
-                ]}
-              />
-            );
-          })}
-        </View>
-
         <TKButton
           title={renderTitle()}
           onPress={handleGetStarted}
