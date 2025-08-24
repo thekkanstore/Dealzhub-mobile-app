@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import TKHeader from '../../components/TKHeader/TKHeader';
+import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
-import NotificationPermissionCard from './components/NotificationPermissionCard/NotificationPermissionCard';
+import NotificationPermissionCard from '../../components/Settings/NotificationPermissionCard/NotificationPermissionCard';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import {colors} from '../../config/styles/colors';
 

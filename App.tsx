@@ -10,9 +10,9 @@ import {View} from 'react-native';
 
 import MainStack from './src/navigation/MainStack';
 import {persistor, store} from './src/redux/store';
-import TKStatusBar from './src/components/TKStatusBar/TKStatusBar';
-import {ToastConfig} from './src/components/TKToastConfig/TKToastConfig';
-import {TKGlobalModalManager} from './src/components/TKGlobalModalManager/TKGlobalModalManager';
+import TKStatusBar from './src/components/Common/TKStatusBar/TKStatusBar';
+import {ToastConfig} from './src/components/Common/TKToastConfig/TKToastConfig';
+import {TKGlobalModalManager} from './src/components/Common/TKGlobalModalManager/TKGlobalModalManager';
 import {SafeAreaProvider, initialWindowMetrics} from 'react-native-safe-area-context';
 import {GlobalSafeAreaProvider} from './src/providers/SafeAreaProvider';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';

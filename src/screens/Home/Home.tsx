@@ -1,13 +1,17 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import LocationBar from './components/LocationBar/LocationBar';
+import LocationBar from '../../components/Home/LocationBar/LocationBar';
 import {colors} from '../../config/styles/colors';
 import {moderateScale} from '../../config/styles/responsiveSize';
+import TKTextInput from '../../components/Common/TKTextInput/TKTextInput';
+import TKSecondaryTextInput from '../../components/Common/TKSecondaryTextInput/TKSecondaryTextInput';
 
 const Home = () => {
   return (
     <View style={styles.container}>
       <LocationBar />
+      <TKTextInput />
+      <TKSecondaryTextInput />
     </View>
   );
 };

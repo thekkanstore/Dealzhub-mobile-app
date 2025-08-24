@@ -4,13 +4,13 @@ import {BottomTabBarProps, createBottomTabNavigator} from '@react-navigation/bot
 import {navigationStrings} from './navigationStrings';
 // import LXIcon from '../components/LxIcon/LXIcon';
 import {HomeStack} from './HomeStack';
-import TKCustomBottomTabBar from '../components/TKCustomBottomTabBar/TKCustomBottomTabBar';
-import {TKHomeSelectedIcon} from '../components/Icons/TKHomeSelectedIcon';
-import {TKHomeUnselectedIcon} from '../components/Icons/TKHomeUnselectedIcon';
-import {TKHeartSelectedIcon} from '../components/Icons/TKHeartSelectedIcon';
-import {TKHeartUnselectedIcon} from '../components/Icons/TKHeartUnselectedIcon';
-import {TKCartUnselectedIcon} from '../components/Icons/TKCartUnselectedIcon';
-import {TKCartIcon} from '../components/Icons/TKCartIcon';
+import {TKCartIcon} from '../components/Common/Icons/TKCartIcon';
+import {TKCartUnselectedIcon} from '../components/Common/Icons/TKCartUnselectedIcon';
+import {TKHeartSelectedIcon} from '../components/Common/Icons/TKHeartSelectedIcon';
+import {TKHeartUnselectedIcon} from '../components/Common/Icons/TKHeartUnselectedIcon';
+import {TKHomeSelectedIcon} from '../components/Common/Icons/TKHomeSelectedIcon';
+import {TKHomeUnselectedIcon} from '../components/Common/Icons/TKHomeUnselectedIcon';
+import TKCustomBottomTabBar from '../components/Common/TKCustomBottomTabBar/TKCustomBottomTabBar';
 
 const Tab = createBottomTabNavigator();
 

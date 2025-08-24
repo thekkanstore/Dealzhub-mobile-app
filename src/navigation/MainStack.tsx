@@ -9,7 +9,7 @@ import BottomTabBarStack from './BottomTabStack';
 import {useAppSelector} from '../redux/hooks';
 import {View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {TKNotificationPermissionHandler} from '../components/TKNotificationPermissionHandler/TKNotificationPermissionHandler';
+import {TKNotificationPermissionHandler} from '../components/Common/TKNotificationPermissionHandler/TKNotificationPermissionHandler';
 import {updateNotificationPermissionModalVisibility} from '../redux/systemSlice';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -51,11 +51,13 @@ export default function MainStack() {
           )}
         </Stack.Navigator>
       </View>
-      <TKNotificationPermissionHandler
-        onPermissionGranted={handleNotification}
-        onPermissionDenied={handleNotification}
-        autoRequestOnMount={true}
-      />
+      {isUserDetails && (
+        <TKNotificationPermissionHandler
+          onPermissionGranted={handleNotification}
+          onPermissionDenied={handleNotification}
+          autoRequestOnMount={true}
+        />
+      )}
     </NavigationContainer>
   );
 }

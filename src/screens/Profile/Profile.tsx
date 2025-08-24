@@ -1,13 +1,13 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import TKHeader from '../../components/TKHeader/TKHeader';
+import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
 import {moderateScale} from '../../config/styles/responsiveSize';
-import UserDetailsCard from './components/UserDetailsCard/UserDetailsCard';
-import TKButton from '../../components/TKButton/TKButton';
-import ProfileOptions from './components/ProfileOptions/ProfileOptions';
+import UserDetailsCard from '../../components/Profile/UserDetailsCard/UserDetailsCard';
+import TKButton from '../../components/Common/TKButton/TKButton';
+import ProfileOptions from '../../components/Profile/ProfileOptions/ProfileOptions';
 import {colors} from '../../config/styles/colors';
-import LogoutButton from './components/LogoutButton/LogoutButton';
+import LogoutButton from '../../components/Profile/LogoutButton/LogoutButton';
 
 const Profile = () => {
   const renderHelpButton = () => {

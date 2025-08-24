@@ -2,13 +2,13 @@ import React, {useState} from 'react';
 import {ImageBackground, Text, View, Dimensions, Image} from 'react-native';
 
 import {imagePath} from '../../assets/imagePath';
-import TKStatusBar from '../../components/TKStatusBar/TKStatusBar';
+import TKStatusBar from '../../components/Common/TKStatusBar/TKStatusBar';
 import {strings} from '../../utils/language/langauageUtils';
-import TKButton from '../../components/TKButton/TKButton';
 import {useSafeAreaBottom} from '../../providers/SafeAreaProvider';
 import LinearGradient from 'react-native-linear-gradient';
 import {styles} from './LoginStyle';
 import authService from '../../services/auth/authService';
+import TKButton from '../../components/Common/TKButton/TKButton';
 
 const {width} = Dimensions.get('window');
 

@@ -17,6 +17,7 @@ export const colors = {
 
   inputBorder: '#666666',
   inputBackground: '#FAFAFA',
+  inputBackgroundSecondary: '#fff',
   inputDisabledBackground: '#F0F0F0',
   backgroundContainerLight: '#F8F8F8',
 
@@ -34,4 +35,6 @@ export const colors = {
   switchBorder: '#C5C5C5',
 
   headerBorder: '#D9D9D9',
+
+  darkTextColor: '#000000',
 };

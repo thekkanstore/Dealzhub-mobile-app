@@ -25,6 +25,7 @@ async function onGoogleButtonPress() {
     const googleCredential = GoogleAuthProvider.credential(idToken);
 
     const data = await signInWithCredential(getAuth(), googleCredential);
+    console.log(data, 'data from firebase auth');
     updateUserInfo(signInResult.data);
     setTimeout(() => updateNotificationPermissionModalVisibility(true), 200);
     return data;
@@ -34,7 +35,7 @@ async function onGoogleButtonPress() {
     showErrorToast(strings('login.failedSignIn'));
   }
 }
-
+ 
 async function logout() {
   try {
     // Sign out from Firebase
