@@ -13,16 +13,22 @@ import {IUserTable} from '../../config/models/users';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import TKRadioButton from '../../components/Common/TKRadioButton/TKRadioButton';
-import {useNavigation} from '@react-navigation/native';
-import {UserRegisterScreenNavigationProp} from '../../navigation/rootparamstypes';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  RegisterUserStackParamList,
+  UserRegisterScreenNavigationProp,
+} from '../../navigation/rootparamstypes';
 import {useCreateUser, useGetUserDetails} from '../../react-queries/user/userQueries';
 import {useAppSelector} from '../../redux/hooks';
 import TKDropdown from '../../components/Common/TKDropdown/TKDropdown';
 import {DistrictList} from '../../config/common/constants';
+import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
-  const {mutate: createUser, isPending: isLoading} = useCreateUser();
+  const route = useRoute<RouteProp<RegisterUserStackParamList, 'UserDetails'>>();
+  const {isEdit = false} = route.params;
+  const {mutate: createUser, isPending: isLoading} = useCreateUser(isEdit);
   const user = useAppSelector(state => state.user.user);
   const {data: userDetails = {}} = useGetUserDetails(true);
   const initialValues: IUserTable = useMemo(() => {
@@ -34,6 +40,10 @@ const UserDetailsForm = () => {
       {...values, city: values.city.value ?? ''},
       {
         onSuccess: () => {
+          if (isEdit) {
+            navigation.goBack();
+            return;
+          }
           navigation.navigate('ChooseUserType');
         },
       },
@@ -41,10 +51,10 @@ const UserDetailsForm = () => {
   };
   return (
     <>
-      <TKHeader header={strings('labels.userDetails')} showBackButton={false} />
+      <TKHeader header={strings('labels.userDetails')} showBackButton={isEdit} />
       <Formik<IUserTable>
         initialValues={initialValues}
-        validationSchema={useDetailsValidationsSchema}
+        validationSchema={() => useDetailsValidationsSchema(isEdit)}
         onSubmit={handleSubmit}
         enableReinitialize
         validateOnMount={false}>
@@ -137,15 +147,16 @@ const UserDetailsForm = () => {
                 isDisabled
                 editable={false}
               />
-
-              <TKRadioButton
-                value={values.isAgreeTermsAndCondition}
-                buttonName={strings('labels.termsAndConditions')}
-                onSelect={() =>
-                  setFieldValue('isAgreeTermsAndCondition', !values.isAgreeTermsAndCondition)
-                }
-                isSelected={!!values.isAgreeTermsAndCondition}
-              />
+              <TKRenderIf isRender={!isEdit}>
+                <TKRadioButton
+                  value={values.isAgreeTermsAndCondition}
+                  buttonName={strings('labels.termsAndConditions')}
+                  onSelect={() =>
+                    setFieldValue('isAgreeTermsAndCondition', !values.isAgreeTermsAndCondition)
+                  }
+                  isSelected={!!values.isAgreeTermsAndCondition}
+                />
+              </TKRenderIf>
             </KeyboardAwareScrollView>
 
             <TKButton

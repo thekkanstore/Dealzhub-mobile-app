@@ -1,5 +1,5 @@
-import {useMutation, useQuery} from '@tanstack/react-query';
-import {errorHandler} from '../../utils/common/toastUtils';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {errorHandler, showSuccessToast} from '../../utils/common/toastUtils';
 import {
   checkUserExists,
   createNewUser,
@@ -46,12 +46,13 @@ export const useGetUserExistence = () => {
     },
   });
 };
-export const useCreateUser = () => {
+export const useCreateUser = (isUpdate = false) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['userCreationMutation'],
     mutationFn: async (payload: IUserTable) => {
       try {
-        const data = await createNewUser(payload);
+        const data = await createNewUser(payload, isUpdate);
         return data;
       } catch (error) {
         return Promise.reject(error);
@@ -59,6 +60,10 @@ export const useCreateUser = () => {
     },
     onError: error => {
       errorHandler(error);
+    },
+    onSuccess: data => {
+      showSuccessToast(data.message ?? '');
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
     },
   });
 };

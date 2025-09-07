@@ -6,7 +6,8 @@ export const navigationStrings = {
 
   AUTH_STACK: 'AuthStack',
   BOTTOM_TAB_STACK: 'BottomTabStack',
-  REGISTER_STACK: 'BottomTabStack',
+  REGISTER_STACK: 'RegisterStack',
+  REGISTER_USER_STACK: 'RegisterUserStack',
 
   // bottom tab
   HOME_TAB: 'HomeTab',

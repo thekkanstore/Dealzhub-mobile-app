@@ -21,9 +21,12 @@ export type HomeStackParamList = {
   Home: undefined;
   Profile: undefined;
   Settings: undefined;
+  RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
 };
 export type RegisterUserStackParamList = {
-  UserDetails: undefined;
+  UserDetails: {
+    isEdit?: boolean;
+  };
   ChooseUserType: undefined;
   StoreDetails: undefined;
 };

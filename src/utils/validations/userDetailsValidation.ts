@@ -6,7 +6,7 @@ import {
   phoneNumberIndia,
 } from './commonValiddations';
 
-export const useDetailsValidationsSchema = () => {
+export const useDetailsValidationsSchema = (isEdit = false) => {
   return Yup.object({
     id: Yup.string().required('state is required'),
     email: emailValidation,
@@ -15,6 +15,10 @@ export const useDetailsValidationsSchema = () => {
     address: addressValidation,
     state: Yup.string().required('State is required'),
     city: Yup.object().required('City is required'),
-    isAgreeTermsAndCondition: Yup.boolean().required('Please accept terms and conditions'),
+    isAgreeTermsAndCondition: isEdit
+      ? Yup.boolean()
+      : Yup.boolean()
+          .oneOf([true], 'Please accept terms and conditions')
+          .required('Please accept terms and conditions'),
   });
 };

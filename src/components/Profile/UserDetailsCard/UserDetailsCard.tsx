@@ -1,31 +1,41 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../../config/styles/colors';
-import {useAppSelector} from '../../../redux/hooks';
 import {moderateScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import TKButton from '../../Common/TKButton/TKButton';
 import {strings} from '../../../utils/language/langauageUtils';
+import {useNavigation} from '@react-navigation/native';
+import {navigationStrings} from '../../../navigation/navigationStrings';
+import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 
 const UserDetailsCard = () => {
-  const userDetails = useAppSelector(state => state.user.user);
+  const {data: userDetails} = useGetUserDetails(true);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const handleEditProfile = () => {
+    navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
+      screen: navigationStrings.USER_DETAILS,
+      params: {isEdit: true},
+    });
+  };
   return (
     <View style={style.container}>
       <View style={style.subContainer}>
-        <Image
-          style={style.image}
-          source={{uri: userDetails?.user?.photo ?? ''}}
-          resizeMode="cover"
-        />
+        <Image style={style.image} source={{uri: userDetails?.photo ?? ''}} resizeMode="cover" />
         <View>
-          <Text style={style.nameText}>{userDetails?.user?.name}</Text>
+          <Text style={style.nameText}>{userDetails?.name}</Text>
           <Text
             style={
               style.emailText
-            }>{`${userDetails?.user?.email}, ${userDetails?.user?.phone ?? ''}`}</Text>
+            }>{`${userDetails?.email ?? ''}, ${userDetails?.phoneNumber ?? ''}`}</Text>
         </View>
       </View>
-      <TKButton title={strings('labels.editProfile')} style={style.buttonContainer} />
+      <TKButton
+        title={strings('labels.editProfile')}
+        style={style.buttonContainer}
+        onPress={handleEditProfile}
+      />
     </View>
   );
 };

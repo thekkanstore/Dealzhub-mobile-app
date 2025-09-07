@@ -51,6 +51,7 @@ async function getUserData(userId: string): Promise<IUserTable | null> {
 // Function specifically for creating new user data
 async function createNewUser(
   userData: IUserTable,
+  isUpdate = false,
 ): Promise<{success: boolean; userId: string | null; message: string}> {
   try {
     const usersCollection = firestore().collection(FireStoreCollections.USERS);
@@ -67,31 +68,38 @@ async function createNewUser(
     // }
 
     // Prepare user data with timestamps
-    const newUserData = {
+    const newUserData: Partial<
+      typeof userData & {createdAt: Date; updatedAt: Date; isActive: boolean}
+    > = {
       ...userData,
       createdAt: new Date(),
       updatedAt: new Date(),
       isActive: true,
     };
 
-    await usersCollection.doc(userData.id).set(newUserData);
+    if (isUpdate) {
+      delete newUserData.createdAt;
+      await usersCollection.doc(userData.id).update(newUserData);
+    } else {
+      await usersCollection.doc(userData.id).set(newUserData);
+    }
     const verifyUser = await usersCollection.doc(userData.id).get();
     if (verifyUser.exists()) {
       return Promise.resolve({
         success: true,
         data: verifyUser.data(),
         userId: userData.id,
-        message: 'User created successfully',
+        message: isUpdate ? 'User details updated successfully' : 'User created successfully',
       });
     } else {
-      return Promise.reject('User creation verification failed');
+      return Promise.reject(isUpdate ? 'User update failed' : 'User creation verification failed');
     }
   } catch (error) {
     console.error('Error creating new user:', error);
     return Promise.reject({
       success: false,
       userId: null,
-      message: `Error creating user: ${error}`,
+      message: isUpdate ? 'User details update failed' : `Error creating user: ${error}`,
     });
   }
 }
