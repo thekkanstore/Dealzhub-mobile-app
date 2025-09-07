@@ -37,4 +37,9 @@ export const colors = {
   headerBorder: '#D9D9D9',
 
   darkTextColor: '#000000',
+
+  radioButtonBackgroundColor: '#427256',
+  radioButtonSelectedBackgroundColor: '#427256',
+  radioButtonDisabledBackgroundColor: '#fff',
+  radioButtonDisabledBorderColor: '#fff',
 };

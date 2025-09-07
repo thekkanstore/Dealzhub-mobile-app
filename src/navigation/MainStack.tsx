@@ -11,6 +11,7 @@ import {View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {TKNotificationPermissionHandler} from '../components/Common/TKNotificationPermissionHandler/TKNotificationPermissionHandler';
 import {updateNotificationPermissionModalVisibility} from '../redux/systemSlice';
+import {RegisterUserStack} from './RegisterStack';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -18,15 +19,34 @@ export default function MainStack() {
   const insets = useSafeAreaInsets();
   useEffect(() => {
     setTimeout(() => {
-      hideSplash(); // Hide after some time
+      hideSplash();
     }, 2000);
   }, []);
   const isUserDetails = useAppSelector(state => state.user.user);
+  const isNewUser = useAppSelector(state => state.user.isNewUser);
 
   const handleNotification = () => {
     updateNotificationPermissionModalVisibility(false);
   };
 
+  const getUserStack = () => {
+    if (isNewUser) {
+      return (
+        <Stack.Screen
+          name={navigationStrings.REGISTER_STACK as 'RegisterUserStack'}
+          component={RegisterUserStack}
+          options={{gestureEnabled: false}}
+        />
+      );
+    }
+    return (
+      <Stack.Screen
+        name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
+        component={BottomTabBarStack}
+        options={{gestureEnabled: false}}
+      />
+    );
+  };
   return (
     <NavigationContainer>
       <View
@@ -43,11 +63,7 @@ export default function MainStack() {
               options={{gestureEnabled: false}}
             />
           ) : (
-            <Stack.Screen
-              name={navigationStrings.BOTTOM_TAB_STACK as 'BottomTabStack'}
-              component={BottomTabBarStack}
-              options={{gestureEnabled: false}}
-            />
+            getUserStack()
           )}
         </Stack.Navigator>
       </View>

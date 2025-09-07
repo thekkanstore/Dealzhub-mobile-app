@@ -83,7 +83,6 @@ const TKModal: React.FC<TKModalProps> = ({
       </View>
     );
   };
-console.log('TKModal rendered with isVisible:', insets);
   return (
     <Modal
       isVisible={isVisible}

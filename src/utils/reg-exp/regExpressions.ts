@@ -6,3 +6,4 @@ export const phoneRegExp =
 export const singleSpaceRegExp = /^[^\s]+(\s[^\s]+)*$/;
 
 export const removeExtraWhitespaceRegExp = /\s+/g;
+export const emailRegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

@@ -6,6 +6,7 @@ export type RootStackParamList = {
   AuthStack: undefined | {screen?: keyof AuthStackParamList; params?: any};
   HomeStack: {screen?: keyof HomeStackParamList; params?: any};
   BottomTabStack: {screen?: keyof BottomTabStackParamList; params?: any};
+  RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
 };
 
 // Define the param list for the auth stack
@@ -20,6 +21,11 @@ export type HomeStackParamList = {
   Home: undefined;
   Profile: undefined;
   Settings: undefined;
+};
+export type RegisterUserStackParamList = {
+  UserDetails: undefined;
+  ChooseUserType: undefined;
+  StoreDetails: undefined;
 };
 
 export type BottomTabStackParamList = {
@@ -37,6 +43,10 @@ export type AuthStackNavigationProp = StackNavigationProp<AuthStackParamList>;
 // Navigation props for screens in HomeStack
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<HomeStackParamList, 'Home'>,
+  StackNavigationProp<RootStackParamList>
+>;
+export type UserRegisterScreenNavigationProp = CompositeNavigationProp<
+  StackNavigationProp<RegisterUserStackParamList, 'UserDetails'>,
   StackNavigationProp<RootStackParamList>
 >;
 

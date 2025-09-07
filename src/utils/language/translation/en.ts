@@ -1,3 +1,5 @@
+import { store } from "../../../redux/store";
+
 export const en = {
   gettingStarted: {
     step1Title: 'New Products \nEveryday',
@@ -14,6 +16,7 @@ export const en = {
     gettingStarted: 'Get Started',
     next: 'Next',
     done: 'Done',
+    continue: 'Continue',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -28,6 +31,22 @@ export const en = {
     viewWishlist: 'View Wishlist',
     settings: 'Settings',
     notifications: 'Notifications',
+    fullName: 'Full name',
+    emailAddress: 'Email address',
+    phoneNumber: 'Phone number',
+    address: 'Address',
+    city: 'City',
+    state: 'State',
+    userDetails: 'User Details',
+    termsAndConditions:
+      'By proceeding, I acknowledge that I have read and agree to the Terms and Conditions.',
+    storeName: 'Store name',
+    storeDetails: 'Store Details',
+    storeEmailAddress: 'Store email address',
+    storePhoneNumber: 'Store phone number',
+    storeAddress: 'Store address',
+    storeState: 'Store state',
+    storeCity: 'Store city',
   },
   notificationPermission: {
     title: 'Enable Notifications',
@@ -42,10 +61,40 @@ export const en = {
     permissionDenied:
       'Notification permissions are required to keep you updated about your orders and important alerts',
   },
+  ChooseUserType: {
+    backgroundText1: 'Browse, shop, and \ninteract with vendors.',
+    backgroundText2: 'Manage your store and \nsell your products.',
+    userButtonText: 'I’am an User & I’m Buying Items',
+    vendorButtonText: 'I’am a Business Owner & I’m Selling',
+  },
   login: {
     loginDescription: 'Simple Deals. Smart Living.',
     signInWithGoogle: 'Sign In With Google',
     failedSignIn: 'Failed to Sign In',
     logoutMessage: 'Logout successful',
+  },
+  placeholder: {
+    fullName: 'Enter your full name',
+    emailAddress: 'Enter your email address',
+    phoneNumber: 'Enter your phone number',
+    address: 'Enter your address',
+    city: 'Enter your city',
+    state: 'Enter your state',
+    storeName: 'Enter your store name',
+    storeEmailAddress: 'Enter your store email address',
+    storePhoneNumber: 'Enter your store phone number',
+    storeAddress: 'Enter your store address',
+    storeState: 'Enter your store state',
+    storeCity: 'Enter your store city',
+  },
+  validations: {
+    emailInvalid: 'Please enter a valid email address',
+    emailRequired: 'Email is required',
+    passwordRequired: 'Password is required',
+    nameRequired: 'Name is required',
+    phoneNumberRequired: 'Phone number is required',
+    addressRequired: 'Address is required',
+    cityRequired: 'City is required',
+    stateRequired: 'State is required',
   },
 };

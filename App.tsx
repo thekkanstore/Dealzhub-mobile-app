@@ -17,29 +17,33 @@ import {SafeAreaProvider, initialWindowMetrics} from 'react-native-safe-area-con
 import {GlobalSafeAreaProvider} from './src/providers/SafeAreaProvider';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Config from 'react-native-config';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 GoogleSignin.configure({
   webClientId: Config.GOOGLE_CLIENT_ID,
   scopes: ['https://www.googleapis.com/auth/user.phonenumbers.read'],
 });
+export const queryClient = new QueryClient();
 function App(): React.JSX.Element {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <GlobalSafeAreaProvider>
-            <View style={{flex: 1}}>
-              <TKGlobalModalManager>
-                <KeyboardProvider>
-                  <TKStatusBar />
-                  <MainStack />
-                  <Toast config={ToastConfig} />
-                </KeyboardProvider>
-              </TKGlobalModalManager>
-            </View>
-          </GlobalSafeAreaProvider>
-        </SafeAreaProvider>
-      </PersistGate>
+      <QueryClientProvider client={queryClient}>
+        <PersistGate loading={null} persistor={persistor}>
+          <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+            <GlobalSafeAreaProvider>
+              <View style={{flex: 1}}>
+                <TKGlobalModalManager>
+                  <KeyboardProvider>
+                    <TKStatusBar />
+                    <MainStack />
+                    <Toast config={ToastConfig} />
+                  </KeyboardProvider>
+                </TKGlobalModalManager>
+              </View>
+            </GlobalSafeAreaProvider>
+          </SafeAreaProvider>
+        </PersistGate>
+      </QueryClientProvider>
     </Provider>
   );
 }

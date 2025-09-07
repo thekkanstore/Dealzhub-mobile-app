@@ -7,8 +7,9 @@ import {
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
-import {updateUserInfo} from '../../redux/userSlice';
+import {updateNewUserStatus, updateUserInfo} from '../../redux/userSlice';
 import {updateNotificationPermissionModalVisibility} from '../../redux/systemSlice';
+import {checkIsUserRegistrationCompleted} from '../firestore/userFirestoreService';
 
 async function onGoogleButtonPress() {
   try {
@@ -16,26 +17,24 @@ async function onGoogleButtonPress() {
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
     // Get the users ID token
     const signInResult = await GoogleSignin.signIn();
-    // Try the new style of google-sign in result, from v13+ of that module
-    const idToken = signInResult.data?.idToken;
-    if (!idToken) {
+
+    if (!signInResult.data?.idToken || !signInResult.data?.user.id) {
       throw new Error('No ID token found');
     }
     // Create a Google credential with the token
-    const googleCredential = GoogleAuthProvider.credential(idToken);
+    const googleCredential = GoogleAuthProvider.credential(signInResult.data?.idToken);
 
     const data = await signInWithCredential(getAuth(), googleCredential);
-    console.log(data, 'data from firebase auth');
     updateUserInfo(signInResult.data);
+    const userExists = await checkIsUserRegistrationCompleted(signInResult.data?.user.id ?? '');
+    updateNewUserStatus(!userExists);
     setTimeout(() => updateNotificationPermissionModalVisibility(true), 200);
     return data;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error, 'error');
     showErrorToast(strings('login.failedSignIn'));
   }
 }
- 
+
 async function logout() {
   try {
     // Sign out from Firebase

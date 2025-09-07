@@ -157,7 +157,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.inputBackgroundSecondary,
     height: verticalScale(45),
     width: '100%',
-    ...stylesUtils.darkShadow({}),
+    ...stylesUtils.darkShadow({
+      shadowOffset: {width: 1, height: 1},
+      shadowOpacity: 0.3,
+      shadowRadius: 2,
+      elevation:15
+    }),
   },
   disabledContainer: {
     backgroundColor: colors.backgroundContainerLight,
@@ -219,7 +224,7 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: moderateScale(14),
     color: colors.primaryTextColor,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.semiBold,
   },
   labelDisableColor: {
     color: colors.disabledTextColor,

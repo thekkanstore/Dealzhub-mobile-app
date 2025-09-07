@@ -55,7 +55,7 @@ const TKHeader: React.FC<Props> = ({
           </Pressable>
         </TKRenderIf>
 
-        <View style={styles.headerContainer}>{renderHeader()}</View>
+        <View style={[styles.headerContainer, !showBackButton && {marginLeft: moderateScale(16)}]}>{renderHeader()}</View>
       </View>
 
       <TKRenderIf isRender={!!rightComponent}>
