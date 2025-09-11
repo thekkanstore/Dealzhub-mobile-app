@@ -8,7 +8,7 @@ import TKSecondaryTextInput from '../../components/Common/TKSecondaryTextInput/T
 import TKButton from '../../components/Common/TKButton/TKButton';
 import {userDetailsInitialValues} from '../../utils/initialValues/userDetailsInitialValues';
 import {shouldShowError} from '../../utils/common/errorUtils';
-import {useDetailsValidationsSchema} from '../../utils/validations/userDetailsValidation';
+import {userDetailsValidationsSchema} from '../../utils/validations/userDetailsValidation';
 import {IUserTable} from '../../config/models/users';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
@@ -54,7 +54,7 @@ const UserDetailsForm = () => {
       <TKHeader header={strings('labels.userDetails')} showBackButton={isEdit} />
       <Formik<IUserTable>
         initialValues={initialValues}
-        validationSchema={() => useDetailsValidationsSchema(isEdit)}
+        validationSchema={() => userDetailsValidationsSchema(isEdit)}
         onSubmit={handleSubmit}
         enableReinitialize
         validateOnMount={false}>

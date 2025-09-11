@@ -6,7 +6,7 @@ import {
   phoneNumberIndia,
 } from './commonValiddations';
 
-export const useDetailsValidationsSchema = (isEdit = false) => {
+export const userDetailsValidationsSchema = (isEdit = false) => {
   return Yup.object({
     id: Yup.string().required('state is required'),
     email: emailValidation,

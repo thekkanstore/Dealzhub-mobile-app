@@ -63,7 +63,7 @@ const style = StyleSheet.create({
     color: colors.primaryTextColor,
   },
   emailText: {
-    fontSize: moderateScale(16),
+    fontSize: moderateScale(14),
     fontFamily: fontFamily.regular,
     color: colors.primaryTextColor,
   },
