@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Formik} from 'formik';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {onlyNumbers} from '../../utils/common/numberUtils';
 import {strings} from '../../utils/language/langauageUtils';
@@ -14,17 +15,37 @@ import {IStoreRequestBody} from '../../config/models/store';
 import {storeDetailsValidationsSchema} from '../../utils/validations/storeDetailsValidation';
 import TKDropdown from '../../components/Common/TKDropdown/TKDropdown';
 import {DistrictList} from '../../config/common/constants';
-import {useCreateNewUserStore} from '../../react-queries/store/storeQueries';
+import {
+  useCreateNewUserStore,
+  useGetStoreDetails,
+  useUpdateUserStore,
+} from '../../react-queries/store/storeQueries';
 import {updateNewUserStatus} from '../../redux/userSlice';
 
 const StoreDetailsForm = () => {
-  const {mutate, isPending} = useCreateNewUserStore();
+  const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
+  const {mutate: updateStore, isPending: updateStoreLoader} = useUpdateUserStore();
+  const {data: storeDetails} = useGetStoreDetails();
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const {isEdit = false} = useRoute()?.params || {};
+  const navigation = useNavigation();
   const initialValues: IStoreRequestBody = useMemo(() => {
-    return storeDetailsInitialValues();
-  }, []);
+    return storeDetailsInitialValues(storeDetails ?? undefined);
+  }, [storeDetails]);
 
   const handleSubmit = (values: IStoreRequestBody) => {
-    mutate(
+    if (isEdit) {
+      updateStore(
+        {...values, city: values.city.value ?? ''},
+        {
+          onSuccess: () => {
+            navigation.goBack();
+          },
+        },
+      );
+      return;
+    }
+    createStore(
       {...values, city: values.city.value ?? ''},
       {
         onSuccess: () => {
@@ -138,7 +159,7 @@ const StoreDetailsForm = () => {
             <TKButton
               title={strings('button.continue')}
               onPress={() => handleSubmit()}
-              isLoading={isPending}
+              isLoading={createStoreLoader || updateStoreLoader}
               isDisabled={!isValid || !dirty}
             />
           </View>

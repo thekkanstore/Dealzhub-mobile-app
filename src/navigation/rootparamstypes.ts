@@ -23,6 +23,11 @@ export type HomeStackParamList = {
   Settings: undefined;
   RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
 };
+export type VendorStackParamList = {
+  Vendor: undefined;
+  RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
+  ProductUpdate: undefined;
+};
 export type RegisterUserStackParamList = {
   UserDetails: {
     isEdit?: boolean;
@@ -35,6 +40,7 @@ export type BottomTabStackParamList = {
   HomeTab: undefined;
   Orders: undefined;
   ProfileTab: undefined;
+  VendorTab: undefined;
 };
 
 // Create a combined param list for easier navigation
@@ -46,6 +52,10 @@ export type AuthStackNavigationProp = StackNavigationProp<AuthStackParamList>;
 // Navigation props for screens in HomeStack
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<HomeStackParamList, 'Home'>,
+  StackNavigationProp<RootStackParamList>
+>;
+export type VendorScreenNavigationProp = CompositeNavigationProp<
+  StackNavigationProp<VendorStackParamList, 'Vendor'>,
   StackNavigationProp<RootStackParamList>
 >;
 export type UserRegisterScreenNavigationProp = CompositeNavigationProp<

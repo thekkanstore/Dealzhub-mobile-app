@@ -13,10 +13,15 @@ export const navigationStrings = {
   HOME_TAB: 'HomeTab',
   FAVORITES_TAB: 'FavoritesTab',
   CART_TAB: 'CartTab',
+  VENDOR_TAB: 'VendorTab',
 
   HOME: 'Home',
   PROFILE: 'Profile',
   SETTINGS: 'Settings',
+
+  //Vendor
+  VENDOR: 'Vendor',
+  PRODUCT_UPDATE: 'ProductUpdate',
 
   // Register stack screens
   USER_DETAILS: 'UserDetails',

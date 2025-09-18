@@ -16,6 +16,6 @@ export interface IUserTable {
 
   isAgreeTermsAndCondition?: boolean;
   photo?: string;
-  created_at?: Date;
-  updated_at?: Date;
+  created_at?: FieldValue;
+  updated_at?: FieldValue;
 }

@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import firestore, {FieldValue, serverTimestamp} from '@react-native-firebase/firestore';
 import {IUserTable} from '../../config/models/users';
 import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {Roles} from '../../config/common/constants';
@@ -69,11 +69,11 @@ async function createNewUser(
 
     // Prepare user data with timestamps
     const newUserData: Partial<
-      typeof userData & {createdAt: Date; updatedAt: Date; isActive: boolean}
+      typeof userData & {createdAt: FieldValue; updatedAt: FieldValue; isActive: boolean}
     > = {
       ...userData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       isActive: true,
     };
 
@@ -121,7 +121,7 @@ async function updateUserRoles(
     // Update user roles with timestamp
     await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
       role: roles,
-      updatedAt: new Date(),
+      updatedAt: serverTimestamp(),
     });
     return {
       success: true,
@@ -163,7 +163,7 @@ async function addUserRole(
 
     await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
       role: updatedRoles,
-      updatedAt: new Date(),
+      updatedAt: serverTimestamp(),
     });
 
     return {
@@ -210,7 +210,7 @@ async function removeUserRole(
     // Update user with filtered roles
     await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
       role: updatedRoles,
-      updatedAt: new Date(),
+      updatedAt: serverTimestamp(),
     });
     return {
       success: true,

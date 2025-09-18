@@ -38,6 +38,16 @@
 	<string>We need access to your location even when the app is in the background.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need access to your location to provide features.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to take photos for your store and product listings.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to select images for your store and product listings.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs access to save photos to your photo library.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>This app needs access to your documents to select files for your store and product listings.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access to record videos with audio.</string>
 
 	<key>RCTNewArchEnabled</key>
 	<true/>

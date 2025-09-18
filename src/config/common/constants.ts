@@ -65,3 +65,7 @@ export const DistrictList = [
     value: 'Wayanad',
   },
 ];
+
+export const CategoryListHeaderTabs = {
+  ALL_PRODUCTS: 'All Products',
+};

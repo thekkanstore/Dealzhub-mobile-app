@@ -15,12 +15,13 @@ export const newPasswordValidation = Yup.string()
   .matches(/[A-Z]/, 'Password requires an uppercase letter')
   .matches(/[^\w]/, 'Password requires a special characters');
 
-export const nameValidation = Yup.string()
-  .required(strings('validations.nameRequired'))
-  .matches(
-    onlyAlphabeticRegExp,
-    'Only alphabetic characters and single space allowed between words',
-  );
+export const nameValidation = (name = 'Name') =>
+  Yup.string()
+    .required(`${name} is required`)
+    .matches(
+      onlyAlphabeticRegExp,
+      'Only alphabetic characters and single space allowed between words',
+    );
 
 export const phoneNumberIndia = Yup.string()
   .required('Phone number is required')
@@ -72,7 +73,7 @@ export const amountValidation = Yup.string()
   .required('Amount is required')
   .test('is-positive', 'Amount must be a positive number', value => Number(value) > 0);
 
-export const docValidation = Yup.mixed().required('Document is required');
+export const docValidation = (name = 'Document') => Yup.mixed().required(`${name} is required`);
 // .test({
 //   name: 'doc_cert',
 //   message: 'File size is too small. Minimum size is 34kb.',

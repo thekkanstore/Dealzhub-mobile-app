@@ -11,6 +11,9 @@ import {TKHeartUnselectedIcon} from '../components/Common/Icons/TKHeartUnselecte
 import {TKHomeSelectedIcon} from '../components/Common/Icons/TKHomeSelectedIcon';
 import {TKHomeUnselectedIcon} from '../components/Common/Icons/TKHomeUnselectedIcon';
 import TKCustomBottomTabBar from '../components/Common/TKCustomBottomTabBar/TKCustomBottomTabBar';
+import {TKVendorSelectedIcon} from '../components/Common/Icons/TKVendorSelectedIcon';
+import {TKVendorUnSelectedIcon} from '../components/Common/Icons/TKVendorUnSelectedIcon';
+import {VendorStack} from './VendorStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +36,16 @@ const screens = [
         <TKHeartSelectedIcon width={30} height={30} />
       ) : (
         <TKHeartUnselectedIcon width={30} height={30} />
+      ),
+  },
+  {
+    name: navigationStrings.VENDOR_TAB as 'VendorTab',
+    component: VendorStack,
+    icon: (focused: boolean) =>
+      focused ? (
+        <TKVendorSelectedIcon width={30} height={30} />
+      ) : (
+        <TKVendorUnSelectedIcon width={30} height={30} />
       ),
   },
   {

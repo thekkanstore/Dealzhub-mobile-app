@@ -27,7 +27,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
   const route = useRoute<RouteProp<RegisterUserStackParamList, 'UserDetails'>>();
-  const {isEdit = false} = route.params;
+  const {isEdit = false} = route.params || {};
   const {mutate: createUser, isPending: isLoading} = useCreateUser(isEdit);
   const user = useAppSelector(state => state.user.user);
   const {data: userDetails = {}} = useGetUserDetails(true);

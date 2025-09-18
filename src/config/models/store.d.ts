@@ -9,8 +9,8 @@ export interface IStoreTable {
   categories?: string[];
   city: string;
   state: string;
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: FieldValue;
+  updatedAt?: FieldValue;
 }
 
 export interface IStoreRequestBody

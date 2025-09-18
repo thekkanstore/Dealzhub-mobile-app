@@ -1,5 +1,3 @@
-import { store } from "../../../redux/store";
-
 export const en = {
   gettingStarted: {
     step1Title: 'New Products \nEveryday',
@@ -17,6 +15,8 @@ export const en = {
     next: 'Next',
     done: 'Done',
     continue: 'Continue',
+    edit: 'Edit',
+    addProduct: 'Add Product',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -47,6 +47,21 @@ export const en = {
     storeAddress: 'Store address',
     storeState: 'Store state',
     storeCity: 'Store city',
+    addStore: 'Add Store',
+    addProduct: 'Add New Product',
+    productName: 'Product name',
+    productCategory: 'Product category',
+    productPrice: 'Product price',
+    productQuantity: 'Product quantity',
+    productDescription: 'Product description',
+    productImage: 'Product image',
+    productDetails: 'Product Details',
+    productUpdate: 'Product Update',
+    actualPrice: 'Actual Price',
+    discountPrice: 'Discount Price',
+    isSecondHand: 'Is Second Hand',
+    isActive: 'Is Active',
+    allProducts: 'All Products',
   },
   notificationPermission: {
     title: 'Enable Notifications',
@@ -86,6 +101,13 @@ export const en = {
     storeAddress: 'Enter your store address',
     storeState: 'Enter your store state',
     storeCity: 'Enter your store city',
+    productName: 'Enter your product name',
+    productDescription: 'Enter your product description',
+    productCategory: 'Choose your product category',
+    productPrice: 'Enter your product price',
+    productQuantity: 'Enter your product quantity',
+    actualPrice: 'Enter your actual price',
+    discountPrice: 'Enter your discount price',
   },
   validations: {
     emailInvalid: 'Please enter a valid email address',
