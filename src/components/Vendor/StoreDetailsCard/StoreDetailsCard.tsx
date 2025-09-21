@@ -8,6 +8,7 @@ import TKButton from '../../Common/TKButton/TKButton';
 import {strings} from '../../../utils/language/langauageUtils';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {navigationStrings} from '../../../navigation/navigationStrings';
+import {VendorService} from '../../../services/vendor/vendorService';
 
 interface Props {
   storeDetails: IStoreTable;
@@ -25,10 +26,7 @@ const StoreDetailsCard: React.FC<Props> = ({storeDetails, navigation}) => {
   };
   return (
     <View style={styles.container}>
-      <Text
-        style={
-          styles.detailText
-        }>{`${storeDetails.storeName}, ${storeDetails.address}, ${storeDetails.city}, ${storeDetails.state}\n${storeDetails.email}, ${storeDetails.phoneNumber}`}</Text>
+      <Text style={styles.detailText}>{VendorService.getStoreAddressInfo(storeDetails)}</Text>
       <View style={styles.buttonContainer}>
         <TKButton
           title={strings('button.edit')}

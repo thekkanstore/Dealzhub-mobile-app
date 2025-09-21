@@ -56,6 +56,7 @@ const Vendor: React.FC<Props> = ({navigation}) => {
       ...headerList,
     ];
   }, [categoryList, storeDetails]);
+
   return (
     <View style={style.container}>
       <TKHeader
@@ -66,11 +67,7 @@ const Vendor: React.FC<Props> = ({navigation}) => {
       />
       <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
         <StoreDetailsCard storeDetails={storeDetails!} navigation={navigation} />
-        <CategoryHeaderTabBar
-          selectedTab={null}
-          headerTabItems={headerList}
-          storeDetails={storeDetails}
-        />
+        <CategoryHeaderTabBar headerTabItems={headerList} storeDetails={storeDetails} />
       </TKRenderIf>
     </View>
   );

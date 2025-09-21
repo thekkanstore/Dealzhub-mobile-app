@@ -17,6 +17,9 @@ export const en = {
     continue: 'Continue',
     edit: 'Edit',
     addProduct: 'Add Product',
+    addToCart: 'Add to Cart',
+    buyNow: 'Buy Now',
+    disable: 'Disable',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -49,6 +52,7 @@ export const en = {
     storeCity: 'Store city',
     addStore: 'Add Store',
     addProduct: 'Add New Product',
+    updateProduct: 'Update Product',
     productName: 'Product name',
     productCategory: 'Product category',
     productPrice: 'Product price',
@@ -62,6 +66,8 @@ export const en = {
     isSecondHand: 'Is Second Hand',
     isActive: 'Is Active',
     allProducts: 'All Products',
+    categoryDetails: 'Category Details',
+    name: 'Name',
   },
   notificationPermission: {
     title: 'Enable Notifications',

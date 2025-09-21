@@ -22,6 +22,7 @@ export const navigationStrings = {
   //Vendor
   VENDOR: 'Vendor',
   PRODUCT_UPDATE: 'ProductUpdate',
+  PRODUCT_DETAILS: 'ProductDetails',
 
   // Register stack screens
   USER_DETAILS: 'UserDetails',

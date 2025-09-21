@@ -17,7 +17,7 @@ import {
   pickImageFromCamera,
   pickImageFromGallery,
   pickDocument,
-  openDocumentViewer,
+  // openDocumentViewer,
 } from '../../../utils/filePicker';
 import {showErrorToast} from '../../../utils/common/toastUtils';
 import TKSecondaryTextInput from '../TKSecondaryTextInput/TKSecondaryTextInput';
@@ -25,6 +25,10 @@ import TKModal from '../TKModal/TKModal';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
 import {fontFamily} from '../../../config/styles/fontFamily';
+import {TKCloseCircleIcon} from '../Icons/TKCircledCloseIcon';
+import {TKCloudUploadIcon} from '../Icons/TKCloudUploadIcon';
+import FastImage from 'react-native-fast-image';
+import TKRenderIf from '../TKRenderIf/TKRenderIf';
 
 interface LXFilePickerProps {
   onFilePicked: (file: FilePickerResult) => void;
@@ -46,7 +50,7 @@ interface LXFilePickerProps {
 
 const TKFilePicker: React.FC<LXFilePickerProps> = ({
   onFilePicked,
-  allowedTypes = ['image', 'pdf'],
+  allowedTypes = ['image'],
   maxSizeInMB = 5,
   minSizeInMB = 0.03, // min 30 kb
   title = 'Select File',
@@ -82,25 +86,24 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
     maxImageHeight,
   };
 
-  const handleViewDocument = async () => {
-    if (value) {
-      // Use apiUri (web URL) if available, otherwise use local uri
-      const documentUri = value.uri || value.apiUri || '';
-      await openDocumentViewer(documentUri);
-    }
-  };
+  // const handleViewDocument = async () => {
+  //   if (value) {
+  //     // Use apiUri (web URL) if available, otherwise use local uri
+  //     const documentUri = value?.uri || value?.apiUri || '';
+  //     console.log('documentUri:', documentUri, value);
+  //     await openDocumentViewer(documentUri);
+  //   }
+  // };
   const handleImagePicker = async (type: 'camera' | 'gallery') => {
     setActiveOption(type);
 
     const onSuccess = (file: FilePickerResult) => {
-      console.log(`${type} picker success:`, file);
       onFilePicked(file);
       setIsShowOptionModal(false);
       setActiveOption(null);
     };
 
     const onError = (error: string) => {
-      console.log(`${type} picker error:`, error);
       showErrorToast(error);
       setActiveOption(null);
     };
@@ -168,13 +171,8 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
   );
 
   const renderRightChild = () => {
-    if (value)
-      return (
-        <Pressable onPress={() => onDelete?.()} hitSlop={10}>
-          {/* <TkCloseCircleIcon color={colors.secondaryTextColor} /> */}
-        </Pressable>
-      );
-    // return <LXCloudUploadIcon height={moderateScale(18)} width={moderateScale(18)} />;
+    if (isDisabled || !!value) return null;
+    return <TKCloudUploadIcon />;
   };
   return (
     <>
@@ -182,15 +180,14 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
         onPress={() => {
           if (!value) {
             setIsShowOptionModal(true);
-            return;
           }
-          handleViewDocument();
+          // handleViewDocument();
         }}>
         <TKSecondaryTextInput
           pointerEvents={'none'}
           editable={false}
           value={value ? (value.name ?? 'Document uploaded') : ''}
-          isDisabled={isDisabled}
+          isDisabled={isDisabled || !!value}
           placeholder={placeholder ?? ''}
           onFocus={() => setIsShowOptionModal(true)}
           label={title}
@@ -199,6 +196,18 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
           error={error}
           containerStyle={containerStyle}
         />
+        <TKRenderIf isRender={!!value}>
+          <View style={styles.imageContainer}>
+            <Pressable onPress={() => onDelete?.()} hitSlop={10} style={styles.closeButton}>
+              <TKCloseCircleIcon />
+            </Pressable>
+            <FastImage
+              source={{uri: value?.apiUri ?? value?.uri ?? '', priority: FastImage.priority.normal}}
+              resizeMode={FastImage.resizeMode.contain}
+              style={styles.image}
+            />
+          </View>
+        </TKRenderIf>
       </Pressable>
       <TKModal
         isVisible={isShowOptionModal}
@@ -219,18 +228,20 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
                   allowedTypes.includes('image'),
                 'camera',
               )}
-              {renderOption(
+              {/* {renderOption(
                 'imageGallery',
                 'Choose from Gallery',
                 () => handleImagePicker('gallery'),
                 false,
                 !(allowedTypes.includes('pdf') || allowedTypes.includes('document')),
                 'gallery',
-              )}
+              )} */}
             </>
           )}
 
-          {(allowedTypes.includes('pdf') || allowedTypes.includes('document')) &&
+          {(allowedTypes.includes('image') ||
+            allowedTypes.includes('pdf') ||
+            allowedTypes.includes('document')) &&
             renderOption(
               'imageGallery',
               'Choose Document',
@@ -294,6 +305,23 @@ const styles = StyleSheet.create({
   arrowText: {
     fontSize: fontScale(16),
     color: colors.secondaryTextColor,
+  },
+  imageContainer: {
+    height: moderateScale(150),
+    width: moderateScale(150),
+    marginVertical: moderateScale(10),
+    backgroundColor: colors.primaryBackgroundColor,
+    borderRadius: moderateScale(6),
+  },
+  image: {
+    height: moderateScale(150),
+    width: moderateScale(150),
+  },
+  closeButton: {
+    position: 'absolute',
+    top: moderateScale(-6),
+    right: moderateScale(-6),
+    zIndex: 100,
   },
 });
 

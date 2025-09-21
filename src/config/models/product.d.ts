@@ -1,8 +1,10 @@
 import {ImageSourcePropType} from 'react-native/types_generated/index';
+import {IStoreTable} from './store';
+import {ICategoryTable} from './category';
 
 export interface IProductTable {
-  id: number;
-  storeId: number;
+  id: string;
+  storeId: string;
   userId: string;
   name: string;
   description: string;
@@ -16,6 +18,11 @@ export interface IProductTable {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IProduct extends IProductTable {
+  store: IStoreTable;
+  category: ICategoryTable;
 }
 
 export interface IProductFormValue
@@ -45,3 +52,12 @@ export interface IGetProductsResponse {
   hasMore: boolean;
   total: number;
 }
+
+export interface IProductCreateResponse {
+  success: true;
+  data: IProduct;
+  productId: string;
+  message: string;
+}
+
+export interface IProductUpdateResponse extends IProductCreateResponse {}

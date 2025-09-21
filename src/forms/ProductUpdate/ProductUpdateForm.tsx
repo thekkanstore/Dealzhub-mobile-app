@@ -1,7 +1,7 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Formik} from 'formik';
-import {useNavigation} from '@react-navigation/native';
+import {Formik, FormikProps} from 'formik';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {strings} from '../../utils/language/langauageUtils';
 import TKSecondaryTextInput from '../../components/Common/TKSecondaryTextInput/TKSecondaryTextInput';
@@ -18,15 +18,23 @@ import TKFilePicker from '../../components/Common/TKFilePicker/TKFilePicker';
 import TKRadioButton from '../../components/Common/TKRadioButton/TKRadioButton';
 import {useGetCategoriesList} from '../../react-queries/categories/categoriesQuery';
 import {ICategoryTable} from '../../config/models/category';
-import {uploadFilePickerResult} from '../../services/firestore/imageUploadService';
-import {useAddNewProduct} from '../../react-queries/product/productQueries';
+import {
+  deleteImageFromStorage,
+  uploadFilePickerResult,
+} from '../../services/firestore/imageUploadService';
+import {useAddNewProduct, useUpdateProduct} from '../../react-queries/product/productQueries';
 import {onlyDecimalNumbers} from '../../utils/common/numberUtils';
+import {VendorStackParamList} from '../../navigation/rootparamstypes';
 
 const ProductUpdateForm = () => {
-  // const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
-  // const {mutate: updateStore, isPending: updateStoreLoader} = useUpdateUserStore();
   const {mutate: createProduct, isPending: createProductLoader} = useAddNewProduct();
+  const {mutate: updateProduct, isPending: updateProductLoader} = useUpdateProduct();
   const [isLoader, setIsLoader] = useState(false);
+  const [deletedImageUri, setDeletedImageUri] = useState('');
+  const formRef = useRef<FormikProps<IProductFormValue>>(null);
+
+  const {productDetails = null, isUpdate = false} =
+    useRoute<RouteProp<VendorStackParamList, 'ProductUpdate'>>().params || {};
 
   const {data: storeDetails} = useGetStoreDetails();
   const {data: categoryList} = useGetCategoriesList();
@@ -40,10 +48,19 @@ const ProductUpdateForm = () => {
   }, [categoryList]);
   const navigation = useNavigation();
   const initialValues: IProductFormValue = useMemo(() => {
-    return productDetailsInitalValues(storeDetails);
-  }, [storeDetails]);
+    return productDetailsInitalValues(storeDetails, productDetails);
+  }, [storeDetails, productDetails]);
 
+  const handleOnDeleteImage = () => {
+    formRef.current?.setFieldValue('image', null);
+    if (deletedImageUri) return;
+    setDeletedImageUri(initialValues.image?.apiUri ?? '');
+  };
   const handleSubmit = async (values: IProductFormValue) => {
+    if (isUpdate) {
+      handleUpdate(values);
+      return;
+    }
     setIsLoader(true);
     const {image, category, ...rest} = values;
     const updatedImage = await uploadFilePickerResult(image);
@@ -57,13 +74,52 @@ const ProductUpdateForm = () => {
     );
     setIsLoader(false);
   };
+  useEffect(() => {
+    if (categoryDropDownList && productDetails?.categoryId) {
+      formRef.current?.setFieldValue(
+        'category',
+        categoryDropDownList.find(item => item.value === productDetails?.categoryId),
+      );
+    }
+  }, [categoryDropDownList, productDetails?.categoryId]);
+
+  const handleUpdate = async (values: IProductFormValue) => {
+    setIsLoader(true);
+    const {image, category, ...rest} = values;
+    let updatedImage = image.apiUri ?? '';
+    if (deletedImageUri) {
+      const newImage = await uploadFilePickerResult(image);
+      updatedImage = newImage?.url ?? '';
+    }
+    updateProduct(
+      {
+        ...rest,
+        id: productDetails?.id ?? '',
+        image: updatedImage ?? '',
+        categoryId: category.value,
+      },
+      {
+        onSuccess: () => {
+          if (deletedImageUri) {
+            deleteImageFromStorage(deletedImageUri);
+          }
+          navigation.goBack();
+        },
+      },
+    );
+    setIsLoader(false);
+  };
+
   return (
     <>
-      <TKHeader header={strings('labels.addProduct')} />
+      <TKHeader
+        header={isUpdate ? strings('labels.updateProduct') : strings('labels.addProduct')}
+      />
       <Formik<IProductFormValue>
         initialValues={initialValues}
         validationSchema={productValidationsSchema}
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+        innerRef={formRef}>
         {({
           handleChange,
           handleBlur,
@@ -160,6 +216,7 @@ const ProductUpdateForm = () => {
                     ? errors.image
                     : undefined
                 }
+                onDelete={handleOnDeleteImage}
               />
               <View>
                 <TKRadioButton
@@ -174,7 +231,7 @@ const ProductUpdateForm = () => {
             <TKButton
               title={strings('button.continue')}
               onPress={() => handleSubmit()}
-              isLoading={createProductLoader || isLoader}
+              isLoading={createProductLoader || isLoader || updateProductLoader}
               isDisabled={!isValid || !dirty}
             />
           </View>

@@ -1,17 +1,26 @@
+import {IProduct} from '../../config/models/product';
 import {IStoreTable} from '../../config/models/store';
 
-export const productDetailsInitalValues = (storeDetails?: IStoreTable | null) => {
+export const productDetailsInitalValues = (
+  storeDetails?: IStoreTable | null,
+  productDetails?: IProduct | null,
+) => {
   return {
-    name: '',
-    description: '',
-    actualPrice: '',
-    discountPrice: '',
+    name: productDetails?.name ?? '',
+    description: productDetails?.description ?? '',
+    actualPrice: productDetails?.actualPrice ?? '',
+    discountPrice: productDetails?.discountPrice ?? '',
     category: null,
-    image: null,
-    status: 'instock',
-    isSecondHand: false,
-    isActive: true,
-    storeId: storeDetails?.id,
-    userId: storeDetails?.userId,
+    image: productDetails?.image
+      ? {
+          name: `${productDetails?.name}.jpg`,
+          apiUri: productDetails?.image,
+        }
+      : null,
+    status: productDetails?.status ?? 'instock',
+    isSecondHand: productDetails?.isSecondHand ?? false,
+    isActive: productDetails?.isActive ?? true,
+    storeId: productDetails?.store?.id ?? storeDetails?.id,
+    userId: productDetails?.store?.userId ?? storeDetails?.userId,
   };
 };

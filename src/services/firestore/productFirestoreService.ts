@@ -3,13 +3,14 @@ import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {
   IGetProductsParams,
   IGetProductsResponse,
+  IProduct,
   IProductRequestBody,
   IProductTable,
 } from '../../config/models/product';
 
 async function createNewProduct(
   productData: IProductRequestBody,
-): Promise<{success: boolean; userId: string | null; message: string}> {
+): Promise<{success: boolean; productId: string | null; message: string}> {
   try {
     const storeCollection = firestore().collection(FireStoreCollections.PRODUCTS);
     const newProductRef = storeCollection.doc();
@@ -22,12 +23,12 @@ async function createNewProduct(
       isActive: true,
     };
     await newProductRef.set(newProductData);
-    const storeDetails = await getStoreData(productId);
-    if (storeDetails) {
+    const productDetails = await getProductById(productId);
+    if (productDetails) {
       return Promise.resolve({
         success: true,
-        data: storeDetails,
-        userId: productId,
+        data: productDetails,
+        productId: productId,
         message: 'Product Added Successfully',
       });
     } else {
@@ -42,22 +43,37 @@ async function createNewProduct(
   }
 }
 
-async function getStoreData(userId: string): Promise<IProductTable | null> {
+async function updateProductDetails(
+  productId: string,
+  productData: IProductRequestBody,
+): Promise<{success: boolean; productId: string | null; message: string}> {
   try {
-    const productDoc = await firestore()
+    const newProductData = {
+      ...productData,
+      id: productId,
+      updatedAt: serverTimestamp(),
+    };
+    await firestore()
       .collection(FireStoreCollections.PRODUCTS)
-      .doc(userId)
-      .get();
-
-    if (productDoc.exists()) {
-      const productData = {id: productDoc.id, ...productDoc.data()};
-      return productData as unknown as IProductTable;
+      .doc(productId)
+      .update(newProductData);
+    const productDetails = await getProductById(productId);
+    if (productDetails) {
+      return Promise.resolve({
+        success: true,
+        data: productDetails,
+        productId: productId,
+        message: 'Product updated  Successfully',
+      });
     } else {
-      return null;
+      return Promise.reject('Product creation failed');
     }
   } catch (error) {
-    console.error('Error getting store data:', error);
-    return null;
+    return Promise.reject({
+      success: false,
+      userId: null,
+      message: `Error creating Product: ${error}`,
+    });
   }
 }
 
@@ -117,4 +133,22 @@ async function getProductsByStore({
   }
 }
 
-export {createNewProduct, getProductsByStore};
+async function getProductById(productId: string): Promise<IProduct | null> {
+  try {
+    const productDoc = await firestore()
+      .collection(FireStoreCollections.PRODUCTS)
+      .doc(productId)
+      .get();
+    if (productDoc.exists()) {
+      const productData = {id: productDoc.id, ...productDoc.data()};
+      return productData as unknown as IProduct;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting product by ID:', error);
+    return null;
+  }
+}
+
+export {createNewProduct, getProductsByStore, getProductById, updateProductDetails};

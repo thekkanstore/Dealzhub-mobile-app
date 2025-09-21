@@ -6,6 +6,10 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import {colors} from '../../../config/styles/colors';
 import ProductList from '../../Products/ProductList/ProductList';
 import {CategoryListHeaderTabs} from '../../../config/common/constants';
+import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
+import {useNavigation} from '@react-navigation/native';
+import {IProductTable} from '../../../config/models/product';
+import {navigationStrings} from '../../../navigation/navigationStrings';
 
 export interface HeaderTabItem {
   id?: string;
@@ -13,21 +17,13 @@ export interface HeaderTabItem {
 }
 
 interface Props {
-  selectedTab: HeaderTabItem | null;
   headerTabItems: HeaderTabItem[];
   storeDetails: any;
 }
-const CategoryHeaderTabBar: React.FC<Props> = ({selectedTab, headerTabItems, storeDetails}) => {
+const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) => {
   const [activeTab, setActiveTab] = React.useState(headerTabItems[0]);
-  //   const navigation = useNavigation<OrderStackNavigationProp>();
+  const navigation = useNavigation<VendorScreenNavigationProp>();
   const flatListRef = useRef<FlatList>(null);
-
-  useEffect(() => {
-    if (selectedTab) {
-      setActiveTab(selectedTab);
-      //   navigation.setParams({initialTab: null});
-    }
-  }, [selectedTab]);
 
   useEffect(() => {
     const activeIndex = headerTabItems.findIndex(item => item.id === activeTab.id);
@@ -61,6 +57,11 @@ const CategoryHeaderTabBar: React.FC<Props> = ({selectedTab, headerTabItems, sto
       </TouchableOpacity>
     );
   };
+
+  const handleOnPressItem = (item: IProductTable) => {
+    navigation.navigate(navigationStrings.PRODUCT_DETAILS, {productId: item.id});
+  };
+
   return (
     <>
       <FlatList
@@ -90,12 +91,9 @@ const CategoryHeaderTabBar: React.FC<Props> = ({selectedTab, headerTabItems, sto
           storeId={storeDetails?.id ?? ''}
           categoryId={
             activeTab?.id === CategoryListHeaderTabs.ALL_PRODUCTS ? undefined : activeTab?.id
-          } // optional
+          }
           limit={2}
-          onProductPress={product => {
-            // Handle product selection
-            console.log('Selected product:', product.name);
-          }}
+          onProductPress={handleOnPressItem}
         />
       </View>
     </>

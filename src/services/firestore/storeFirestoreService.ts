@@ -24,6 +24,21 @@ async function getStoreData(userId: string): Promise<IStoreTable | null> {
   }
 }
 
+async function getStoreById(storeId: string): Promise<IStoreTable | null> {
+  try {
+    const productDoc = await firestore().collection(FireStoreCollections.STORES).doc(storeId).get();
+    if (productDoc.exists()) {
+      const productData = {id: productDoc.id, ...productDoc.data()};
+      return productData as unknown as IStoreTable;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting product by ID:', error);
+    return null;
+  }
+}
+
 // Function specifically for creating new user data
 async function createNewUserStore(
   storeData: Omit<IStoreTable, 'id'>,
@@ -164,4 +179,4 @@ async function addCategoriesToStore(
   }
 }
 
-export {getStoreData, createNewUserStore, updateUserStore, addCategoriesToStore};
+export {getStoreData, createNewUserStore, updateUserStore, addCategoriesToStore, getStoreById};
