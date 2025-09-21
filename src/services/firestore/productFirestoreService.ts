@@ -151,4 +151,33 @@ async function getProductById(productId: string): Promise<IProduct | null> {
   }
 }
 
-export {createNewProduct, getProductsByStore, getProductById, updateProductDetails};
+async function updateProductStatus(
+  productId: string,
+  isActive: boolean,
+): Promise<{success: boolean; message: string; productId: string}> {
+  try {
+    await firestore().collection(FireStoreCollections.PRODUCTS).doc(productId).update({
+      isActive: isActive,
+      updatedAt: serverTimestamp(),
+    });
+    return {
+      success: true,
+      message: 'Product status updated successfully',
+      productId: productId,
+    };
+  } catch (error) {
+    console.error('Error updating user roles:', error);
+    return {
+      success: false,
+      message: `Error updating user roles: ${error}`,
+      productId: productId,
+    };
+  }
+}
+export {
+  createNewProduct,
+  getProductsByStore,
+  getProductById,
+  updateProductDetails,
+  updateProductStatus,
+};

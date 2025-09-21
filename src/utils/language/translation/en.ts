@@ -20,6 +20,9 @@ export const en = {
     addToCart: 'Add to Cart',
     buyNow: 'Buy Now',
     disable: 'Disable',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    enable: 'Enable',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -68,6 +71,9 @@ export const en = {
     allProducts: 'All Products',
     categoryDetails: 'Category Details',
     name: 'Name',
+    areYouSure: 'Are you sure?',
+    disableProduct: 'Do you want to disable this product?',
+    enableProduct: 'Do you want to enable this product?',
   },
   notificationPermission: {
     title: 'Enable Notifications',

@@ -10,6 +10,7 @@ import {
   getProductsByStore,
   getProductById,
   updateProductDetails,
+  updateProductStatus,
 } from '../../services/firestore/productFirestoreService';
 import {useAddCategoriesToStore} from '../store/storeQueries';
 import {getStoreById} from '../../services/firestore/storeFirestoreService';
@@ -25,6 +26,28 @@ export const useAddNewProduct = () => {
         const data = await createNewProduct({...payload});
         await mutateAsync([payload.categoryId]);
         return data as IProductCreateResponse;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onSuccess: data => {
+      queryClient.invalidateQueries({queryKey: ['getProductsByStore']});
+      queryClient.invalidateQueries({queryKey: ['getProductById', data.productId]});
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+  });
+};
+
+export const useUpdateProductStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateProduct'],
+    mutationFn: async (payload: {id: string; isActive: boolean}) => {
+      try {
+        const data = await updateProductStatus(payload?.id, payload.isActive);
+        return data as IProductUpdateResponse;
       } catch (error) {
         return Promise.reject(error);
       }
