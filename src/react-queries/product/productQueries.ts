@@ -1,13 +1,14 @@
 import {useMutation, useInfiniteQuery, useQuery, useQueryClient} from '@tanstack/react-query';
 import {errorHandler} from '../../utils/common/toastUtils';
 import {
+  IGetProductsParams,
   IProductCreateResponse,
   IProductRequestBody,
   IProductUpdateResponse,
 } from '../../config/models/product';
 import {
   createNewProduct,
-  getProductsByStore,
+  getProductsList,
   getProductById,
   updateProductDetails,
   updateProductStatus,
@@ -31,7 +32,7 @@ export const useAddNewProduct = () => {
       }
     },
     onSuccess: data => {
-      queryClient.invalidateQueries({queryKey: ['getProductsByStore']});
+      queryClient.invalidateQueries({queryKey: ['getProductsList']});
       queryClient.invalidateQueries({queryKey: ['getProductById', data.productId]});
     },
     onError: error => {
@@ -53,7 +54,7 @@ export const useUpdateProductStatus = () => {
       }
     },
     onSuccess: data => {
-      queryClient.invalidateQueries({queryKey: ['getProductsByStore']});
+      queryClient.invalidateQueries({queryKey: ['getProductsList']});
       queryClient.invalidateQueries({queryKey: ['getProductById', data.productId]});
     },
     onError: error => {
@@ -76,7 +77,7 @@ export const useUpdateProduct = () => {
       }
     },
     onSuccess: data => {
-      queryClient.invalidateQueries({queryKey: ['getProductsByStore']});
+      queryClient.invalidateQueries({queryKey: ['getProductsList']});
       queryClient.invalidateQueries({queryKey: ['getProductById', data.productId]});
     },
     onError: error => {
@@ -85,22 +86,22 @@ export const useUpdateProduct = () => {
   });
 };
 
-interface IGetProductsParams {
-  storeId: string;
-  categoryId?: string;
-  limit?: number;
-}
-
-export const useGetProductsByStore = ({storeId, categoryId, limit = 10}: IGetProductsParams) => {
+export const useGetProductsList = ({
+  storeId,
+  categoryId,
+  limit = 10,
+  isActive,
+}: IGetProductsParams) => {
   const query = useInfiniteQuery({
-    queryKey: ['getProductsByStore', storeId, categoryId],
+    queryKey: ['getProductsList', storeId, categoryId],
     queryFn: async ({pageParam}) => {
       try {
-        const data = await getProductsByStore({
+        const data = await getProductsList({
           storeId,
           categoryId,
           limit,
           lastDoc: pageParam,
+          isActive,
         });
         return data;
       } catch (error) {
@@ -148,39 +149,3 @@ export const useGetProductById = (productId: string) => {
   });
 };
 
-// export const useUpdateUserStore = () => {
-//   const user = useAppSelector(state => state.user.user);
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationKey: ['updateUserStore'],
-//     mutationFn: async (payload: IStoreRequestBody) => {
-//       try {
-//         const data = await updateUserStore(user?.user.id ?? '', payload);
-//         return data;
-//       } catch (error) {
-//         return Promise.reject(error);
-//       }
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({queryKey: ['getStoreDetails']});
-//     },
-//     onError: error => {
-//       errorHandler(error);
-//     },
-//   });
-// };
-
-// export const useGetStoreDetails = () => {
-//   const user = useAppSelector(state => state.user.user);
-//   return useQuery({
-//     queryKey: ['getStoreDetails'],
-//     queryFn: async () => {
-//       try {
-//         const data = await getStoreData(user?.user.id ?? '');
-//         return data;
-//       } catch (error) {
-//         return Promise.reject(error);
-//       }
-//     },
-//   });
-// };

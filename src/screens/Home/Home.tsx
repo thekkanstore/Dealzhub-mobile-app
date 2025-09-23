@@ -4,14 +4,14 @@ import LocationBar from '../../components/Home/LocationBar/LocationBar';
 import {colors} from '../../config/styles/colors';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import TKTextInput from '../../components/Common/TKTextInput/TKTextInput';
-import TKSecondaryTextInput from '../../components/Common/TKSecondaryTextInput/TKSecondaryTextInput';
+import HomeProductListing from '../../components/Home/HomeProductListing/HomeProductListing';
 
 const Home = () => {
   return (
     <View style={styles.container}>
       <LocationBar />
-      <TKTextInput />
-      <TKSecondaryTextInput />
+      <TKTextInput editable={false} />
+      <HomeProductListing />
     </View>
   );
 };
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.primaryBackgroundColor,
-    paddingHorizontal: moderateScale(16),
     paddingTop: moderateScale(16),
+    gap: moderateScale(16),
   },
 });

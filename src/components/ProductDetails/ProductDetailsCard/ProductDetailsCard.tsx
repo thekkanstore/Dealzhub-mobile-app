@@ -15,9 +15,9 @@ import {navigationStrings} from '../../../navigation/navigationStrings';
 interface Props {
   productDetails: IProduct;
   navigation: VendorScreenNavigationProp;
-  isCustomer?: boolean;
+  isVendor?: boolean;
 }
-const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isCustomer = false}) => {
+const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVendor}) => {
   const handleOnClickVendor = () => {
     navigation.navigate(navigationStrings.VENDOR);
   };
@@ -37,7 +37,7 @@ const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isCust
         </View>
       </>
 
-      <TKRenderIf isRender={!isCustomer}>
+      <TKRenderIf isRender={!isVendor}>
         <TouchableOpacity onPress={handleOnClickVendor} style={styles.vendorContainer}>
           <View style={styles.vendorHeaderContainer}>
             <Text style={styles.vendorHeaderText}>{productDetails.store.storeName}</Text>

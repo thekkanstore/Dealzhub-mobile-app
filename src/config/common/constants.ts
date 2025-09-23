@@ -69,3 +69,5 @@ export const DistrictList = [
 export const CategoryListHeaderTabs = {
   ALL_PRODUCTS: 'All Products',
 };
+
+export const FavoritesLimit = 20;

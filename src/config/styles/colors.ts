@@ -5,6 +5,7 @@ export const colors = {
   neutralButtonBackgroundColor: '#FFFFFF',
 
   primaryBackgroundColor: '#FFFFFF',
+  secondaryBackgroundColor: '#E5EEE9',
 
   primaryTextColor: '#121212',
   secondaryTextColor: '#ffffff',
@@ -25,7 +26,7 @@ export const colors = {
   errorTextColor: '#BD343B',
 
   errorToastBackgroundColor: '#BD343B',
-  successButtonBackgroundColor: '#11c92aff',
+  successButtonBackgroundColor: '#50ae77ff',
 
   transparent: 'transparent',
 
@@ -42,4 +43,7 @@ export const colors = {
   radioButtonSelectedBackgroundColor: '#427256',
   radioButtonDisabledBackgroundColor: '#fff',
   radioButtonDisabledBorderColor: '#fff',
+
+  favoriteUnselectedColor: '#FAFAFABD',
+  favoritesSelectedColor: '#FF5858',
 };

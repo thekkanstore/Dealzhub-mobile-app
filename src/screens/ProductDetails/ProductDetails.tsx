@@ -13,20 +13,33 @@ interface Props {
   navigation: VendorScreenNavigationProp;
 }
 const ProductDetails: React.FC<Props> = ({route, navigation}) => {
-  const {productId = ''} = route.params;
+  const {productId = '', isStackChange, isVendor = false} = route.params;
   const {data: ProductDetails} = useGetProductById(productId);
   return (
     <View style={styles.container}>
       <View>
         <TKRenderIf isRender={!!ProductDetails?.image}>
-          <ImageHeaderCard productDetails={ProductDetails!} navigation={navigation} />
+          <ImageHeaderCard
+            productDetails={ProductDetails!}
+            navigation={navigation}
+            isStackChange={isStackChange}
+            isVendor={isVendor}
+          />
         </TKRenderIf>
         <TKRenderIf isRender={!!ProductDetails?.image}>
-          <ProductDetailsCard productDetails={ProductDetails!} navigation={navigation} />
+          <ProductDetailsCard
+            productDetails={ProductDetails!}
+            navigation={navigation}
+            isVendor={isVendor}
+          />
         </TKRenderIf>
       </View>
       <View>
-        <ProductButtonAction productDetails={ProductDetails!} navigation={navigation} />
+        <ProductButtonAction
+          productDetails={ProductDetails!}
+          navigation={navigation}
+          isVendor={isVendor}
+        />
       </View>
     </View>
   );

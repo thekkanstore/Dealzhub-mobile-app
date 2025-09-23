@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 import {BottomTabBarProps, createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {StackActions} from '@react-navigation/native';
 
 import {navigationStrings} from './navigationStrings';
 // import LXIcon from '../components/LxIcon/LXIcon';
@@ -14,6 +15,7 @@ import TKCustomBottomTabBar from '../components/Common/TKCustomBottomTabBar/TKCu
 import {TKVendorSelectedIcon} from '../components/Common/Icons/TKVendorSelectedIcon';
 import {TKVendorUnSelectedIcon} from '../components/Common/Icons/TKVendorUnSelectedIcon';
 import {VendorStack} from './VendorStack';
+import {FavoritesStack} from './FavoritesStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,7 +32,7 @@ const screens = [
   },
   {
     name: navigationStrings.FAVORITES_TAB as 'FavoritesTab',
-    component: HomeStack,
+    component: FavoritesStack,
     icon: (focused: boolean) =>
       focused ? (
         <TKHeartSelectedIcon width={30} height={30} />
@@ -47,6 +49,24 @@ const screens = [
       ) : (
         <TKVendorUnSelectedIcon width={30} height={30} />
       ),
+    listeners: ({navigation}: any) => ({
+      tabPress: (e: any) => {
+        const state = navigation.getState();
+        const vendorTabState = state.routes.find(
+          (route: any) => route.name === navigationStrings.VENDOR_TAB,
+        );
+
+        // If VendorStack has more than one screen (not on initial screen)
+        if (vendorTabState?.state?.routes?.length > 1) {
+          // Prevent default tab switch behavior
+          e.preventDefault();
+          // Reset VendorStack to initial screen
+          navigation.dispatch(StackActions.popToTop());
+          // Then switch to the tab
+          navigation.navigate(navigationStrings.VENDOR_TAB);
+        }
+      },
+    }),
   },
   {
     name: navigationStrings.CART_TAB as 'CartTab',

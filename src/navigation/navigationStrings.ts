@@ -8,6 +8,8 @@ export const navigationStrings = {
   BOTTOM_TAB_STACK: 'BottomTabStack',
   REGISTER_STACK: 'RegisterStack',
   REGISTER_USER_STACK: 'RegisterUserStack',
+  VENDOR_STACK: 'VendorStack',
+  FAVORITES_STACK: 'FavoritesStack',
 
   // bottom tab
   HOME_TAB: 'HomeTab',
@@ -28,4 +30,7 @@ export const navigationStrings = {
   USER_DETAILS: 'UserDetails',
   CHOOSE_USER_TYPE: 'ChooseUserType',
   STORE_DETAILS: 'StoreDetails',
+
+  //Favorites stack screens
+  FAVORITES: 'Favorites',
 } as const;

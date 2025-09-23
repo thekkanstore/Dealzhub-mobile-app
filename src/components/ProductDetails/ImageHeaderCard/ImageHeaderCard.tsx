@@ -6,15 +6,30 @@ import {moderateScale} from '../../../config/styles/responsiveSize';
 import {TKArrowIcon} from '../../Common/Icons/TKArrowIcon';
 import {colors} from '../../../config/styles/colors';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
+import Favorite from '../Favorite/Favourite';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
+import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 
 interface Props {
   productDetails: IProduct;
   navigation: VendorScreenNavigationProp;
+  isStackChange?: boolean;
+  isVendor?: boolean;
 }
-const ImageHeaderCard: React.FC<Props> = ({productDetails, navigation}) => {
+const ImageHeaderCard: React.FC<Props> = ({
+  productDetails,
+  navigation,
+  isStackChange,
+  isVendor,
+}) => {
   const handleBackPress = () => {
+    if (isStackChange) {
+      navigation.popToTop();
+    }
     navigation.goBack();
   };
+  const {data: userDetails} = useGetUserDetails(true);
+  const isFavorites = !!userDetails?.favorites?.includes(productDetails.id);
   return (
     <View>
       <FastImage
@@ -26,6 +41,13 @@ const ImageHeaderCard: React.FC<Props> = ({productDetails, navigation}) => {
         <Pressable onPress={handleBackPress} style={styles.backButton}>
           <TKArrowIcon width={16} height={16} color={colors.primaryTextColor} direction="left" />
         </Pressable>
+        <TKRenderIf isRender={!isVendor}>
+          <Favorite
+            containerStyle={styles.backButton}
+            productId={productDetails.id}
+            isFavorite={isFavorites}
+          />
+        </TKRenderIf>
       </View>
     </View>
   );
@@ -40,15 +62,16 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: moderateScale(10),
-    marginRight: 8,
     backgroundColor: colors.tertiaryButtonBackgroundColor,
     borderRadius: moderateScale(20),
   },
   buttonContainer: {
     position: 'absolute',
     top: moderateScale(20),
-    left: moderateScale(20),
+    paddingHorizontal: moderateScale(16),
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });

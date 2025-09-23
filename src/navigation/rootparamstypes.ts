@@ -23,6 +23,12 @@ export type HomeStackParamList = {
   Profile: undefined;
   Settings: undefined;
   RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
+  VendorStack: {screen?: keyof VendorStackParamList; params?: any};
+};
+
+export type FavoritesStackParamList = {
+  Favorites: undefined;
+  VendorStack: {screen?: keyof VendorStackParamList; params?: any};
 };
 export type VendorStackParamList = {
   Vendor: undefined;
@@ -30,9 +36,12 @@ export type VendorStackParamList = {
   ProductUpdate?: {
     productDetails?: IProduct;
     isUpdate?: boolean;
+    isVendor?: boolean;
   };
   ProductDetails: {
     productId: string;
+    isStackChange?: boolean;
+    isVendor?: boolean;
   };
 };
 export type RegisterUserStackParamList = {
@@ -63,6 +72,10 @@ export type HomeScreenNavigationProp = CompositeNavigationProp<
 >;
 export type VendorScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<VendorStackParamList, 'Vendor'>,
+  StackNavigationProp<RootStackParamList>
+>;
+export type FavoritesScreenNavigationProp = CompositeNavigationProp<
+  StackNavigationProp<FavoritesStackParamList, 'Favorites'>,
   StackNavigationProp<RootStackParamList>
 >;
 export type UserRegisterScreenNavigationProp = CompositeNavigationProp<

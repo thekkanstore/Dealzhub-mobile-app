@@ -77,20 +77,24 @@ async function updateProductDetails(
   }
 }
 
-async function getProductsByStore({
+async function getProductsList({
   storeId,
   categoryId,
   limit = 10,
   lastDoc,
+  isActive,
 }: IGetProductsParams): Promise<IGetProductsResponse> {
   try {
     // Strategy 1: Try with ordering first (requires composite index)
-    let query = firestore()
-      .collection(FireStoreCollections.PRODUCTS)
-      .where('storeId', '==', storeId)
-      .where('isActive', '==', true);
+    let query: any = firestore().collection(FireStoreCollections.PRODUCTS);
 
     // Add category filter if provided
+    if (isActive !== undefined) {
+      query = query.where('isActive', '==', isActive);
+    }
+    if (storeId) {
+      query = query.where('storeId', '==', storeId);
+    }
     if (categoryId) {
       query = query.where('categoryId', '==', categoryId);
     }
@@ -176,7 +180,7 @@ async function updateProductStatus(
 }
 export {
   createNewProduct,
-  getProductsByStore,
+  getProductsList,
   getProductById,
   updateProductDetails,
   updateProductStatus,

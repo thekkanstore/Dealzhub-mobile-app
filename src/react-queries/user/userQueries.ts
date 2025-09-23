@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {errorHandler, showSuccessToast} from '../../utils/common/toastUtils';
+import {errorHandler, showErrorToast, showSuccessToast} from '../../utils/common/toastUtils';
 import {
   checkUserExists,
   createNewUser,
@@ -7,9 +7,13 @@ import {
   updateUserRoles,
   addUserRole,
   removeUserRole,
+  addToFavorite,
+  removeFromFavorite,
 } from '../../services/firestore/userFirestoreService';
 import {IUserTable} from '../../config/models/users';
 import {useAppSelector} from '../../redux/hooks';
+import {FavoritesLimit} from '../../config/common/constants';
+import {getProductById} from '../../services/firestore/productFirestoreService';
 
 const useGetUserDetails = (enabled = false) => {
   const user = useAppSelector(state => state.user.user);
@@ -116,6 +120,58 @@ export const useRemoveUserRole = () => {
     onError: error => {
       errorHandler(error);
     },
+  });
+};
+
+export const useUpdateFavoritesList = () => {
+  const user = useAppSelector(state => state.user.user);
+  const userDetails = useGetUserDetails();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateUserRoles'],
+    mutationFn: async ({id, updateStatus}: {id: string; updateStatus: 'add' | 'remove'}) => {
+      try {
+        if (updateStatus === 'remove') {
+          const data = await removeFromFavorite(user?.user.id ?? '', id);
+          return data;
+        }
+        if ((userDetails.data?.favorites?.length || 0) >= FavoritesLimit) {
+          showErrorToast('You can not add more than 20 favorites');
+          return;
+        }
+        const data = await addToFavorite(user?.user.id ?? '', id);
+        showSuccessToast('Favorite updated successfully');
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+  });
+};
+
+export const useGetFavoritesProductList = () => {
+  const userDetails = useGetUserDetails();
+  return useQuery({
+    queryKey: ['getUserFavoritesProducts', userDetails.data?.favorites?.length],
+    queryFn: async () => {
+      try {
+        if (!userDetails.data?.favorites?.length) {
+          return [];
+        }
+        const promises = userDetails.data.favorites.map(id => getProductById(id));
+        const data = await Promise.all(promises);
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnMount: true,
   });
 };
 

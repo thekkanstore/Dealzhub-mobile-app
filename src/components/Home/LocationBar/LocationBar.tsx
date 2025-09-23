@@ -66,6 +66,7 @@ const style = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginHorizontal: moderateScale(16),
   },
   addressContainer: {
     flex: 0.75,

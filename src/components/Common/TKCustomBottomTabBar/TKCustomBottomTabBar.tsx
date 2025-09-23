@@ -15,7 +15,7 @@ const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProp
   const focusedRoute = state.routes[state.index];
 
   const focusedRouteName = getFocusedRouteNameFromRoute(focusedRoute) || 'HomePage';
-  const screensThatShouldShowTabBar = ['HomePage', 'Home', 'Vendor'];
+  const screensThatShouldShowTabBar = ['HomePage', 'Home', 'Vendor', 'Favorites'];
   const shouldShowTabBar = screensThatShouldShowTabBar.includes(focusedRouteName);
 
   const dynamicStyles = useMemo(

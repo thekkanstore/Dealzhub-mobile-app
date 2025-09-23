@@ -40,10 +40,11 @@ export interface IProductRequestBody
   extends Omit<IProductTable, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export interface IGetProductsParams {
-  storeId: string;
+  storeId?: string;
   categoryId?: string;
   limit?: number;
   lastDoc?: any;
+  isActive?: boolean;
 }
 
 export interface IGetProductsResponse {

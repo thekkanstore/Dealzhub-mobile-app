@@ -225,6 +225,69 @@ async function removeUserRole(
   }
 }
 
+async function addToFavorite(
+  userId: string,
+  id: string,
+): Promise<{success: boolean; message: string}> {
+  try {
+    const userData = await getUserData(userId);
+    if (!userData) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+    const favoritesList = userData.favorites || [];
+    const updateFavorites = [...favoritesList, id];
+    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+      favorites: updateFavorites,
+      updatedAt: serverTimestamp(),
+    });
+    return {
+      success: true,
+      message: 'User role added successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error adding user role: ${error}`,
+    };
+  }
+}
+async function removeFromFavorite(
+  userId: string,
+  id: string,
+): Promise<{success: boolean; message: string}> {
+  try {
+    const userData = await getUserData(userId);
+    if (!userData) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+
+    const favoritesList = userData.favorites || [];
+
+    const updateFavorites = favoritesList.filter(item => item !== id);
+
+    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+      favorites: updateFavorites,
+      updatedAt: serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      message: 'User role added successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error adding user role: ${error}`,
+    };
+  }
+}
+
 export {
   checkUserExists,
   checkIsUserRegistrationCompleted,
@@ -233,4 +296,6 @@ export {
   updateUserRoles,
   addUserRole,
   removeUserRole,
+  addToFavorite,
+  removeFromFavorite,
 };

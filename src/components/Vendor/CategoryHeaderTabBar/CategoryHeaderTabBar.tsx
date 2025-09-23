@@ -59,7 +59,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) =
   };
 
   const handleOnPressItem = (item: IProductTable) => {
-    navigation.navigate(navigationStrings.PRODUCT_DETAILS, {productId: item.id});
+    navigation.navigate(navigationStrings.PRODUCT_DETAILS, {productId: item.id, isVendor: true});
   };
 
   return (
@@ -94,6 +94,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) =
           }
           limit={2}
           onProductPress={handleOnPressItem}
+          isVendor
         />
       </View>
     </>

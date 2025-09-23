@@ -1,24 +1,39 @@
 import React from 'react';
-import {IProductTable} from '../../../config/models/product';
+import {Pressable} from 'react-native-gesture-handler';
 import {StyleSheet, Text, View} from 'react-native';
+import {IProductTable} from '../../../config/models/product';
 import {fontScale, moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import FastImage from 'react-native-fast-image';
+import Favorite from '../../ProductDetails/Favorite/Favourite';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
+import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 
 interface ProductItemProps {
   product: IProductTable;
   onPress?: () => void;
+  isVendor?: boolean;
 }
 
-const ProductCard: React.FC<ProductItemProps> = ({product, onPress}) => {
+const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) => {
+  const {data: userDetails} = useGetUserDetails(true);
   return (
-    <View style={styles.productCard} onTouchEnd={onPress}>
-      <FastImage
-        style={styles.productImage}
-        source={{uri: product.image ?? '', priority: FastImage.priority.normal}}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+    <Pressable style={styles.productCard} onPress={onPress}>
+      <View>
+        <TKRenderIf isRender={!isVendor}>
+          <Favorite
+            productId={product.id}
+            isFavorite={userDetails?.favorites?.includes(product.id) ?? false}
+            containerStyle={styles.favoriteIcon}
+          />
+        </TKRenderIf>
+        <FastImage
+          style={styles.productImage}
+          source={{uri: product.image ?? '', priority: FastImage.priority.normal}}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      </View>
       <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={2}>
           {product.name}
@@ -28,7 +43,7 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress}) => {
         </Text>
         <Text style={styles.actualPrice}>₹ {product.actualPrice}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -37,6 +52,7 @@ const styles = StyleSheet.create({
     width: moderateScale(150),
     height: moderateScale(150),
     borderRadius: moderateScale(14),
+    alignSelf: 'center',
   },
   productInfo: {
     gap: verticalScale(2),
@@ -44,7 +60,6 @@ const styles = StyleSheet.create({
   },
   productCard: {
     width: moderateScale(170),
-    backgroundColor: colors.primaryBackgroundColor,
     borderRadius: moderateScale(12),
     padding: moderateScale(16),
     marginVertical: verticalScale(8),
@@ -66,6 +81,15 @@ const styles = StyleSheet.create({
     fontSize: fontScale(16),
     fontFamily: fontFamily.bold,
     color: colors.primaryTextColor,
+  },
+  favoriteIcon: {
+    position: 'absolute',
+    top: verticalScale(8),
+    right: moderateScale(2),
+    zIndex: 100,
+    padding: moderateScale(3),
+    // backgroundColor: colors.tertiaryButtonBackgroundColor,
+    borderRadius: moderateScale(20),
   },
 });
 

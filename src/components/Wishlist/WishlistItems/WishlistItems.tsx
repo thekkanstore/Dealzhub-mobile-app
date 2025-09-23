@@ -1,99 +1,45 @@
 import React, {useCallback} from 'react';
-import {
-  FlatList,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-  ListRenderItem,
-} from 'react-native';
-import {useGetProductsList} from '../../../react-queries/product/productQueries';
+import {FlatList, View, Text, StyleSheet, ActivityIndicator, ListRenderItem} from 'react-native';
+import {NavigationProp, ParamListBase, useNavigation} from '@react-navigation/native';
 import {IProductTable} from '../../../config/models/product';
 import {colors} from '../../../config/styles/colors';
 import {fontScale, moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
-import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
-import ProductCard from '../ProductCard/ProductCard';
+import ProductCard from '../../Products/ProductCard/ProductCard';
+import {useGetFavoritesProductList} from '../../../react-queries/user/userQueries';
+import {navigationStrings} from '../../../navigation/navigationStrings';
 
-interface ProductListProps {
+interface WishlistItemsProps {
   storeId?: string;
   categoryId?: string;
   limit?: number;
   onProductPress?: (product: IProductTable) => void;
   isActive?: boolean;
-  isVendor?: boolean;
-  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
-  ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
 }
 
-const ProductList: React.FC<ProductListProps> = ({
-  storeId,
-  categoryId,
-  limit = 10,
-  onProductPress,
-  ListHeaderComponent,
-  ListFooterComponent,
-  isActive,
-  isVendor,
-}) => {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isRefetching,
-    refetch,
-    error,
-  } = useGetProductsList({storeId, categoryId, limit, isActive});
-
-  // Flatten all pages into a single array
-  const products = data?.pages.flatMap(page => page.products) || [];
-
-  const renderProduct: ListRenderItem<IProductTable> = useCallback(
-    ({item}) => (
-      <ProductCard product={item} onPress={() => onProductPress?.(item)} isVendor={isVendor} />
-    ),
-    [onProductPress],
-  );
-
-  const renderFooter = () => (
-    <View style={styles.footerContainer}>
-      <TKRenderIf isRender={isFetchingNextPage}>
-        <ActivityIndicator
-          size="small"
-          color={colors.primaryButtonBackgroundColor}
-          style={styles.loader}
-        />
-      </TKRenderIf>
-      <TKRenderIf isRender={!hasNextPage && products.length > 0}>
-        <Text style={styles.endText}>No more products</Text>
-      </TKRenderIf>
-      {ListFooterComponent && typeof ListFooterComponent === 'function' && <ListFooterComponent />}
-      {ListFooterComponent && typeof ListFooterComponent !== 'function' && ListFooterComponent}
-    </View>
-  );
+const WishlistItems: React.FC<WishlistItemsProps> = (
+  {
+    //   storeId,
+    //   categoryId,
+    //   limit = 10,
+    //   onProductPress,
+  },
+) => {
+  const {data: favorites, isPending} = useGetFavoritesProductList();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>
-        {error ? 'Failed to load products' : 'No products found'}
-      </Text>
+      <Text style={styles.emptyText}>{'No products found'}</Text>
     </View>
   );
 
-  const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  };
+  const renderProduct: ListRenderItem<IProductTable> = useCallback(
+    ({item}) => <ProductCard product={item} onPress={() => handleOnPressItem(item)} />,
+    [],
+  );
 
-  const handleRefresh = () => {
-    refetch();
-  };
-
-  if (isLoading) {
+  if (isPending) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
@@ -102,33 +48,32 @@ const ProductList: React.FC<ProductListProps> = ({
     );
   }
 
+  const handleOnPressItem = (item: IProductTable) => {
+    navigation.navigate(navigationStrings.VENDOR_TAB as any, {
+      screen: navigationStrings.PRODUCT_DETAILS,
+      params: {
+        productId: item.id,
+        isStackChange: true,
+      },
+    });
+  };
+
   return (
     <FlatList
-      data={products}
+      data={favorites ?? []}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item.id}-${index}`}
-      onEndReached={handleLoadMore}
       onEndReachedThreshold={0.1}
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={renderFooter}
-      ListEmptyComponent={renderEmpty}
       numColumns={2}
+      ListEmptyComponent={renderEmpty}
       columnWrapperStyle={styles.row}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefetching}
-          onRefresh={handleRefresh}
-          colors={[colors.primaryButtonBackgroundColor]}
-        />
-      }
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
-      // style={{flex: 1, backgroundColor: 'red'}}
     />
   );
 };
 
-export default ProductList;
+export default WishlistItems;
 
 const styles = StyleSheet.create({
   contentContainer: {

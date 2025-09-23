@@ -11,8 +11,8 @@ export interface IUserTable {
   vendorIsActive?: boolean;
   vendorApprovalStatus?: string | null; // null, Pending , Approved , Rejected
 
-  cartItems?: Array<number>; // array of products id
-  favorites?: Array<number>; // array of products id
+  cartItems?: Array<string>; // array of products id
+  favorites?: Array<string>; // array of products id
 
   isAgreeTermsAndCondition?: boolean;
   photo?: string;

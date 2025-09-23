@@ -11,15 +11,15 @@ import {moderateScale} from '../../../config/styles/responsiveSize';
 interface Props {
   productDetails: IProduct;
   navigation: VendorScreenNavigationProp;
-  isCustomer?: boolean;
+  isVendor?: boolean;
 }
-const ProductButtonAction: React.FC<Props> = ({productDetails, navigation, isCustomer = false}) => {
+const ProductButtonAction: React.FC<Props> = ({productDetails, navigation, isVendor = false}) => {
   return (
     <View style={styles.container}>
-      <TKRenderIf isRender={isCustomer}>
+      <TKRenderIf isRender={!isVendor}>
         <CustomerAction />
       </TKRenderIf>
-      <TKRenderIf isRender={!isCustomer}>
+      <TKRenderIf isRender={isVendor}>
         <VendorAction productDetails={productDetails} navigation={navigation} />
       </TKRenderIf>
     </View>
