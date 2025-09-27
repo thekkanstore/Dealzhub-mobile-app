@@ -16,6 +16,7 @@ import {TKVendorSelectedIcon} from '../components/Common/Icons/TKVendorSelectedI
 import {TKVendorUnSelectedIcon} from '../components/Common/Icons/TKVendorUnSelectedIcon';
 import {VendorStack} from './VendorStack';
 import {FavoritesStack} from './FavoritesStack';
+import {CartStack} from './CartStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -70,7 +71,7 @@ const screens = [
   },
   {
     name: navigationStrings.CART_TAB as 'CartTab',
-    component: HomeStack,
+    component: CartStack,
     label: 'Profile',
     icon: (focused: boolean) =>
       focused ? <TKCartIcon width={30} height={30} /> : <TKCartUnselectedIcon />,

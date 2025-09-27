@@ -23,6 +23,8 @@ export const en = {
     cancel: 'Cancel',
     confirm: 'Confirm',
     enable: 'Enable',
+    moveToWishlist: 'Move to Wishlist',
+    remove: 'Remove',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -74,6 +76,7 @@ export const en = {
     areYouSure: 'Are you sure?',
     disableProduct: 'Do you want to disable this product?',
     enableProduct: 'Do you want to enable this product?',
+    myCart: 'My Cart',
   },
   notificationPermission: {
     title: 'Enable Notifications',

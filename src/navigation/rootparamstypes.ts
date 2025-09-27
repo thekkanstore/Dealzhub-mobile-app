@@ -30,6 +30,10 @@ export type FavoritesStackParamList = {
   Favorites: undefined;
   VendorStack: {screen?: keyof VendorStackParamList; params?: any};
 };
+export type CartStackParamList = {
+  Cart: undefined;
+  VendorStack: {screen?: keyof VendorStackParamList; params?: any};
+};
 export type VendorStackParamList = {
   Vendor: undefined;
   RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
@@ -76,6 +80,10 @@ export type VendorScreenNavigationProp = CompositeNavigationProp<
 >;
 export type FavoritesScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<FavoritesStackParamList, 'Favorites'>,
+  StackNavigationProp<RootStackParamList>
+>;
+export type CartScreenNavigationProp = CompositeNavigationProp<
+  StackNavigationProp<CartStackParamList, 'Cart'>,
   StackNavigationProp<RootStackParamList>
 >;
 export type UserRegisterScreenNavigationProp = CompositeNavigationProp<

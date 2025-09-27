@@ -9,10 +9,12 @@ import {
   removeUserRole,
   addToFavorite,
   removeFromFavorite,
+  removeFromCart,
+  addToCart,
 } from '../../services/firestore/userFirestoreService';
 import {IUserTable} from '../../config/models/users';
 import {useAppSelector} from '../../redux/hooks';
-import {FavoritesLimit} from '../../config/common/constants';
+import {CartItemsLimit, FavoritesLimit} from '../../config/common/constants';
 import {getProductById} from '../../services/firestore/productFirestoreService';
 
 const useGetUserDetails = (enabled = false) => {
@@ -128,7 +130,7 @@ export const useUpdateFavoritesList = () => {
   const userDetails = useGetUserDetails();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ['updateUserRoles'],
+    mutationKey: ['updateCartItemsList'],
     mutationFn: async ({id, updateStatus}: {id: string; updateStatus: 'add' | 'remove'}) => {
       try {
         if (updateStatus === 'remove') {
@@ -136,8 +138,10 @@ export const useUpdateFavoritesList = () => {
           return data;
         }
         if ((userDetails.data?.favorites?.length || 0) >= FavoritesLimit) {
-          showErrorToast('You can not add more than 20 favorites');
-          return;
+          return Promise.reject({
+            success: false,
+            message: 'Maximum number of favorites reached',
+          });
         }
         const data = await addToFavorite(user?.user.id ?? '', id);
         showSuccessToast('Favorite updated successfully');
@@ -175,4 +179,85 @@ export const useGetFavoritesProductList = () => {
   });
 };
 
+export const useUpdateCartItemsList = () => {
+  const user = useAppSelector(state => state.user.user);
+  const userDetails = useGetUserDetails();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateCartItemsList'],
+    mutationFn: async ({id, updateStatus}: {id: string; updateStatus: 'add' | 'remove'}) => {
+      try {
+        if (updateStatus === 'remove') {
+          const data = await removeFromCart(user?.user.id ?? '', id);
+          showSuccessToast('Item Removed from the Cart');
+          return data;
+        }
+        if ((userDetails.data?.cartItems?.length || 0) >= CartItemsLimit) {
+          showErrorToast('You can not add more than 20 favorites');
+          return;
+        }
+        const data = await addToCart(user?.user.id ?? '', id);
+        showSuccessToast('Favorite Added successfully');
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+  });
+};
+
+export const useGetCartItemsProductList = () => {
+  const userDetails = useGetUserDetails();
+  return useQuery({
+    queryKey: ['getCartItemsList', userDetails.data?.cartItems?.length],
+    queryFn: async () => {
+      try {
+        if (!userDetails.data?.cartItems?.length) {
+          return [];
+        }
+        const promises = userDetails.data.cartItems.map(id => getProductById(id));
+        const data = await Promise.all(promises);
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnMount: true,
+  });
+};
+
+export const useMoveCartToWishlist = () => {
+  const user = useAppSelector(state => state.user.user);
+  const userDetails = useGetUserDetails();
+  const queryClient = useQueryClient();
+  const {mutateAsync: updateFavoriteStatus} = useUpdateFavoritesList();
+  return useMutation({
+    mutationKey: ['moveCartToWishlist'],
+    mutationFn: async ({id}: {id: string}) => {
+      try {
+        const isFavorite = userDetails.data?.favorites?.some(item => item === id);
+        if (!isFavorite) {
+          await updateFavoriteStatus({id: user?.user.id ?? '', updateStatus: 'add'});
+        }
+        const data = await removeFromCart(user?.user.id ?? '', id);
+        showSuccessToast('Item Removed from the Cart');
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+  });
+};
 export {useGetUserDetails};

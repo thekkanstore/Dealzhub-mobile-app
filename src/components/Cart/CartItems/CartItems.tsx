@@ -5,12 +5,12 @@ import {IProductTable} from '../../../config/models/product';
 import {colors} from '../../../config/styles/colors';
 import {fontScale, moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
-import ProductCard from '../../Products/ProductCard/ProductCard';
-import {useGetFavoritesProductList} from '../../../react-queries/user/userQueries';
+import {useGetCartItemsProductList} from '../../../react-queries/user/userQueries';
 import {navigationStrings} from '../../../navigation/navigationStrings';
+import CartIemCard from '../CartIemCard/CartIemCard';
 
-const WishlistItems = () => {
-  const {data: favorites, isPending} = useGetFavoritesProductList();
+const CartItemsComponent = () => {
+  const {data: cartItems, isPending} = useGetCartItemsProductList();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
   const renderEmpty = () => (
@@ -31,9 +31,10 @@ const WishlistItems = () => {
     },
     [navigation],
   );
+
   const renderProduct: ListRenderItem<IProductTable | null> = useCallback(
-    ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} />,
-    [],
+    ({item}) => <CartIemCard product={item!} onPress={() => handleOnPressItem(item!)} />,
+    [handleOnPressItem],
   );
 
   if (isPending) {
@@ -47,24 +48,25 @@ const WishlistItems = () => {
 
   return (
     <FlatList
-      data={favorites ?? []}
+      data={cartItems ?? []}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item?.id}-${index}`}
       onEndReachedThreshold={0.1}
-      numColumns={2}
       ListEmptyComponent={renderEmpty}
-      columnWrapperStyle={styles.row}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
     />
   );
 };
 
-export default WishlistItems;
+export default CartItemsComponent;
 
 const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
+    paddingHorizontal: moderateScale(8),
+    paddingVertical: verticalScale(8),
+    gap: moderateScale(8),
   },
   row: {
     justifyContent: 'space-between',

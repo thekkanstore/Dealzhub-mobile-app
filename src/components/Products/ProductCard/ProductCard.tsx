@@ -23,25 +23,25 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) =
       <View>
         <TKRenderIf isRender={!isVendor}>
           <Favorite
-            productId={product.id}
-            isFavorite={userDetails?.favorites?.includes(product.id) ?? false}
+            productId={product?.id}
+            isFavorite={userDetails?.favorites?.includes(product?.id) ?? false}
             containerStyle={styles.favoriteIcon}
           />
         </TKRenderIf>
         <FastImage
           style={styles.productImage}
-          source={{uri: product.image ?? '', priority: FastImage.priority.normal}}
+          source={{uri: product?.image ?? '', priority: FastImage.priority.normal}}
           resizeMode={FastImage.resizeMode.contain}
         />
       </View>
       <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={2}>
-          {product.name}
+          {product?.name}
         </Text>
         <Text style={styles.productDescription} numberOfLines={2}>
-          {product.description}
+          {product?.description}
         </Text>
-        <Text style={styles.actualPrice}>₹ {product.actualPrice}</Text>
+        <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
       </View>
     </Pressable>
   );

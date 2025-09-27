@@ -33,4 +33,7 @@ export const navigationStrings = {
 
   //Favorites stack screens
   FAVORITES: 'Favorites',
+
+  //cart Stack Screens
+  CART: 'Cart',
 } as const;

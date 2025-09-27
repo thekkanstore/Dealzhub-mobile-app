@@ -71,3 +71,4 @@ export const CategoryListHeaderTabs = {
 };
 
 export const FavoritesLimit = 20;
+export const CartItemsLimit = 20;

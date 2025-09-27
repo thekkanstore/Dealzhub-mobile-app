@@ -43,6 +43,9 @@ export const testSuccessToast = () => {
 
 export const errorHandler = (error: any) => {
   const errorMessage =
-    error?.response?.data?.message || error?.response?.data?.error || 'Something went wrong';
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    'Something went wrong';
   showErrorToast(errorMessage);
 };

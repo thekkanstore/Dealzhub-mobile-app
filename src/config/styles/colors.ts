@@ -46,4 +46,6 @@ export const colors = {
 
   favoriteUnselectedColor: '#FAFAFABD',
   favoritesSelectedColor: '#FF5858',
+
+  iconShadeColor: '#8B8A8A',
 };

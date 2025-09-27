@@ -17,7 +17,7 @@ const ProductButtonAction: React.FC<Props> = ({productDetails, navigation, isVen
   return (
     <View style={styles.container}>
       <TKRenderIf isRender={!isVendor}>
-        <CustomerAction />
+        <CustomerAction productDetails={productDetails} />
       </TKRenderIf>
       <TKRenderIf isRender={isVendor}>
         <VendorAction productDetails={productDetails} navigation={navigation} />

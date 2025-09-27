@@ -288,6 +288,63 @@ async function removeFromFavorite(
   }
 }
 
+async function addToCart(userId: string, id: string): Promise<{success: boolean; message: string}> {
+  try {
+    const userData = await getUserData(userId);
+    if (!userData) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+    const cartList = userData.cartItems || [];
+    const updatedCartItems = [...cartList, id];
+    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+      cartItems: updatedCartItems,
+      updatedAt: serverTimestamp(),
+    });
+    return {
+      success: true,
+      message: 'User role added successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error adding user role: ${error}`,
+    };
+  }
+}
+
+async function removeFromCart(
+  userId: string,
+  id: string,
+): Promise<{success: boolean; message: string}> {
+  try {
+    const userData = await getUserData(userId);
+    if (!userData) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+    const cartItemsList = userData.cartItems || [];
+    const updatedCartItems = cartItemsList.filter(item => item !== id);
+    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+      cartItems: updatedCartItems,
+      updatedAt: serverTimestamp(),
+    });
+    return {
+      success: true,
+      message: 'User role added successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error adding user role: ${error}`,
+    };
+  }
+}
+
 export {
   checkUserExists,
   checkIsUserRegistrationCompleted,
@@ -298,4 +355,6 @@ export {
   removeUserRole,
   addToFavorite,
   removeFromFavorite,
+  addToCart,
+  removeFromCart,
 };
