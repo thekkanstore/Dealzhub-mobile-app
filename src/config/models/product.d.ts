@@ -7,6 +7,7 @@ export interface IProductTable {
   storeId: string;
   userId: string;
   name: string;
+  nameLower: string;
   description: string;
   image: string | null;
   actualPrice: string;

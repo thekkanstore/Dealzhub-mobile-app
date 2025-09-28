@@ -1,19 +1,46 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, View, Text, StyleSheet, ActivityIndicator, ListRenderItem} from 'react-native';
+import {debounce} from 'lodash';
 import {NavigationProp, ParamListBase, useNavigation} from '@react-navigation/native';
 import {IProductTable} from '../../../config/models/product';
 import {colors} from '../../../config/styles/colors';
 import {fontScale, moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import ProductCard from '../../Products/ProductCard/ProductCard';
-import {useGetFavoritesProductList} from '../../../react-queries/user/userQueries';
 import {navigationStrings} from '../../../navigation/navigationStrings';
+import {useGetSearchProductList} from '../../../react-queries/product/productQueries';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
 import {strings} from '../../../utils/language/langauageUtils';
 
-const WishlistItems = () => {
-  const {data: favorites, isPending, error} = useGetFavoritesProductList();
+interface Props {
+  productName: string;
+}
+
+const SearchItems: React.FC<Props> = ({productName}) => {
+  const {
+    mutate: getSearchProductList,
+    data: productList = [],
+    isPending,
+    error,
+  } = useGetSearchProductList();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((searchTerm: string) => {
+        if (searchTerm.trim()) {
+          getSearchProductList({productName: searchTerm});
+        }
+      }, 500),
+    [getSearchProductList],
+  );
+
+  useEffect(() => {
+    debouncedSearch(productName);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [productName, debouncedSearch]);
 
   const handleOnPressItem = useCallback(
     (item: IProductTable) => {
@@ -27,10 +54,9 @@ const WishlistItems = () => {
     },
     [navigation],
   );
-  console.log('favorites', favorites);
   const renderProduct: ListRenderItem<IProductTable | null> = useCallback(
     ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} />,
-    [],
+    [handleOnPressItem],
   );
 
   if (isPending) {
@@ -44,7 +70,7 @@ const WishlistItems = () => {
 
   return (
     <FlatList
-      data={favorites ?? []}
+      data={productList ?? []}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item?.id}-${index}`}
       onEndReachedThreshold={0.1}
@@ -63,7 +89,7 @@ const WishlistItems = () => {
   );
 };
 
-export default WishlistItems;
+export default SearchItems;
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -93,7 +119,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontScale(16),
-    color: colors.secondaryTextColor,
+    color: colors.noFoundTextColor,
     fontFamily: fontFamily.medium,
     textAlign: 'center',
   },

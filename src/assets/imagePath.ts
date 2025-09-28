@@ -6,4 +6,5 @@ export const imagePath = {
   googleLogo: require('./images/googleLogo.png'),
   chooseUserTypeBg1: require('./images/chooseUserTypeBg-1.png'),
   chooseUserTypeBg2: require('./images/chooseUserTypeBg-2.png'),
+  noDataFound: require('./images/noDataFound.png'),
 };

@@ -77,6 +77,9 @@ export const en = {
     disableProduct: 'Do you want to disable this product?',
     enableProduct: 'Do you want to enable this product?',
     myCart: 'My Cart',
+    searchForProduct: 'Search for a product',
+    sorryNoResultFound: 'Sorry, No results found!',
+    failedToLoadProducts: 'Failed to load products',
   },
   notificationPermission: {
     title: 'Enable Notifications',

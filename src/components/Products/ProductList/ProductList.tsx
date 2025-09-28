@@ -15,6 +15,8 @@ import {fontScale, moderateScale, verticalScale} from '../../../config/styles/re
 import {fontFamily} from '../../../config/styles/fontFamily';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 import ProductCard from '../ProductCard/ProductCard';
+import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
+import {strings} from '../../../utils/language/langauageUtils';
 
 interface ProductListProps {
   storeId?: string;
@@ -75,14 +77,6 @@ const ProductList: React.FC<ProductListProps> = ({
     </View>
   );
 
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>
-        {error ? 'Failed to load products' : 'No products found'}
-      </Text>
-    </View>
-  );
-
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -111,7 +105,13 @@ const ProductList: React.FC<ProductListProps> = ({
       onEndReachedThreshold={0.1}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={renderFooter}
-      ListEmptyComponent={renderEmpty}
+      ListEmptyComponent={
+        <TKNoProductFound
+          title={
+            error ? strings('labels.failedToLoadProducts') : strings('labels.sorryNoResultFound')
+          }
+        />
+      }
       numColumns={2}
       columnWrapperStyle={styles.row}
       refreshControl={

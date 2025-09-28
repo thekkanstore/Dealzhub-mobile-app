@@ -7,6 +7,7 @@ import ImageHeaderCard from '../../components/ProductDetails/ImageHeaderCard/Ima
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import ProductDetailsCard from '../../components/ProductDetails/ProductDetailsCard/ProductDetailsCard';
 import ProductButtonAction from '../../components/ProductDetails/ProductButtonAction/ProductButtonAction';
+import TKAppSpinner from '../../components/Common/TKAppSpinner/TKAppSpinner';
 
 interface Props {
   route: RouteProp<VendorStackParamList, 'ProductDetails'>;
@@ -14,7 +15,10 @@ interface Props {
 }
 const ProductDetails: React.FC<Props> = ({route, navigation}) => {
   const {productId = '', isStackChange, isVendor = false} = route.params;
-  const {data: ProductDetails} = useGetProductById(productId);
+  const {data: ProductDetails, isPending} = useGetProductById(productId);
+  if (isPending) {
+    return <TKAppSpinner isVisible={isPending} />;
+  }
   return (
     <View style={styles.container}>
       <View>

@@ -7,6 +7,7 @@ import Profile from '../screens/Profile/Profile';
 import Settings from '../screens/Settings/Settings';
 import {RegisterUserStack} from './RegisterStack';
 import {VendorStack} from './VendorStack';
+import Search from '../screens/Search/Search';
 
 const Stack = createStackNavigator<HomeStackParamList>();
 
@@ -26,6 +27,11 @@ export const HomeStack = () => {
       <Stack.Screen
         name={navigationStrings.SETTINGS as 'Settings'}
         component={Settings}
+        options={{gestureEnabled: false}}
+      />
+      <Stack.Screen
+        name={navigationStrings.SEARCH as 'Search'}
+        component={Search}
         options={{gestureEnabled: false}}
       />
       <Stack.Screen

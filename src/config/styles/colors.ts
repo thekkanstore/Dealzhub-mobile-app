@@ -15,6 +15,7 @@ export const colors = {
   placeHolderTextColor: '#999999',
   disabledTextColor: '#CCCCCC',
   neutralButtonTextColor: '#254030',
+  noFoundTextColor: '#315540',
 
   inputBorder: '#666666',
   inputBackground: '#FAFAFA',

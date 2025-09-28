@@ -2,6 +2,7 @@ import {useMutation, useInfiniteQuery, useQuery, useQueryClient} from '@tanstack
 import {errorHandler} from '../../utils/common/toastUtils';
 import {
   IGetProductsParams,
+  IProduct,
   IProductCreateResponse,
   IProductRequestBody,
   IProductUpdateResponse,
@@ -12,6 +13,7 @@ import {
   getProductById,
   updateProductDetails,
   updateProductStatus,
+  searchProductsByName,
 } from '../../services/firestore/productFirestoreService';
 import {useAddCategoriesToStore} from '../store/storeQueries';
 import {getStoreById} from '../../services/firestore/storeFirestoreService';
@@ -149,3 +151,19 @@ export const useGetProductById = (productId: string) => {
   });
 };
 
+export const useGetSearchProductList = () => {
+  return useMutation({
+    mutationKey: ['updateProduct'],
+    mutationFn: async (payload: {productName: string}) => {
+      try {
+        const data = await searchProductsByName(payload?.productName?.toLowerCase() ?? '');
+        return data as IProduct[];
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+  });
+};

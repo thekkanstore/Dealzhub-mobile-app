@@ -20,6 +20,7 @@ export const navigationStrings = {
   HOME: 'Home',
   PROFILE: 'Profile',
   SETTINGS: 'Settings',
+  SEARCH: 'Search',
 
   //Vendor
   VENDOR: 'Vendor',

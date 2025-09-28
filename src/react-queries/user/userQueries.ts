@@ -243,7 +243,7 @@ export const useMoveCartToWishlist = () => {
       try {
         const isFavorite = userDetails.data?.favorites?.some(item => item === id);
         if (!isFavorite) {
-          await updateFavoriteStatus({id: user?.user.id ?? '', updateStatus: 'add'});
+          await updateFavoriteStatus({id: id, updateStatus: 'add'});
         }
         const data = await removeFromCart(user?.user.id ?? '', id);
         showSuccessToast('Item Removed from the Cart');

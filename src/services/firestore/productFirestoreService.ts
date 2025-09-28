@@ -18,6 +18,7 @@ async function createNewProduct(
     const newProductData = {
       ...productData,
       id: productId,
+      nameLower: productData.name?.toLowerCase(),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       isActive: true,
@@ -51,6 +52,7 @@ async function updateProductDetails(
     const newProductData = {
       ...productData,
       id: productId,
+      nameLower: productData.name?.toLowerCase(),
       updatedAt: serverTimestamp(),
     };
     await firestore()
@@ -178,10 +180,38 @@ async function updateProductStatus(
     };
   }
 }
+
+async function searchProductsByName(productName: string): Promise<IProductTable[]> {
+  try {
+    const searchTerm = productName.toLowerCase();
+    const query = firestore()
+      .collection(FireStoreCollections.PRODUCTS)
+      .orderBy('nameLower')
+      .startAt(searchTerm)
+      .endAt(searchTerm + '\uf8ff')
+      .limit(20);
+
+    const snapshot = await query.get();
+
+    const products: IProductTable[] = snapshot.docs.map(
+      doc =>
+        ({
+          ...doc.data(),
+          id: doc.id,
+        }) as unknown as IProductTable,
+    );
+    return products;
+  } catch (error: any) {
+    console.error('Error searching products by name:', error);
+    throw new Error(`Failed to search products: ${error}`);
+  }
+}
+
 export {
   createNewProduct,
   getProductsList,
   getProductById,
   updateProductDetails,
   updateProductStatus,
+  searchProductsByName,
 };

@@ -24,6 +24,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
   VendorStack: {screen?: keyof VendorStackParamList; params?: any};
+  Search: undefined;
 };
 
 export type FavoritesStackParamList = {
