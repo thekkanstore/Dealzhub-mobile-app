@@ -20,7 +20,7 @@ const rootReducerWithReset = (state: any, action: any) => {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: [], // Exclude kycVerification from persistence
+  blacklist: ['product'], // Exclude kycVerification from persistence
 };
 
 // Persist the onboarding reducer

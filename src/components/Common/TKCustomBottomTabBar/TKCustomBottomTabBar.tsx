@@ -9,14 +9,22 @@ import {useKeyboardListener} from '../../../hooks/useKeyboardListener';
 import {colors} from '../../../config/styles/colors';
 import {moderateScale, moderateScaleVertical} from '../../../config/styles/responsiveSize';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
+import {useAppSelector} from '../../../redux/hooks';
+import {updateIsFromProductDetails} from '../../../redux/productSlice';
 
+const screensThatShouldShowTabBar = ['HomePage', 'Home', 'Vendor', 'Favorites', 'Cart'];
 const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
   const [isKeyboardVisible] = useKeyboardListener();
   const focusedRoute = state.routes[state.index];
 
   const focusedRouteName = getFocusedRouteNameFromRoute(focusedRoute) || 'HomePage';
-  const screensThatShouldShowTabBar = ['HomePage', 'Home', 'Vendor', 'Favorites', 'Cart'];
-  const shouldShowTabBar = screensThatShouldShowTabBar.includes(focusedRouteName);
+  const isFromProductScreen = useAppSelector(state => state.product.isFromProductDetails);
+  const shouldShowTabBar = useMemo(() => {
+    if (isFromProductScreen && focusedRouteName === 'Vendor') {
+      return false;
+    }
+    return screensThatShouldShowTabBar.includes(focusedRouteName);
+  }, [focusedRouteName, isFromProductScreen]);
 
   const dynamicStyles = useMemo(
     () =>
@@ -37,10 +45,15 @@ const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProp
         target: route.key,
         canPreventDefault: true,
       });
-
-      if (!isFocused && !event.defaultPrevented) {
-        navigation.navigate(route.name);
-      }
+      updateIsFromProductDetails(false);
+      setTimeout(() => {
+        if (!isFocused && !event.defaultPrevented) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: route.name}],
+          });
+        }
+      }, 300);
     },
     [navigation],
   );

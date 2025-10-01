@@ -27,7 +27,6 @@ const WishlistItems = () => {
     },
     [navigation],
   );
-  console.log('favorites', favorites);
   const renderProduct: ListRenderItem<IProductTable | null> = useCallback(
     ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} />,
     [],

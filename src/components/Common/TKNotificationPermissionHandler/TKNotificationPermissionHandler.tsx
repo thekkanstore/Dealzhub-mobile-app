@@ -58,13 +58,9 @@ export const TKNotificationPermissionHandler: React.FC<
 
   // Set up notification handlers
   useEffect(() => {
-    console.log('Setting up notification handlers, permission status:', permissionStatus);
-
     // Always set up the listener, not just when permission is granted
     // Handle foreground messages
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('Received foreground message:', remoteMessage);
-
       // Display notification when app is in foreground
       if (remoteMessage.notification) {
         // Show Notifee notification for better native experience
@@ -87,9 +83,6 @@ export const TKNotificationPermissionHandler: React.FC<
           console.error('Failed to display Notifee notification:', error);
         }
       } else if (remoteMessage.data) {
-        // Handle data-only messages
-        console.log('Showing toast for data message:', remoteMessage.data);
-
         // Show Toast notification
         Toast.show({
           type: 'info',
@@ -120,7 +113,7 @@ export const TKNotificationPermissionHandler: React.FC<
           console.error('Failed to display Notifee data notification:', error);
         }
       } else {
-        console.log('No notification or data in message');
+        // No notification or data payload
       }
     });
 
@@ -130,7 +123,6 @@ export const TKNotificationPermissionHandler: React.FC<
       .then(remoteMessage => {
         if (remoteMessage) {
           // Handle navigation or actions when app opens from notification
-          console.log('App opened from notification:', remoteMessage);
         }
       });
 
@@ -151,11 +143,9 @@ export const TKNotificationPermissionHandler: React.FC<
   const tokenStatus = async () => {
     const token = await messaging().getToken();
     // Store or use the FCM token as needed
-    console.log('FCM Token:', token);
     return token;
   };
 
-  console.log(permissionStatus, 'permissionStatus');
   const initializeNotifee = async () => {
     try {
       // Request Notifee permissions

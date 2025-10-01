@@ -115,7 +115,6 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
         await pickImageFromGallery(filePickerOptions, onSuccess, onError);
       }
     } catch (error) {
-      console.error(`Error in handle${type}Picker:`, error);
       onError(`Failed to open ${type}`);
     }
   };

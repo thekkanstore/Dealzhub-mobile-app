@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Linking, StyleSheet, Alert} from 'react-native';
 import React, {useMemo} from 'react';
 import TKButton from '../../Common/TKButton/TKButton';
 import {strings} from '../../../utils/language/langauageUtils';
@@ -22,6 +22,18 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
       updateStatus: 'add',
     });
   };
+  const handleBuyNow = () => {
+    const message = `Hi! I'm interested in ${productDetails.name}, priced at ${productDetails.actualPrice}. Can you tell me more?`;
+    const url =
+      'whatsapp://send?text=' +
+      encodeURIComponent(message) +
+      '&phone=' +
+      productDetails.store.phoneNumber;
+    Linking.openURL(url)
+      .then(() => {})
+      .catch(() => Alert.alert('Error', 'Make sure WhatsApp installed on your device'));
+  };
+
   return (
     <>
       <TKButton
@@ -32,7 +44,12 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
         isDisabled={isAlreadyAddedToCart}
         isLoading={isAddToCartLoader}
       />
-      <TKButton title={strings('button.buyNow')} type={'primary'} style={styles.button} />
+      <TKButton
+        title={strings('button.buyNow')}
+        type={'primary'}
+        style={styles.button}
+        onPress={handleBuyNow}
+      />
     </>
   );
 };

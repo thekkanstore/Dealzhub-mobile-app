@@ -3,9 +3,10 @@ import {useAppSelector} from '../../redux/hooks';
 import {IStoreRequestBody} from '../../config/models/store';
 import {
   createNewUserStore,
-  getStoreData,
+  getStoreBasedOnUserIdData,
   updateUserStore,
   addCategoriesToStore,
+  getStoreById,
 } from '../../services/firestore/storeFirestoreService';
 import {errorHandler} from '../../utils/common/toastUtils';
 
@@ -48,13 +49,15 @@ export const useUpdateUserStore = () => {
   });
 };
 
-export const useGetStoreDetails = () => {
+export const useGetStoreDetails = (storeId = '') => {
   const user = useAppSelector(state => state.user.user);
   return useQuery({
-    queryKey: ['getStoreDetails'],
+    queryKey: ['getStoreDetails', storeId],
     queryFn: async () => {
       try {
-        const data = await getStoreData(user?.user.id ?? '');
+        const data = storeId
+          ? await getStoreById(storeId)
+          : await getStoreBasedOnUserIdData(user?.user.id ?? '');
         return data;
       } catch (error) {
         return Promise.reject(error);

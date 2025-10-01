@@ -36,7 +36,10 @@ export type CartStackParamList = {
   VendorStack: {screen?: keyof VendorStackParamList; params?: any};
 };
 export type VendorStackParamList = {
-  Vendor: undefined;
+  Vendor: {
+    isFromProductDetails?: boolean;
+    storeId?: string;
+  };
   RegisterUserStack: {screen?: keyof RegisterUserStackParamList; params?: any};
   ProductUpdate?: {
     productDetails?: IProduct;

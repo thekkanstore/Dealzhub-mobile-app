@@ -3,7 +3,7 @@ import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {IStoreTable} from '../../config/models/store';
 
 // Get specific user data
-async function getStoreData(userId: string): Promise<IStoreTable | null> {
+async function getStoreBasedOnUserIdData(userId: string): Promise<IStoreTable | null> {
   try {
     const storeSnapshot = await firestore()
       .collection(FireStoreCollections.STORES)
@@ -55,7 +55,7 @@ async function createNewUserStore(
     await storeCollection.doc().set(newstoreData);
 
     // Verify the user was created
-    const storeDetails = await getStoreData(storeData.userId);
+    const storeDetails = await getStoreBasedOnUserIdData(storeData.userId);
     if (storeDetails) {
       return Promise.resolve({
         success: true,
@@ -102,7 +102,7 @@ async function updateUserStore(
     await storeDoc.ref.update(updatedStoreData);
 
     // Verify the store was updated
-    const updatedStoreDetails = await getStoreData(userId);
+    const updatedStoreDetails = await getStoreBasedOnUserIdData(userId);
     if (updatedStoreDetails) {
       return Promise.resolve({
         success: true,
@@ -128,7 +128,7 @@ async function addCategoriesToStore(
 ): Promise<{success: boolean; userId: string | null; message: string; data?: IStoreTable}> {
   try {
     // First, fetch the current store details
-    const currentStore = await getStoreData(userId);
+    const currentStore = await getStoreBasedOnUserIdData(userId);
 
     if (!currentStore) {
       return Promise.reject({
@@ -179,4 +179,10 @@ async function addCategoriesToStore(
   }
 }
 
-export {getStoreData, createNewUserStore, updateUserStore, addCategoriesToStore, getStoreById};
+export {
+  getStoreBasedOnUserIdData,
+  createNewUserStore,
+  updateUserStore,
+  addCategoriesToStore,
+  getStoreById,
+};

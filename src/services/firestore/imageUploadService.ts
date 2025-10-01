@@ -71,7 +71,6 @@ export const deleteImageFromStorage = async (imageUrl: string): Promise<boolean>
       await reference.getMetadata();
     } catch (metadataError: any) {
       if (metadataError.code === 'storage/object-not-found') {
-        console.log('File already deleted or never existed');
         return true; // Consider it successful since the goal (file not existing) is achieved
       }
       throw metadataError;
@@ -81,7 +80,6 @@ export const deleteImageFromStorage = async (imageUrl: string): Promise<boolean>
     return true;
   } catch (error: any) {
     if (error.code === 'storage/object-not-found') {
-      console.log('File already deleted or never existed');
       return true;
     }
     console.error('Error deleting image:', error);

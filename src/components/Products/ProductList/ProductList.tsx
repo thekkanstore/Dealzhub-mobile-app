@@ -57,7 +57,7 @@ const ProductList: React.FC<ProductListProps> = ({
     ({item}) => (
       <ProductCard product={item} onPress={() => onProductPress?.(item)} isVendor={isVendor} />
     ),
-    [onProductPress],
+    [onProductPress, isVendor],
   );
 
   const renderFooter = () => (

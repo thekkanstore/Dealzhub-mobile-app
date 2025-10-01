@@ -11,6 +11,7 @@ import {VendorService} from '../../../services/vendor/vendorService';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 import {navigationStrings} from '../../../navigation/navigationStrings';
+import {updateIsFromProductDetails} from '../../../redux/productSlice';
 
 interface Props {
   productDetails: IProduct;
@@ -19,7 +20,13 @@ interface Props {
 }
 const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVendor}) => {
   const handleOnClickVendor = () => {
-    navigation.navigate(navigationStrings.VENDOR);
+    updateIsFromProductDetails(true);
+    setTimeout(() => {
+      navigation.navigate(navigationStrings.VENDOR, {
+        isFromProductDetails: true,
+        storeId: productDetails.store.id,
+      });
+    }, 300);
   };
   return (
     <View style={styles.container}>

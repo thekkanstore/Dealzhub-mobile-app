@@ -10,17 +10,21 @@ import {navigationStrings} from '../../navigation/navigationStrings';
 import {useGetStoreDetails} from '../../react-queries/store/storeQueries';
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import StoreDetailsCard from '../../components/Vendor/StoreDetailsCard/StoreDetailsCard';
-import {VendorScreenNavigationProp} from '../../navigation/rootparamstypes';
+import {VendorScreenNavigationProp, VendorStackParamList} from '../../navigation/rootparamstypes';
 import CategoryHeaderTabBar from '../../components/Vendor/CategoryHeaderTabBar/CategoryHeaderTabBar';
 import {useGetCategoriesList} from '../../react-queries/categories/categoriesQuery';
 import {CategoryListHeaderTabs} from '../../config/common/constants';
+import {RouteProp} from '@react-navigation/native';
 
 interface Props {
   navigation: VendorScreenNavigationProp;
+  route: RouteProp<VendorStackParamList, 'Vendor'>;
 }
-const Vendor: React.FC<Props> = ({navigation}) => {
-  const {data: storeDetails, isPending} = useGetStoreDetails();
+const Vendor: React.FC<Props> = ({navigation, route}) => {
+  const {isFromProductDetails = false, storeId = ''} = route.params || {};
+  const {data: storeDetails, isPending} = useGetStoreDetails(storeId);
   const {data: categoryList} = useGetCategoriesList();
+
   const handleAddStore = () => {
     navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
       screen: navigationStrings.STORE_DETAILS,
@@ -63,11 +67,19 @@ const Vendor: React.FC<Props> = ({navigation}) => {
         header={storeDetails?.storeName ?? strings('labels.storeDetails')}
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
-        showBackButton={false}
+        showBackButton={isFromProductDetails}
       />
       <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
-        <StoreDetailsCard storeDetails={storeDetails!} navigation={navigation} />
-        <CategoryHeaderTabBar headerTabItems={headerList} storeDetails={storeDetails} />
+        <StoreDetailsCard
+          storeDetails={storeDetails!}
+          navigation={navigation}
+          isFromProductDetails={isFromProductDetails}
+        />
+        <CategoryHeaderTabBar
+          headerTabItems={headerList}
+          storeDetails={storeDetails}
+          isFromProductDetails={isFromProductDetails}
+        />
       </TKRenderIf>
     </View>
   );

@@ -2,7 +2,7 @@ import firestore, {FieldValue, serverTimestamp} from '@react-native-firebase/fir
 import {IUserTable} from '../../config/models/users';
 import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {Roles} from '../../config/common/constants';
-import {getStoreData} from './storeFirestoreService';
+import {getStoreBasedOnUserIdData} from './storeFirestoreService';
 
 // Enhanced check user exists with more data
 async function checkUserExists(userId: string): Promise<boolean> {
@@ -21,7 +21,7 @@ async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean
     const {role = []} = userDoc.data() as IUserTable;
     if (role.length === 0) return false;
     if (role.includes(Roles.VENDOR)) {
-      const storeDetails = await getStoreData(userId);
+      const storeDetails = await getStoreBasedOnUserIdData(userId);
       return !!storeDetails;
     }
     return true;

@@ -19,8 +19,13 @@ export interface HeaderTabItem {
 interface Props {
   headerTabItems: HeaderTabItem[];
   storeDetails: any;
+  isFromProductDetails?: boolean;
 }
-const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) => {
+const CategoryHeaderTabBar: React.FC<Props> = ({
+  headerTabItems,
+  storeDetails,
+  isFromProductDetails,
+}) => {
   const [activeTab, setActiveTab] = React.useState(headerTabItems[0]);
   const navigation = useNavigation<VendorScreenNavigationProp>();
   const flatListRef = useRef<FlatList>(null);
@@ -59,7 +64,10 @@ const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) =
   };
 
   const handleOnPressItem = (item: IProductTable) => {
-    navigation.navigate(navigationStrings.PRODUCT_DETAILS, {productId: item.id, isVendor: true});
+    navigation.navigate(navigationStrings.PRODUCT_DETAILS, {
+      productId: item.id,
+      isVendor: !isFromProductDetails,
+    });
   };
 
   return (
@@ -94,7 +102,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({headerTabItems, storeDetails}) =
           }
           limit={2}
           onProductPress={handleOnPressItem}
-          isVendor
+          isVendor={!isFromProductDetails}
         />
       </View>
     </>

@@ -9,12 +9,18 @@ import {strings} from '../../../utils/language/langauageUtils';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {VendorService} from '../../../services/vendor/vendorService';
+import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 
 interface Props {
   storeDetails: IStoreTable;
   navigation: VendorScreenNavigationProp;
+  isFromProductDetails?: boolean;
 }
-const StoreDetailsCard: React.FC<Props> = ({storeDetails, navigation}) => {
+const StoreDetailsCard: React.FC<Props> = ({
+  storeDetails,
+  navigation,
+  isFromProductDetails = false,
+}) => {
   const handleEditStore = () => {
     navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
       screen: navigationStrings.STORE_DETAILS,
@@ -27,19 +33,21 @@ const StoreDetailsCard: React.FC<Props> = ({storeDetails, navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.detailText}>{VendorService.getStoreAddressInfo(storeDetails)}</Text>
-      <View style={styles.buttonContainer}>
-        <TKButton
-          title={strings('button.edit')}
-          type={'secondary'}
-          style={styles.button}
-          onPress={handleEditStore}
-        />
-        <TKButton
-          title={strings('button.addProduct')}
-          style={styles.button}
-          onPress={handleAddProduct}
-        />
-      </View>
+      <TKRenderIf isRender={!isFromProductDetails}>
+        <View style={styles.buttonContainer}>
+          <TKButton
+            title={strings('button.edit')}
+            type={'secondary'}
+            style={styles.button}
+            onPress={handleEditStore}
+          />
+          <TKButton
+            title={strings('button.addProduct')}
+            style={styles.button}
+            onPress={handleAddProduct}
+          />
+        </View>
+      </TKRenderIf>
     </View>
   );
 };
