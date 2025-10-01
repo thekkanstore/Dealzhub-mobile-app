@@ -91,13 +91,13 @@ const styles = StyleSheet.create({
     gap: moderateScale(10),
   },
   vendorContainer: {
-    backgroundColor: colors.cardItemBackground,
+    backgroundColor: colors.primaryBackgroundColor,
     borderRadius: moderateScale(16),
     paddingHorizontal: moderateScale(16),
     paddingBottom: moderateScale(10),
     borderColor: colors.neutralButtonBackgroundColor,
     ...stylesUtils.darkShadow({
-      elevation: 2,
+      elevation: 0.73,
     }),
   },
   vendorHeaderContainer: {

@@ -345,6 +345,37 @@ async function removeFromCart(
   }
 }
 
+async function updateNotificationStatus(
+  userId: string,
+  notification: string | null,
+): Promise<{success: boolean; message: string}> {
+  try {
+    const userExists = await checkUserExists(userId);
+    if (!userExists) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
+
+    // Update user roles with timestamp
+    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+      notification,
+      updatedAt: serverTimestamp(),
+    });
+    return {
+      success: true,
+      message: 'User notification status updated successfully',
+    };
+  } catch (error) {
+    console.error('Error updating user notification:', error);
+    return {
+      success: false,
+      message: `Error updating user notification: ${error}`,
+    };
+  }
+}
+
 export {
   checkUserExists,
   checkIsUserRegistrationCompleted,
@@ -357,4 +388,5 @@ export {
   removeFromFavorite,
   addToCart,
   removeFromCart,
+  updateNotificationStatus,
 };

@@ -7,7 +7,7 @@ export interface IUserTable {
   city: string;
   state: string;
   role?: Array<string>; // default user, vendor
-  notification?: boolean;
+  notification?: string;
   vendorIsActive?: boolean;
   vendorApprovalStatus?: string | null; // null, Pending , Approved , Rejected
 

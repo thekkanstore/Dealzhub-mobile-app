@@ -21,6 +21,7 @@ import {
   useUpdateUserStore,
 } from '../../react-queries/store/storeQueries';
 import {updateNewUserStatus} from '../../redux/userSlice';
+import {colors} from '../../config/styles/colors';
 
 const StoreDetailsForm = () => {
   const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
@@ -176,6 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: moderateScale(16),
     paddingVertical: moderateScale(10),
+    backgroundColor: colors.primaryBackgroundColor,
   },
   addressInputStyle: {
     height: 100,

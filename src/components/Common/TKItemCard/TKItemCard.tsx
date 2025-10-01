@@ -28,6 +28,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 2,
     // Android Shadow
-    elevation: 5,
+    elevation: 1,
   },
 });

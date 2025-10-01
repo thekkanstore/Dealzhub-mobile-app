@@ -25,6 +25,7 @@ import {
 import {useAddNewProduct, useUpdateProduct} from '../../react-queries/product/productQueries';
 import {onlyDecimalNumbers} from '../../utils/common/numberUtils';
 import {VendorStackParamList} from '../../navigation/rootparamstypes';
+import {colors} from '../../config/styles/colors';
 
 const ProductUpdateForm = () => {
   const {mutate: createProduct, isPending: createProductLoader} = useAddNewProduct();
@@ -248,6 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: moderateScale(16),
     paddingVertical: moderateScale(10),
+    backgroundColor: colors.primaryBackgroundColor,
   },
   addressInputStyle: {
     height: 100,

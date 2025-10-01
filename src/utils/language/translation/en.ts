@@ -80,6 +80,9 @@ export const en = {
     searchForProduct: 'Search for a product',
     sorryNoResultFound: 'Sorry, No results found!',
     failedToLoadProducts: 'Failed to load products',
+    enableNotification: 'Do you want to enable notifications?',
+    disableNotification: 'Do you want to disable notifications?',
+    confirmation: 'Confirmation',
   },
   notificationPermission: {
     title: 'Enable Notifications',

@@ -6,13 +6,46 @@ import {moderateScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {strings} from '../../../utils/language/langauageUtils';
 import TKSwitch from '../../Common/TKSwitch/TKSwitch';
+import TKConfirmModal from '../../Common/TKConfirmModal/TKConfirmModal';
+import {
+  useGetUserDetails,
+  useUpdateNotificationStatus,
+} from '../../../react-queries/user/userQueries';
 
 const NotificationPermissionCard = () => {
   const [enable, setEnable] = useState(false);
+  const {data: userDetails} = useGetUserDetails();
+  const {mutate: updateNotificationStatus, isPending} = useUpdateNotificationStatus();
+  const handleNotification = () => {
+    updateNotificationStatus(!userDetails?.notification, {
+      onSettled: () => {
+        setEnable(false);
+      },
+    });
+  };
   return (
     <TKItemCard style={style.itemContainer}>
       <Text style={style.itemText}>{strings('labels.notifications')}</Text>
-      <TKSwitch value={enable} onValueChange={() => setEnable(!enable)} disabled={false} />
+      <TKSwitch
+        value={!!userDetails?.notification}
+        onValueChange={() => setEnable(!enable)}
+        disabled={false}
+      />
+      <TKConfirmModal
+        isVisible={enable}
+        cancelButtonAction={() => setEnable(false)}
+        title={strings('labels.confirmation')}
+        bodyText={
+          !userDetails?.notification
+            ? strings('labels.enableNotification')
+            : strings('labels.disableNotification')
+        }
+        confirmButtonText={
+          !userDetails?.notification ? strings('button.enable') : strings('button.disable')
+        }
+        confirmButtonAction={handleNotification}
+        isConfirmLoader={isPending}
+      />
     </TKItemCard>
   );
 };

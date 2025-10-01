@@ -64,7 +64,7 @@ const ChooseUserType: React.FC<Props> = ({navigation}) => {
   return (
     <View style={styles.container}>
       <TKHeader header={undefined} />
-      <Image source={steps[0].image} style={[styles.image]} />
+      <Image source={imagePath.appLogo} style={[styles.appLogo]} />
       <FlatList
         ref={flatListRef}
         data={steps}
@@ -150,7 +150,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: moderateScale(10),
   },
-  slider: {width, alignItems: 'center', padding: 20},
+  appLogo: {
+    width: moderateScale(130),
+    height: moderateScale(130),
+    alignSelf: 'center',
+    marginTop: moderateScale(10),
+  },
+  slider: {width, alignItems: 'center', paddingVertical: 10},
   imageSize: {
     width: moderateScale(250),
     height: moderateScale(250),

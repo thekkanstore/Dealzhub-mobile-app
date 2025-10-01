@@ -8,6 +8,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import ProductDetailsCard from '../../components/ProductDetails/ProductDetailsCard/ProductDetailsCard';
 import ProductButtonAction from '../../components/ProductDetails/ProductButtonAction/ProductButtonAction';
 import TKAppSpinner from '../../components/Common/TKAppSpinner/TKAppSpinner';
+import {colors} from '../../config/styles/colors';
 
 interface Props {
   route: RouteProp<VendorStackParamList, 'ProductDetails'>;
@@ -55,5 +56,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: colors.primaryBackgroundColor,
   },
 });

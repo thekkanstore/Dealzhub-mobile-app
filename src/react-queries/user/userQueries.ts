@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import messaging from '@react-native-firebase/messaging';
 import {errorHandler, showErrorToast, showSuccessToast} from '../../utils/common/toastUtils';
 import {
   checkUserExists,
@@ -11,6 +12,7 @@ import {
   removeFromFavorite,
   removeFromCart,
   addToCart,
+  updateNotificationStatus,
 } from '../../services/firestore/userFirestoreService';
 import {IUserTable} from '../../config/models/users';
 import {useAppSelector} from '../../redux/hooks';
@@ -261,3 +263,26 @@ export const useMoveCartToWishlist = () => {
   });
 };
 export {useGetUserDetails};
+
+export const useUpdateNotificationStatus = () => {
+  const user = useAppSelector(state => state.user.user);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateUserRoles'],
+    mutationFn: async (enableNotification: boolean) => {
+      try {
+        const token = enableNotification ? await messaging().getToken() : null;
+        const data = await updateNotificationStatus(user?.user.id ?? '', token);
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+  });
+};

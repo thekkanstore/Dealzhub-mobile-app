@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   endText: {
     fontSize: fontScale(12),
-    color: colors.secondaryTextColor,
+    color: colors.primaryTextColor,
     fontFamily: fontFamily.regular,
   },
   productCard: {

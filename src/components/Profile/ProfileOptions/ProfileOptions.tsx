@@ -3,36 +3,33 @@ import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import TKItemCard from '../../Common/TKItemCard/TKItemCard';
-import {TKViewHistoryIcon} from '../../Common/Icons/TKViewHistoryIcon';
 import {strings} from '../../../utils/language/langauageUtils';
 import {moderateScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
-import {TKCartUnselectedIcon} from '../../Common/Icons/TKCartUnselectedIcon';
-import {TKHeartUnselectedIcon} from '../../Common/Icons/TKHeartUnselectedIcon';
 import {TKSettingsIcon} from '../../Common/Icons/TKSettingsIcon';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
 
 const screenNames = [
-  {
-    id: 1,
-    icon: TKViewHistoryIcon,
-    name: strings('labels.viewOrderHistory'),
-    routeName: '',
-  },
-  {
-    id: 2,
-    icon: TKCartUnselectedIcon,
-    name: strings('labels.viewCart'),
-    routeName: '',
-  },
-  {
-    id: 3,
-    icon: TKHeartUnselectedIcon,
-    name: strings('labels.viewWishlist'),
-    routeName: '',
-  },
+  // {
+  //   id: 1,
+  //   icon: TKViewHistoryIcon,
+  //   name: strings('labels.viewOrderHistory'),
+  //   routeName: '',
+  // },
+  // {
+  //   id: 2,
+  //   icon: TKCartUnselectedIcon,
+  //   name: strings('labels.viewCart'),
+  //   routeName: '',
+  // },
+  // {
+  //   id: 3,
+  //   icon: TKHeartUnselectedIcon,
+  //   name: strings('labels.viewWishlist'),
+  //   routeName: '',
+  // },
   {
     id: 4,
     icon: TKSettingsIcon,

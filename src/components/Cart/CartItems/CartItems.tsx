@@ -8,17 +8,12 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import {useGetCartItemsProductList} from '../../../react-queries/user/userQueries';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import CartIemCard from '../CartIemCard/CartIemCard';
+import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
+import {strings} from '../../../utils/language/langauageUtils';
 
 const CartItemsComponent = () => {
-  const {data: cartItems, isPending} = useGetCartItemsProductList();
+  const {data: cartItems, isPending, error} = useGetCartItemsProductList();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{'No products found'}</Text>
-    </View>
-  );
-
   const handleOnPressItem = useCallback(
     (item: IProductTable) => {
       navigation.navigate(navigationStrings.VENDOR_TAB as any, {
@@ -52,7 +47,13 @@ const CartItemsComponent = () => {
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item?.id}-${index}`}
       onEndReachedThreshold={0.1}
-      ListEmptyComponent={renderEmpty}
+      ListEmptyComponent={
+        <TKNoProductFound
+          title={
+            error ? strings('labels.failedToLoadProducts') : strings('labels.sorryNoResultFound')
+          }
+        />
+      }
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
     />

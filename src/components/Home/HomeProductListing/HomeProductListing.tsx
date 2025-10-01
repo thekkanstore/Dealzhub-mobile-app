@@ -30,7 +30,6 @@ export default HomeProductListing;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.secondaryBackgroundColor,
     gap: moderateScale(16),
   },
 });
