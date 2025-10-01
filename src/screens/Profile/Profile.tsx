@@ -1,5 +1,6 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import Config from 'react-native-config';
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
 import {moderateScale} from '../../config/styles/responsiveSize';
@@ -8,6 +9,7 @@ import UserDetailsCard from '../../components/Profile/UserDetailsCard/UserDetail
 import ProfileOptions from '../../components/Profile/ProfileOptions/ProfileOptions';
 import {colors} from '../../config/styles/colors';
 import LogoutButton from '../../components/Profile/LogoutButton/LogoutButton';
+import {fontFamily} from '../../config/styles/fontFamily';
 
 const Profile = () => {
   // const renderHelpButton = () => {
@@ -23,6 +25,7 @@ const Profile = () => {
       />
       <UserDetailsCard />
       <ProfileOptions />
+      <Text style={style.versionText}>Version {Config.VERSION_NAME}</Text>
       <LogoutButton buttonStyle={style.buttonContainer} />
     </View>
   );
@@ -42,5 +45,12 @@ const style = StyleSheet.create({
     marginVertical: moderateScale(16),
     marginHorizontal: moderateScale(16),
     alignSelf: 'flex-start',
+  },
+  versionText: {
+    textAlign: 'center',
+    fontSize: moderateScale(12),
+    fontFamily: fontFamily.medium,
+    color: colors.placeHolderTextColor,
+    marginBottom: moderateScale(10),
   },
 });
