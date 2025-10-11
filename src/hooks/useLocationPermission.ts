@@ -14,7 +14,7 @@ import {showErrorToast} from '../utils/common/toastUtils';
 Geolocation.setRNConfiguration({
   skipPermissionRequests: false,
   authorizationLevel: 'whenInUse',
-  locationProvider: 'playServices', // 🔥 Critical fix
+  locationProvider: 'playServices',
 });
 // Custom hook for location permissions
 export const useLocationPermission = () => {
