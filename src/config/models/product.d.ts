@@ -5,6 +5,7 @@ import {ICategoryTable} from './category';
 export interface IProductTable {
   id: string;
   storeId: string;
+  store: IStoreTable;
   userId: string;
   name: string;
   nameLower: string;
@@ -15,6 +16,7 @@ export interface IProductTable {
   // stockAccount: number;
   status: 'instock' | 'outofstock';
   categoryId: string;
+  category: ICategoryTable;
   isSecondHand: boolean;
   isActive: boolean;
   createdAt: Date;
@@ -31,7 +33,7 @@ export interface IProductFormValue
   city: any;
   state: string | undefined;
   category: {
-    value: string;
+    value: ICategoryTable;
     name: string;
   };
   image: ImageSourcePropType;
@@ -50,6 +52,13 @@ export interface IGetProductsParams {
 
 export interface IGetProductsResponse {
   products: IProductTable[];
+  lastDoc: any;
+  hasMore: boolean;
+  total: number;
+}
+
+export interface IGetProductsWithDetailsResponse {
+  products: IProduct[];
   lastDoc: any;
   hasMore: boolean;
   total: number;

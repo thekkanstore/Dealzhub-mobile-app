@@ -43,7 +43,7 @@ const ProductUpdateForm = () => {
     return categoryList?.map((item: ICategoryTable) => {
       return {
         name: item.name,
-        value: item.id,
+        value: item,
       };
     });
   }, [categoryList]);
@@ -66,7 +66,12 @@ const ProductUpdateForm = () => {
     const {image, category, ...rest} = values;
     const updatedImage = await uploadFilePickerResult(image);
     createProduct(
-      {...rest, image: updatedImage.url ?? '', categoryId: category.value},
+      {
+        ...rest,
+        image: updatedImage.url ?? '',
+        categoryId: category.value?.id,
+        category: category.value,
+      },
       {
         onSuccess: () => {
           navigation.goBack();
@@ -79,7 +84,7 @@ const ProductUpdateForm = () => {
     if (categoryDropDownList && productDetails?.categoryId) {
       formRef.current?.setFieldValue(
         'category',
-        categoryDropDownList.find(item => item.value === productDetails?.categoryId),
+        categoryDropDownList.find(item => item.value?.id === productDetails?.categoryId),
       );
     }
   }, [categoryDropDownList, productDetails?.categoryId]);
@@ -97,7 +102,8 @@ const ProductUpdateForm = () => {
         ...rest,
         id: productDetails?.id ?? '',
         image: updatedImage ?? '',
-        categoryId: category.value,
+        categoryId: category.value?.id,
+        category: category.value,
       },
       {
         onSuccess: () => {

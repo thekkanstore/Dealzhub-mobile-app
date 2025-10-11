@@ -52,7 +52,6 @@ const ProductList: React.FC<ProductListProps> = ({
 
   // Flatten all pages into a single array
   const products = data?.pages.flatMap(page => page.products) || [];
-
   const renderProduct: ListRenderItem<IProductTable> = useCallback(
     ({item}) => (
       <ProductCard product={item} onPress={() => onProductPress?.(item)} isVendor={isVendor} />

@@ -11,6 +11,11 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 import {showErrorToast} from '../utils/common/toastUtils';
 
+Geolocation.setRNConfiguration({
+  skipPermissionRequests: false,
+  authorizationLevel: 'whenInUse',
+  locationProvider: 'playServices', // 🔥 Critical fix
+});
 // Custom hook for location permissions
 export const useLocationPermission = () => {
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus | null>(null);
@@ -227,7 +232,7 @@ export const useLocationPermission = () => {
                     setLoading(false);
                   },
                   {
-                    enableHighAccuracy: true || false,
+                    enableHighAccuracy: false,
                     timeout: 20000,
                     maximumAge: 20000,
                   },
@@ -240,7 +245,7 @@ export const useLocationPermission = () => {
           reject(error);
         },
         {
-          enableHighAccuracy: true || false,
+          enableHighAccuracy: false,
           timeout: 20000,
           maximumAge: 20000,
         },

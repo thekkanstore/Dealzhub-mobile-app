@@ -20,8 +20,8 @@ const WishlistItems = () => {
       navigation.navigate(navigationStrings.VENDOR_TAB as any, {
         screen: navigationStrings.PRODUCT_DETAILS,
         params: {
-          productId: item.id,
           isStackChange: true,
+          product: item,
         },
       });
     },

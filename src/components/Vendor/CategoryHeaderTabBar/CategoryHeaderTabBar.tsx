@@ -65,8 +65,8 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
 
   const handleOnPressItem = (item: IProductTable) => {
     navigation.navigate(navigationStrings.PRODUCT_DETAILS, {
-      productId: item.id,
       isVendor: !isFromProductDetails,
+      product: item,
     });
   };
 
@@ -80,6 +80,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
         showsHorizontalScrollIndicator={false}
         style={styles.tabContainer}
         bounces={false}
+        contentContainerStyle={styles.contentContainerStyle}
         keyExtractor={item => item?.id ?? ''}
         extraData={activeTab}
         onScrollToIndexFailed={info => {
@@ -100,7 +101,6 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
           categoryId={
             activeTab?.id === CategoryListHeaderTabs.ALL_PRODUCTS ? undefined : activeTab?.id
           }
-          limit={2}
           onProductPress={handleOnPressItem}
           isVendor={!isFromProductDetails}
         />
@@ -112,14 +112,15 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
 export default CategoryHeaderTabBar;
 
 const styles = StyleSheet.create({
+  contentContainerStyle: {
+    paddingHorizontal: moderateScale(20),
+  },
   tabItemContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: moderateScale(16),
   },
   tabContainer: {
     backgroundColor: colors.primaryBackgroundColor,
-    paddingHorizontal: moderateScale(16),
     maxHeight: moderateScale(35),
   },
   selectedBorder: {
@@ -129,14 +130,14 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: moderateScale(3),
-    width: '115%',
+    width: '105%',
     backgroundColor: colors.transparent,
     borderRadius: moderateScale(10),
     marginTop: moderateScale(3),
   },
   dividerActive: {
     height: moderateScale(3),
-    width: '115%',
+    width: '105%',
     backgroundColor: colors.primaryTextColor,
     borderRadius: moderateScale(15),
     marginTop: moderateScale(3),

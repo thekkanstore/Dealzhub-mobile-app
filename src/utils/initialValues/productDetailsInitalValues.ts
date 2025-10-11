@@ -21,6 +21,7 @@ export const productDetailsInitalValues = (
     isSecondHand: productDetails?.isSecondHand ?? false,
     isActive: productDetails?.isActive ?? true,
     storeId: productDetails?.store?.id ?? storeDetails?.id,
+    store: productDetails?.store ?? storeDetails,
     userId: productDetails?.store?.userId ?? storeDetails?.userId,
   };
 };

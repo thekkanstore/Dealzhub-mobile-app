@@ -3,6 +3,7 @@ import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {
   IGetProductsParams,
   IGetProductsResponse,
+  IGetProductsWithDetailsResponse,
   IProduct,
   IProductRequestBody,
   IProductTable,
@@ -207,9 +208,141 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
   }
 }
 
+async function getProductsListWithDetails({
+  storeId,
+  categoryId,
+  limit = 10,
+  lastDoc,
+  isActive,
+}: IGetProductsParams): Promise<IGetProductsWithDetailsResponse> {
+  try {
+    // First, get the products using the existing logic
+    const productsResponse = await getProductsList({
+      storeId,
+      categoryId,
+      limit,
+      lastDoc,
+      isActive,
+    });
+
+    if (productsResponse.products.length === 0) {
+      return {
+        products: [],
+        lastDoc: productsResponse.lastDoc,
+        hasMore: productsResponse.hasMore,
+        total: 0,
+      };
+    }
+
+    // Extract unique store IDs and category IDs from products
+    const uniqueStoreIds = [...new Set(productsResponse.products.map(p => p.storeId))];
+    const uniqueCategoryIds = [...new Set(productsResponse.products.map(p => p.categoryId))];
+
+    // Batch fetch stores and categories
+    const [storesMap, categoriesMap] = await Promise.all([
+      batchGetStores(uniqueStoreIds),
+      batchGetCategories(uniqueCategoryIds),
+    ]);
+
+    // Combine products with their store and category details
+    const productsWithDetails: IProduct[] = productsResponse.products.map(product => ({
+      ...product,
+      store: storesMap[product.storeId],
+      category: categoriesMap[product.categoryId],
+    }));
+
+    return {
+      products: productsWithDetails,
+      lastDoc: productsResponse.lastDoc,
+      hasMore: productsResponse.hasMore,
+      total: productsWithDetails.length,
+    };
+  } catch (error: any) {
+    console.error('Error fetching products with details:', error);
+    throw new Error(`Failed to fetch products with details: ${error}`);
+  }
+}
+
+async function batchGetStores(storeIds: string[]): Promise<Record<string, any>> {
+  try {
+    if (storeIds.length === 0) return {};
+
+    const storesMap: Record<string, any> = {};
+    const batch = firestore().batch();
+
+    // Firestore batch read limit is 500, but we'll use smaller chunks for better performance
+    const chunks = chunkArray(storeIds, 100);
+
+    for (const chunk of chunks) {
+      const storePromises = chunk.map(storeId =>
+        firestore().collection(FireStoreCollections.STORES).doc(storeId).get()
+      );
+
+      const storeSnapshots = await Promise.all(storePromises);
+
+      storeSnapshots.forEach((snapshot, index) => {
+        if (snapshot.exists()) {
+          storesMap[chunk[index]] = {
+            id: snapshot.id,
+            ...snapshot.data(),
+          };
+        }
+      });
+    }
+
+    return storesMap;
+  } catch (error) {
+    console.error('Error batch fetching stores:', error);
+    return {};
+  }
+}
+
+async function batchGetCategories(categoryIds: string[]): Promise<Record<string, any>> {
+  try {
+    if (categoryIds.length === 0) return {};
+
+    const categoriesMap: Record<string, any> = {};
+
+    // Firestore batch read limit is 500, but we'll use smaller chunks for better performance
+    const chunks = chunkArray(categoryIds, 100);
+
+    for (const chunk of chunks) {
+      const categoryPromises = chunk.map(categoryId =>
+        firestore().collection(FireStoreCollections.CATEGORIES).doc(categoryId).get()
+      );
+
+      const categorySnapshots = await Promise.all(categoryPromises);
+
+      categorySnapshots.forEach((snapshot, index) => {
+        if (snapshot.exists()) {
+          categoriesMap[chunk[index]] = {
+            id: snapshot.id,
+            ...snapshot.data(),
+          };
+        }
+      });
+    }
+
+    return categoriesMap;
+  } catch (error) {
+    console.error('Error batch fetching categories:', error);
+    return {};
+  }
+}
+
+// Helper function to split array into chunks
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
 export {
   createNewProduct,
   getProductsList,
+  getProductsListWithDetails,
   getProductById,
   updateProductDetails,
   updateProductStatus,

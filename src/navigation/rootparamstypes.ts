@@ -1,7 +1,7 @@
 // navigation/types.ts
 import {CompositeNavigationProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {IProduct} from '../config/models/product';
+import {IProduct, IProductTable} from '../config/models/product';
 // Define the param list for the root stack
 export type RootStackParamList = {
   AuthStack: undefined | {screen?: keyof AuthStackParamList; params?: any};
@@ -47,7 +47,7 @@ export type VendorStackParamList = {
     isVendor?: boolean;
   };
   ProductDetails: {
-    productId: string;
+    product: IProductTable;
     isStackChange?: boolean;
     isVendor?: boolean;
   };

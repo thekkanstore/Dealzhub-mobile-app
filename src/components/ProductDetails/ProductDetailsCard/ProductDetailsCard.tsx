@@ -1,6 +1,6 @@
-import {Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {IProduct} from '../../../config/models/product';
+import {IProductTable} from '../../../config/models/product';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
 import {fontFamily} from '../../../config/styles/fontFamily';
@@ -14,7 +14,7 @@ import {navigationStrings} from '../../../navigation/navigationStrings';
 import {updateIsFromProductDetails} from '../../../redux/productSlice';
 
 interface Props {
-  productDetails: IProduct;
+  productDetails: IProductTable;
   navigation: VendorScreenNavigationProp;
   isVendor?: boolean;
 }
@@ -44,13 +44,13 @@ const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVend
         </View>
       </>
 
-      <TKRenderIf isRender={!isVendor}>
+      <TKRenderIf isRender={!isVendor && !!productDetails?.store}>
         <TouchableOpacity onPress={handleOnClickVendor} style={styles.vendorContainer}>
           <View style={styles.vendorHeaderContainer}>
-            <Text style={styles.vendorHeaderText}>{productDetails.store.storeName}</Text>
-            <Pressable onPress={() => {}} style={styles.backButton}>
+            <Text style={styles.vendorHeaderText}>{productDetails?.store?.storeName}</Text>
+            <View style={styles.backButton}>
               <TKArrowIcon width={14} height={14} color={colors.primaryTextColor} />
-            </Pressable>
+            </View>
           </View>
           <Text style={styles.vendorDescriptionText}>
             {VendorService.getStoreAddressInfo(productDetails.store)}

@@ -1,6 +1,6 @@
-import {Pressable, StyleSheet, View} from 'react-native';
-import React from 'react';
-import {IProduct} from '../../../config/models/product';
+import {BackHandler, Pressable, StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {IProductTable} from '../../../config/models/product';
 import FastImage from 'react-native-fast-image';
 import {moderateScale} from '../../../config/styles/responsiveSize';
 import {TKArrowIcon} from '../../Common/Icons/TKArrowIcon';
@@ -11,7 +11,7 @@ import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 
 interface Props {
-  productDetails: IProduct;
+  productDetails: IProductTable;
   navigation: VendorScreenNavigationProp;
   isStackChange?: boolean;
   isVendor?: boolean;
@@ -30,6 +30,16 @@ const ImageHeaderCard: React.FC<Props> = ({
   };
   const {data: userDetails} = useGetUserDetails(true);
   const isFavorites = !!userDetails?.favorites?.includes(productDetails.id);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true; // Prevent default behavior
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove(); // Clean up on unmount
+  }, []);
+
   return (
     <View>
       <FastImage
