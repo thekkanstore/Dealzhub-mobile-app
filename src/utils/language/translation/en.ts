@@ -83,6 +83,7 @@ export const en = {
     enableNotification: 'Do you want to enable notifications?',
     disableNotification: 'Do you want to disable notifications?',
     confirmation: 'Confirmation',
+    all: 'All',
   },
   notificationPermission: {
     title: 'Enable Notifications',

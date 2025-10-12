@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useMemo, useRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import ProductList from '../../Products/ProductList/ProductList';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
@@ -12,9 +12,23 @@ import {useGetCategoriesList} from '../../../react-queries/categories/categories
 import {ICategoryTable} from '../../../config/models/category';
 import FastImage from 'react-native-fast-image';
 import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
+import {strings} from '../../../utils/language/langauageUtils';
+import {imagePath} from '../../../assets/imagePath';
+
+const TabItems: ICategoryTable[] = [
+  {
+    id: 'ALL',
+    name: strings('labels.all'),
+    isActive: true,
+    image: imagePath.chooseUserTypeBg1,
+    key: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 const HomeProductListing = () => {
-  const [activeTab, setActiveTab] = React.useState<HeaderTabItem>();
+  const [activeTab, setActiveTab] = React.useState<HeaderTabItem>(TabItems[0]);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const flatListRef = useRef<FlatList>(null);
   const {data: categoriesList} = useGetCategoriesList();
@@ -28,9 +42,13 @@ const HomeProductListing = () => {
     });
   };
 
+  const categoryFinalList = useMemo(
+    () => [...TabItems, ...(categoriesList ?? [])],
+    [categoriesList],
+  );
   const handleTabPress = (selectedData: HeaderTabItem) => {
     setActiveTab(selectedData);
-    const activeIndex = categoriesList?.findIndex(item => item.id === selectedData.id);
+    const activeIndex = categoryFinalList?.findIndex(item => item.id === selectedData.id);
     if (activeIndex !== -1 && flatListRef.current) {
       flatListRef.current.scrollToIndex({
         index: activeIndex ?? 0,
@@ -43,19 +61,20 @@ const HomeProductListing = () => {
     return (
       <TouchableOpacity onPress={() => handleTabPress(item)} style={[styles.imageContainer]}>
         <FastImage
-          source={{uri: item.image}}
+          source={typeof item.image === 'string' ? {uri: item.image} : item.image}
           style={[activeTab?.id === item.id ? styles.selectedImage : styles.unselectedImage]}
         />
-        <Text style={[styles.tabItemTitle]}>{item.name}</Text>
+        <Text style={[styles.tabItemTitle]} ellipsizeMode="tail" numberOfLines={2}>
+          {item.name}
+        </Text>
       </TouchableOpacity>
     );
   };
-
   return (
     <View>
       <FlatList
         ref={flatListRef}
-        data={categoriesList ?? []}
+        data={categoryFinalList ?? []}
         renderItem={headerTabItem}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -78,7 +97,7 @@ const HomeProductListing = () => {
       <View style={styles.productListContainer}>
         <ProductList
           key={activeTab?.id}
-          categoryId={activeTab?.id}
+          categoryId={activeTab?.id === 'ALL' ? undefined : activeTab?.id}
           onProductPress={handleOnPressItem}
         />
       </View>
@@ -94,6 +113,7 @@ const styles = StyleSheet.create({
     width: moderateScale(80),
     gap: moderateScale(5),
     marginRight: moderateScale(8),
+    alignItems: 'center',
   },
   selectedImage: {
     width: moderateScale(60),
@@ -124,7 +144,8 @@ const styles = StyleSheet.create({
   tabItemTitle: {
     fontSize: fontScale(12),
     color: colors.primaryTextColor,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.semiBold,
+    textAlign: 'center',
   },
 });
 
