@@ -69,7 +69,7 @@ export default function MainStack() {
           )}
         </Stack.Navigator>
       </View>
-      {isUserDetails && (
+      {isUserDetails && !isNewUser && (
         <TKNotificationPermissionHandler
           onPermissionGranted={handleNotification}
           onPermissionDenied={handleNotification}

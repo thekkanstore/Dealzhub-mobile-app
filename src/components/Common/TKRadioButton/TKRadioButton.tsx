@@ -6,7 +6,7 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 
 type Props<T> = {
   value: T;
-  buttonName: string;
+  buttonName: string | React.ReactNode;
   onSelect: (data: T) => void;
   isSelected: boolean;
   disabled?: boolean;
@@ -26,6 +26,12 @@ const TKRadioButton = <T,>({
   size,
 }: Props<T>) => {
   const style = useCustomStyle();
+  const renderButtonName = () => {
+    if (typeof buttonName === 'string') {
+      return <Text style={[style.buttonText, textStyle]}>{buttonName}</Text>;
+    }
+    return buttonName;
+  };
   return (
     <View style={style.mainContainer}>
       <TouchableOpacity
@@ -46,7 +52,7 @@ const TKRadioButton = <T,>({
           ]}
         />
       </TouchableOpacity>
-      <Text style={[style.buttonText, textStyle]}>{buttonName}</Text>
+      {renderButtonName()}
     </View>
   );
 };

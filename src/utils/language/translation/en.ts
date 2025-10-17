@@ -25,6 +25,7 @@ export const en = {
     enable: 'Enable',
     moveToWishlist: 'Move to Wishlist',
     remove: 'Remove',
+    termsAndConditions: 'Terms and Conditions',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -46,8 +47,7 @@ export const en = {
     city: 'City',
     state: 'State',
     userDetails: 'User Details',
-    termsAndConditions:
-      'By proceeding, I acknowledge that I have read and agree to the Terms and Conditions.',
+    termsAndConditions: 'By proceeding, I acknowledge that I have read and agree to the ',
     storeName: 'Store name',
     storeDetails: 'Store Details',
     storeEmailAddress: 'Store email address',

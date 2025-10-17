@@ -28,16 +28,20 @@ async function onGoogleButtonPress() {
     // Create a Google credential with the token
     const googleCredential = GoogleAuthProvider.credential(signInResult.data?.idToken);
     const data = await signInWithCredential(getAuth(), googleCredential);
-    updateUserInfo(signInResult.data);
+    try {
+      const userExists = await checkIsUserRegistrationCompleted(signInResult.data?.user.id ?? '');
+      updateNewUserStatus(!userExists);
+    } catch (error) {
+      /* empty */
+    } finally {
+      updateUserInfo(signInResult.data);
+    }
     try {
       const token = await messaging().getToken();
       updateNotificationStatus(signInResult.data?.user.id ?? '', token);
     } catch (error) {
       // Handle error if needed
     }
-    const userExists = await checkIsUserRegistrationCompleted(signInResult.data?.user.id ?? '');
-    updateNewUserStatus(!userExists);
-    setTimeout(() => updateNotificationPermissionModalVisibility(true), 200);
     return data;
   } catch (error) {
     showErrorToast(strings('login.failedSignIn'));

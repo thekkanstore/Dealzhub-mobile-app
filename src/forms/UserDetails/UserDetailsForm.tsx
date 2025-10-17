@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Linking, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Formik} from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {onlyNumbers} from '../../utils/common/numberUtils';
@@ -10,7 +10,7 @@ import {userDetailsInitialValues} from '../../utils/initialValues/userDetailsIni
 import {shouldShowError} from '../../utils/common/errorUtils';
 import {userDetailsValidationsSchema} from '../../utils/validations/userDetailsValidation';
 import {IUserTable} from '../../config/models/users';
-import {moderateScale} from '../../config/styles/responsiveSize';
+import {fontScale, moderateScale} from '../../config/styles/responsiveSize';
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import TKRadioButton from '../../components/Common/TKRadioButton/TKRadioButton';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
@@ -24,6 +24,7 @@ import TKDropdown from '../../components/Common/TKDropdown/TKDropdown';
 import {DistrictList} from '../../config/common/constants';
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {colors} from '../../config/styles/colors';
+import {fontFamily} from '../../config/styles/fontFamily';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
@@ -36,6 +37,7 @@ const UserDetailsForm = () => {
     return userDetailsInitialValues({...user?.user, ...userDetails});
   }, [userDetails, user?.user]);
 
+  const appConfig = useAppSelector(state => state.sessionStates.appConfig);
   const handleSubmit = (values: IUserTable) => {
     createUser(
       {...values, city: values.city.value ?? ''},
@@ -49,6 +51,23 @@ const UserDetailsForm = () => {
         },
       },
     );
+  };
+
+  const renderTermsAndConditions = () => {
+    return (
+      <View style={styles.termsAndConditions}>
+        <Text style={styles.buttonText}>{strings('labels.termsAndConditions')}</Text>
+        <Pressable
+          onPress={handleRedirectToTermsAndConditions}
+          style={styles.termsAndConditionsSubContainer}>
+          <Text style={styles.termsAndConditionsText}>{strings('button.termsAndConditions')}</Text>
+        </Pressable>
+      </View>
+    );
+  };
+
+  const handleRedirectToTermsAndConditions = () => {
+    Linking.openURL(appConfig?.termsAndConditions || '');
   };
   return (
     <>
@@ -151,7 +170,7 @@ const UserDetailsForm = () => {
               <TKRenderIf isRender={!isEdit}>
                 <TKRadioButton
                   value={values.isAgreeTermsAndCondition}
-                  buttonName={strings('labels.termsAndConditions')}
+                  buttonName={renderTermsAndConditions()}
                   onSelect={() =>
                     setFieldValue('isAgreeTermsAndCondition', !values.isAgreeTermsAndCondition)
                   }
@@ -163,7 +182,6 @@ const UserDetailsForm = () => {
             <TKButton
               title={strings('button.continue')}
               onPress={() => handleSubmit()}
-              // onPress={()=> authService.logout()}
               isLoading={isLoading}
             />
           </View>
@@ -185,5 +203,32 @@ const styles = StyleSheet.create({
   addressInputStyle: {
     height: 100,
     alignItems: 'flex-start',
+  },
+  buttonText: {
+    fontSize: fontScale(14),
+    color: colors.placeHolderTextColor,
+    fontFamily: fontFamily.regular,
+    marginLeft: moderateScale(6),
+    fontWeight: '400',
+    lineHeight: fontScale(18),
+  },
+  termsAndConditionsText: {
+    fontSize: fontScale(14),
+    color: colors.neutralButtonTextColor,
+    fontFamily: fontFamily.regular,
+    marginLeft: moderateScale(6),
+    fontWeight: '400',
+    lineHeight: fontScale(18),
+    textDecorationLine: 'underline',
+  },
+  termsAndConditions: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  termsAndConditionsSubContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: moderateScale(17),
+    left: moderateScale(-10),
   },
 });
