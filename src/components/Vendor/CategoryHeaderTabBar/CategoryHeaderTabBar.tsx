@@ -70,6 +70,9 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
     });
   };
 
+  if (!isFromProductDetails && storeDetails.vendorStatus !== 'approved') {
+    return null;
+  }
   return (
     <>
       <FlatList

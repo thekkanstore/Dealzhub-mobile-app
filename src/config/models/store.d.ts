@@ -9,9 +9,10 @@ export interface IStoreTable {
   categories?: string[];
   city: string;
   state: string;
+  vendorStatus: TVendorStatus;
   createdAt?: FieldValue;
   updatedAt?: FieldValue;
 }
-
+export type TVendorStatus = 'pending' | 'approved' | 'rejected';
 export interface IStoreRequestBody
   extends Omit<IStoreTable, 'id' | 'userId' | 'created_at' | 'updated_at'> {}

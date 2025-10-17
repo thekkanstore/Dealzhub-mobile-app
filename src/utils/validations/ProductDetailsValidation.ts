@@ -19,5 +19,7 @@ export const productValidationsSchema = () => {
     image: Yup.mixed().required('Image is required'),
     isActive: Yup.boolean().required('Please confirm the Active status'),
     isSecondHand: Yup.boolean().required('Please choose any of the option'),
+    isSoldOut: Yup.boolean().required('Please confirm the Sold Out status'),
+    isOutOfStock: Yup.boolean().required('Please confirm the Out of Stock status'),
   });
 };

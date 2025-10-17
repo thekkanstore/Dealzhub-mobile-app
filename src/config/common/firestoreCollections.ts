@@ -3,4 +3,5 @@ export const FireStoreCollections = {
   STORES: 'stores',
   CATEGORIES: 'categories',
   PRODUCTS: 'products',
+  APP_CONFIG: 'appConfig',
 };

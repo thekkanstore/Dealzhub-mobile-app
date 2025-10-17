@@ -8,7 +8,4 @@ export const imagePath = {
   chooseUserTypeBg2: require('./images/chooseUserTypeBg-2.png'),
   noDataFound: require('./images/noDataFound.png'),
   appLogo: require('./images/appLogo.png'),
-  carousel1: require('./images/carousel-1.png'),
-  carousel2: require('./images/carousel-2.png'),
-  carousel3: require('./images/carousel-3.png'),
 };

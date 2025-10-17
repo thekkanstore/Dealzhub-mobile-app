@@ -18,35 +18,63 @@ interface ProductItemProps {
 
 const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) => {
   const {data: userDetails} = useGetUserDetails(true);
-  return (
-    <Pressable style={styles.productCard} onPress={onPress}>
-      <View>
-        <TKRenderIf isRender={!isVendor}>
-          <Favorite
-            productId={product?.id}
-            isFavorite={userDetails?.favorites?.includes(product?.id) ?? false}
-            containerStyle={styles.favoriteIcon}
-          />
-        </TKRenderIf>
-        <FastImage
-          style={styles.productImage}
-          source={{uri: product?.image ?? '', priority: FastImage.priority.normal}}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-      </View>
-      <View style={styles.productInfo}>
-        <Text style={styles.productName} numberOfLines={2}>
-          {product?.name}
-        </Text>
-        <Text style={styles.productDescription} numberOfLines={2}>
-          {product?.description}
-        </Text>
-        <View style={styles.priceContainer}>
-          <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
-          <Text style={styles.discountPrice}>₹ {product?.discountPrice}</Text>
+  const renderStatus = () => {
+    if (!product?.isOutOfStock && !product?.isSoldOut) {
+      return null;
+    }
+    if (product?.isSoldOut) {
+      return (
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusText}>Sold Out</Text>
         </View>
-      </View>
-    </Pressable>
+      );
+    }
+    if (product?.isOutOfStock) {
+      return (
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusText}>Out of Stock</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+  return (
+    <View>
+      <Pressable
+        style={[
+          styles.productCard,
+          product?.isOutOfStock || product?.isSoldOut ? styles.productCardDisabled : {},
+        ]}
+        onPress={onPress}>
+        <View>
+          <TKRenderIf isRender={!isVendor}>
+            <Favorite
+              productId={product?.id}
+              isFavorite={userDetails?.favorites?.includes(product?.id) ?? false}
+              containerStyle={styles.favoriteIcon}
+            />
+          </TKRenderIf>
+          <FastImage
+            style={styles.productImage}
+            source={{uri: product?.image ?? '', priority: FastImage.priority.normal}}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </View>
+        <View style={styles.productInfo}>
+          <Text style={styles.productName} numberOfLines={2}>
+            {product?.name}
+          </Text>
+          <Text style={styles.productDescription} numberOfLines={2}>
+            {product?.description}
+          </Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
+            <Text style={styles.discountPrice}>₹ {product?.discountPrice}</Text>
+          </View>
+        </View>
+      </Pressable>
+      {renderStatus()}
+    </View>
   );
 };
 
@@ -67,6 +95,27 @@ const styles = StyleSheet.create({
     padding: moderateScale(16),
     marginVertical: verticalScale(8),
     gap: verticalScale(2),
+  },
+  productCardDisabled: {
+    opacity: 0.5,
+  },
+  statusContainer: {
+    position: 'absolute',
+    top: '30%',
+    left: moderateScale(30),
+    zIndex: 100,
+    width: moderateScale(120),
+    paddingVertical: verticalScale(4),
+    borderRadius: moderateScale(6),
+    backgroundColor: colors.neutralButtonBackgroundColor,
+    borderWidth: 2,
+    borderColor: colors.errorTextColor,
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: fontScale(16),
+    fontFamily: fontFamily.bold,
+    color: colors.errorTextColor,
   },
   productName: {
     fontSize: fontScale(16),

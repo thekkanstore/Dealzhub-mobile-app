@@ -225,7 +225,21 @@ const ProductUpdateForm = () => {
                 }
                 onDelete={handleOnDeleteImage}
               />
-              <View>
+              <View style={styles.radioButtonContainer}>
+                <View style={styles.radioButtonGroup}>
+                  <TKRadioButton
+                    value={values.isSoldOut}
+                    buttonName={strings('labels.isSoldOut')}
+                    onSelect={data => setFieldValue('isSoldOut', !data)}
+                    isSelected={values.isSoldOut}
+                  />
+                  <TKRadioButton
+                    value={values.isOutOfStock}
+                    buttonName={strings('labels.isOutOfStock')}
+                    onSelect={data => setFieldValue('isOutOfStock', !data)}
+                    isSelected={values.isOutOfStock}
+                  />
+                </View>
                 <TKRadioButton
                   value={values.isSecondHand}
                   buttonName={strings('labels.isSecondHand')}
@@ -263,5 +277,12 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     marginBottom: moderateScale(10),
+  },
+  radioButtonContainer: {
+    gap: moderateScale(20),
+  },
+  radioButtonGroup: {
+    flexDirection: 'row',
+    gap: moderateScale(20),
   },
 });

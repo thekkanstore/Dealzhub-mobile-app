@@ -19,6 +19,8 @@ export interface IProductTable {
   category: ICategoryTable;
   isSecondHand: boolean;
   isActive: boolean;
+  isSoldOut: boolean;
+  isOutOfStock: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

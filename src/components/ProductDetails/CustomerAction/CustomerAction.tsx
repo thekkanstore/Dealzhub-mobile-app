@@ -41,7 +41,9 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
         type={'secondary'}
         style={styles.button}
         onPress={handleAddToCart}
-        isDisabled={isAlreadyAddedToCart}
+        isDisabled={
+          isAlreadyAddedToCart || productDetails?.isSoldOut || productDetails?.isOutOfStock
+        }
         isLoading={isAddToCartLoader}
       />
       <TKButton
@@ -49,6 +51,7 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
         type={'primary'}
         style={styles.button}
         onPress={handleBuyNow}
+        isDisabled={productDetails?.isSoldOut || productDetails?.isOutOfStock}
       />
     </>
   );

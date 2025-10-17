@@ -11,6 +11,8 @@ import {navigationStrings} from '../../navigation/navigationStrings';
 import {useGetUserDetails} from '../../react-queries/user/userQueries';
 import ProductListingCarousel from '../../components/Home/ProductListingCarousel/ProductListingCarousel';
 import LocationBar from '../../components/Home/LocationBar/LocationBar';
+import {useAppSelector} from '../../redux/hooks';
+import {updateSelectedLocation} from '../../redux/sessionStatesSlice';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -20,13 +22,17 @@ const Home: React.FC<Props> = ({navigation}) => {
     navigation.navigate(navigationStrings.SEARCH);
   };
   const {data: userDetails} = useGetUserDetails();
-  const [location, setLocation] = useState<string>('');
+  const {selectedLocation} = useAppSelector(state => state.sessionStates);
+  // const [location, setLocation] = useState<string>(selectedLocation);
+
   useEffect(() => {
-    setLocation(userDetails?.city ?? '');
-  }, [userDetails?.city]);
+    if (!selectedLocation) {
+      updateSelectedLocation(userDetails?.city ?? '');
+    }
+  }, [userDetails?.city, selectedLocation]);
   return (
     <View style={styles.container}>
-      <LocationBar onPress={setLocation} location={location} />
+      <LocationBar onPress={updateSelectedLocation} location={selectedLocation} />
       <Pressable onPress={handleOnPress} style={styles.buttonContainer}>
         <TKSearchIcon height={20} width={20} />
         <Text style={styles.buttonText}>{strings('labels.searchForProduct')}</Text>
@@ -34,7 +40,7 @@ const Home: React.FC<Props> = ({navigation}) => {
       <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false} bounces={false}>
         <ProductListingCarousel />
         <View style={styles.productListingContainer}>
-          <HomeProductListing location={location} />
+          <HomeProductListing location={selectedLocation} />
         </View>
       </ScrollView>
     </View>

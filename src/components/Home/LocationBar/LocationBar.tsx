@@ -169,7 +169,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     borderBottomWidth: moderateScale(1),
-    borderColor: colors.inputBorder,
+    borderColor: colors.disabledTextColor,
     marginVertical: moderateScale(10),
     height: moderateScale(40),
     paddingHorizontal: moderateScale(20),

@@ -84,6 +84,9 @@ export const en = {
     disableNotification: 'Do you want to disable notifications?',
     confirmation: 'Confirmation',
     all: 'All',
+    selectDistrict: 'Select District',
+    isOutOfStock: 'Is Out of Stock',
+    isSoldOut: 'Is Sold Out',
   },
   notificationPermission: {
     title: 'Enable Notifications',

@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
@@ -15,6 +15,8 @@ import CategoryHeaderTabBar from '../../components/Vendor/CategoryHeaderTabBar/C
 import {useGetCategoriesList} from '../../react-queries/categories/categoriesQuery';
 import {CategoryListHeaderTabs} from '../../config/common/constants';
 import {RouteProp} from '@react-navigation/native';
+import { VendorService } from '../../services/vendor/vendorService';
+import { fontFamily } from '../../config/styles/fontFamily';
 
 interface Props {
   navigation: VendorScreenNavigationProp;
@@ -31,9 +33,17 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
       params: {isEdit: true},
     });
   };
+
   const renderHelpButton = () => {
-    if (isPending || storeDetails) {
+    if (isPending || isFromProductDetails) {
       return null;
+    }
+    if (storeDetails && !isFromProductDetails) {
+      return (
+        <Text style={[style.statusText, {color: VendorService.getStoreStatusColors(storeDetails)}]}>
+          {storeDetails.vendorStatus?.toUpperCase()}
+        </Text>
+      );
     }
     return <TKButton title={strings('labels.addStore')} type="tertiary" onPress={handleAddStore} />;
   };
@@ -71,7 +81,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
       />
       <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
         <StoreDetailsCard
-          storeDetails={storeDetails!}
+          storeDetails={storeDetails}
           navigation={navigation}
           isFromProductDetails={isFromProductDetails}
         />
@@ -99,5 +109,9 @@ const style = StyleSheet.create({
     marginVertical: moderateScale(16),
     marginHorizontal: moderateScale(16),
     alignSelf: 'flex-start',
+  },
+  statusText: {
+    fontSize: moderateScale(12),
+    fontFamily: fontFamily.medium,
   },
 });

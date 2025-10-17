@@ -12,11 +12,13 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {TKNotificationPermissionHandler} from '../components/Common/TKNotificationPermissionHandler/TKNotificationPermissionHandler';
 import {updateNotificationPermissionModalVisibility} from '../redux/systemSlice';
 import {RegisterUserStack} from './RegisterStack';
+import {useGetAppConfig} from '../react-queries/appConfig/appConfigQuery';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
   const insets = useSafeAreaInsets();
+  useGetAppConfig();
   useEffect(() => {
     setTimeout(() => {
       hideSplash();

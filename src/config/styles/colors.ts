@@ -29,6 +29,10 @@ export const colors = {
   errorToastBackgroundColor: '#BD343B',
   successButtonBackgroundColor: '#50ae77ff',
 
+  successText: '#119A2F',
+  pendingText: '#C98905',
+  rejectedText: '#BD343B66',
+
   transparent: 'transparent',
 
   tabBarBackgroundColor: '#E5EEE9',
