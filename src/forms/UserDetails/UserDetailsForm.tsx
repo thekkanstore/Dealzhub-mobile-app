@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Linking, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Linking, StyleSheet, Text, View} from 'react-native';
 import {Formik} from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {onlyNumbers} from '../../utils/common/numberUtils';
@@ -25,6 +25,7 @@ import {DistrictList} from '../../config/common/constants';
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
+import authService from '../../services/auth/authService';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
@@ -55,23 +56,33 @@ const UserDetailsForm = () => {
 
   const renderTermsAndConditions = () => {
     return (
-      <View style={styles.termsAndConditions}>
-        <Text style={styles.buttonText}>{strings('labels.termsAndConditions')}</Text>
-        <Pressable
-          onPress={handleRedirectToTermsAndConditions}
-          style={styles.termsAndConditionsSubContainer}>
-          <Text style={styles.termsAndConditionsText}>{strings('button.termsAndConditions')}</Text>
-        </Pressable>
-      </View>
+      <Text style={styles.buttonText}>
+        {strings('labels.termsAndConditions')}
+        <Text style={styles.termsAndConditionsText} onPress={handleRedirectToTermsAndConditions}>
+          {strings('button.termsAndConditions')}
+        </Text>
+      </Text>
     );
   };
 
   const handleRedirectToTermsAndConditions = () => {
     Linking.openURL(appConfig?.termsAndConditions || '');
   };
+
+  const handleGoBack = async () => {
+    if (isEdit) {
+      navigation.goBack();
+      return;
+    }
+    await authService.logout();
+  };
   return (
     <>
-      <TKHeader header={strings('labels.userDetails')} showBackButton={isEdit} />
+      <TKHeader
+        header={strings('labels.userDetails')}
+        onBackPress={handleGoBack}
+        containerStyle={styles.headerContainer}
+      />
       <Formik<IUserTable>
         initialValues={initialValues}
         validationSchema={() => userDetailsValidationsSchema(isEdit)}
@@ -211,24 +222,22 @@ const styles = StyleSheet.create({
     marginLeft: moderateScale(6),
     fontWeight: '400',
     lineHeight: fontScale(18),
+    alignSelf: 'center',
+    flexWrap: 'wrap',
   },
   termsAndConditionsText: {
     fontSize: fontScale(14),
     color: colors.neutralButtonTextColor,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.medium,
     marginLeft: moderateScale(6),
     fontWeight: '400',
     lineHeight: fontScale(18),
     textDecorationLine: 'underline',
   },
   termsAndConditions: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
-  termsAndConditionsSubContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: moderateScale(17),
-    left: moderateScale(-10),
+  headerContainer: {
+    paddingHorizontal: moderateScale(16),
   },
 });
