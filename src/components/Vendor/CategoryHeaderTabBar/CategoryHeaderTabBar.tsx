@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   tabItemContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: moderateScale(10),
   },
   tabContainer: {
     backgroundColor: colors.primaryBackgroundColor,

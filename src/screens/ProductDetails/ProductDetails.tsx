@@ -7,6 +7,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import ProductDetailsCard from '../../components/ProductDetails/ProductDetailsCard/ProductDetailsCard';
 import ProductButtonAction from '../../components/ProductDetails/ProductButtonAction/ProductButtonAction';
 import {colors} from '../../config/styles/colors';
+import {useGetProductById} from '../../react-queries/product/productQueries';
 
 interface Props {
   route: RouteProp<VendorStackParamList, 'ProductDetails'>;
@@ -14,27 +15,33 @@ interface Props {
 }
 const ProductDetails: React.FC<Props> = ({route, navigation}) => {
   const {product, isStackChange, isVendor = false} = route.params;
+  const {data: productDetails} = useGetProductById(product?.id);
+  const finalProductDetails = productDetails ?? product;
   return (
     <View style={styles.container}>
       <View>
-        <TKRenderIf isRender={!!product?.image}>
+        <TKRenderIf isRender={!!finalProductDetails?.image}>
           <ImageHeaderCard
-            productDetails={product}
+            productDetails={finalProductDetails}
             navigation={navigation}
             isStackChange={isStackChange}
             isVendor={isVendor}
           />
         </TKRenderIf>
-        <TKRenderIf isRender={!!product?.image}>
+        <TKRenderIf isRender={!!finalProductDetails?.image}>
           <ProductDetailsCard
-            productDetails={product}
+            productDetails={finalProductDetails}
             navigation={navigation}
             isVendor={isVendor}
           />
         </TKRenderIf>
       </View>
       <View>
-        <ProductButtonAction productDetails={product} navigation={navigation} isVendor={isVendor} />
+        <ProductButtonAction
+          productDetails={finalProductDetails}
+          navigation={navigation}
+          isVendor={isVendor}
+        />
       </View>
     </View>
   );

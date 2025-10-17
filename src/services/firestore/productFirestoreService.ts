@@ -86,6 +86,7 @@ async function getProductsList({
   limit = 10,
   lastDoc,
   isActive,
+  location,
 }: IGetProductsParams): Promise<IGetProductsResponse> {
   try {
     // Strategy 1: Try with ordering first (requires composite index)
@@ -108,6 +109,10 @@ async function getProductsList({
     // Add pagination
     if (lastDoc) {
       query = query.startAfter(lastDoc);
+    }
+
+    if (location) {
+      query = query.where('store.city', '==', location); // or 'store.state'
     }
 
     query = query.limit(limit);
@@ -275,7 +280,7 @@ async function batchGetStores(storeIds: string[]): Promise<Record<string, any>> 
 
     for (const chunk of chunks) {
       const storePromises = chunk.map(storeId =>
-        firestore().collection(FireStoreCollections.STORES).doc(storeId).get()
+        firestore().collection(FireStoreCollections.STORES).doc(storeId).get(),
       );
 
       const storeSnapshots = await Promise.all(storePromises);
@@ -308,7 +313,7 @@ async function batchGetCategories(categoryIds: string[]): Promise<Record<string,
 
     for (const chunk of chunks) {
       const categoryPromises = chunk.map(categoryId =>
-        firestore().collection(FireStoreCollections.CATEGORIES).doc(categoryId).get()
+        firestore().collection(FireStoreCollections.CATEGORIES).doc(categoryId).get(),
       );
 
       const categorySnapshots = await Promise.all(categoryPromises);

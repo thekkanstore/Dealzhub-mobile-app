@@ -93,9 +93,10 @@ export const useGetProductsList = ({
   categoryId,
   limit = 10,
   isActive,
+  location,
 }: IGetProductsParams) => {
   const query = useInfiniteQuery({
-    queryKey: ['getProductsList', storeId, categoryId],
+    queryKey: ['getProductsList', storeId, categoryId, location],
     queryFn: async ({pageParam}) => {
       try {
         const data = await getProductsList({
@@ -104,6 +105,7 @@ export const useGetProductsList = ({
           limit,
           lastDoc: pageParam,
           isActive,
+          location,
         });
         return data;
       } catch (error) {

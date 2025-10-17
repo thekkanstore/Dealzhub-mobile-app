@@ -27,7 +27,10 @@ const TabItems: ICategoryTable[] = [
   },
 ];
 
-const HomeProductListing = () => {
+interface Props {
+  location?: string;
+}
+const HomeProductListing = ({location}: Props) => {
   const [activeTab, setActiveTab] = React.useState<HeaderTabItem>(TabItems[0]);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const flatListRef = useRef<FlatList>(null);
@@ -99,6 +102,7 @@ const HomeProductListing = () => {
           key={activeTab?.id}
           categoryId={activeTab?.id === 'ALL' ? undefined : activeTab?.id}
           onProductPress={handleOnPressItem}
+          location={location}
         />
       </View>
     </View>

@@ -27,6 +27,8 @@ interface ProductListProps {
   isVendor?: boolean;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
+
+  location?: string;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -38,6 +40,7 @@ const ProductList: React.FC<ProductListProps> = ({
   ListFooterComponent,
   isActive,
   isVendor,
+  location,
 }) => {
   const {
     data,
@@ -48,7 +51,7 @@ const ProductList: React.FC<ProductListProps> = ({
     isRefetching,
     refetch,
     error,
-  } = useGetProductsList({storeId, categoryId, limit, isActive});
+  } = useGetProductsList({storeId, categoryId, limit, isActive, location});
 
   // Flatten all pages into a single array
   const products = data?.pages.flatMap(page => page.products) || [];

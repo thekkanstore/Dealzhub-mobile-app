@@ -48,6 +48,7 @@ export interface IGetProductsParams {
   limit?: number;
   lastDoc?: any;
   isActive?: boolean;
+  location?: string;
 }
 
 export interface IGetProductsResponse {

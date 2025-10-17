@@ -41,7 +41,10 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) =
         <Text style={styles.productDescription} numberOfLines={2}>
           {product?.description}
         </Text>
-        <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
+          <Text style={styles.discountPrice}>₹ {product?.discountPrice}</Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -77,10 +80,16 @@ const styles = StyleSheet.create({
     color: colors.primaryTextColor,
     marginBottom: verticalScale(8),
   },
-  actualPrice: {
+  discountPrice: {
     fontSize: fontScale(16),
     fontFamily: fontFamily.bold,
     color: colors.primaryTextColor,
+  },
+  actualPrice: {
+    fontSize: fontScale(14),
+    fontFamily: fontFamily.regular,
+    color: colors.disabledTextColor,
+    textDecorationLine: 'line-through',
   },
   favoriteIcon: {
     position: 'absolute',
@@ -90,6 +99,11 @@ const styles = StyleSheet.create({
     padding: moderateScale(3),
     // backgroundColor: colors.tertiaryButtonBackgroundColor,
     borderRadius: moderateScale(20),
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(8),
   },
 });
 
