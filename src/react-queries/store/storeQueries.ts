@@ -12,6 +12,7 @@ import {errorHandler} from '../../utils/common/toastUtils';
 
 export const useCreateNewUserStore = () => {
   const user = useAppSelector(state => state.user.user);
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['createNewUserStore'],
     mutationFn: async (payload: IStoreRequestBody) => {
@@ -21,6 +22,9 @@ export const useCreateNewUserStore = () => {
       } catch (error) {
         return Promise.reject(error);
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getStoreDetails']});
     },
     onError: error => {
       errorHandler(error);

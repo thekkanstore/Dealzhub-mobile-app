@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Alert, Linking, StyleSheet, View} from 'react-native';
 import {Formik} from 'formik';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
@@ -22,6 +22,7 @@ import {
 } from '../../react-queries/store/storeQueries';
 import {updateNewUserStatus} from '../../redux/userSlice';
 import {colors} from '../../config/styles/colors';
+import {useAppSelector} from '../../redux/hooks';
 
 const StoreDetailsForm = () => {
   const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
@@ -33,6 +34,16 @@ const StoreDetailsForm = () => {
   const initialValues: IStoreRequestBody = useMemo(() => {
     return storeDetailsInitialValues(storeDetails ?? undefined);
   }, [storeDetails]);
+  const appConfig = useAppSelector(state => state.sessionStates.appConfig);
+
+  const handelMessage = (storeName: string) => {
+    const message = `Vendor request for ${storeName} has been submitted. Kindly review the store details and proceed with the approval.`;
+    const url =
+      'whatsapp://send?text=' + encodeURIComponent(message) + '&phone=' + appConfig?.adminNo;
+    Linking.openURL(url)
+      .then(() => {})
+      .catch(() => Alert.alert('Error', 'Make sure WhatsApp installed on your device'));
+  };
 
   const handleSubmit = (values: IStoreRequestBody) => {
     if (isEdit) {
@@ -51,13 +62,17 @@ const StoreDetailsForm = () => {
       {
         onSuccess: () => {
           updateNewUserStatus(false);
+          navigation.goBack();
+          setTimeout(() => {
+            handelMessage(values.storeName);
+          }, 300);
         },
       },
     );
   };
   return (
     <>
-      <TKHeader header={strings('labels.storeDetails')} />
+      <TKHeader header={strings('labels.storeDetails')} containerStyle={styles.headerContainer} />
       <Formik<IStoreRequestBody>
         initialValues={initialValues}
         validationSchema={storeDetailsValidationsSchema}
@@ -182,5 +197,8 @@ const styles = StyleSheet.create({
   addressInputStyle: {
     height: 100,
     alignItems: 'flex-start',
+  },
+  headerContainer: {
+    paddingHorizontal: moderateScale(16),
   },
 });

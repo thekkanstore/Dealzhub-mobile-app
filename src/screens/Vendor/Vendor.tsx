@@ -30,7 +30,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const handleAddStore = () => {
     navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
       screen: navigationStrings.STORE_DETAILS,
-      params: {isEdit: true},
+      params: {isEdit: false},
     });
   };
 

@@ -12,5 +12,6 @@ export const storeDetailsInitialValues = (storeDetails?: IStoreTable) => {
     city: city ?? '',
     state: 'Kerala',
     isActive: storeDetails?.isActive ?? true,
+    vendorStatus: storeDetails?.vendorStatus ?? 'pending',
   };
 };
