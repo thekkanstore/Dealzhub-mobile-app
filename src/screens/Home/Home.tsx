@@ -1,6 +1,5 @@
-import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import LocationBar from '../../components/Home/LocationBar/LocationBar';
+import React, {useEffect, useState} from 'react';
+import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../config/styles/colors';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import HomeProductListing from '../../components/Home/HomeProductListing/HomeProductListing';
@@ -9,6 +8,9 @@ import {fontFamily} from '../../config/styles/fontFamily';
 import {TKSearchIcon} from '../../components/Common/Icons/TKSearchIcon';
 import {HomeScreenNavigationProp} from '../../navigation/rootparamstypes';
 import {navigationStrings} from '../../navigation/navigationStrings';
+import {useGetUserDetails} from '../../react-queries/user/userQueries';
+import ProductListingCarousel from '../../components/Home/ProductListingCarousel/ProductListingCarousel';
+import LocationBar from '../../components/Home/LocationBar/LocationBar';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -17,14 +19,24 @@ const Home: React.FC<Props> = ({navigation}) => {
   const handleOnPress = () => {
     navigation.navigate(navigationStrings.SEARCH);
   };
+  const {data: userDetails} = useGetUserDetails();
+  const [location, setLocation] = useState<string>('');
+  useEffect(() => {
+    setLocation(userDetails?.city ?? '');
+  }, [userDetails?.city]);
   return (
     <View style={styles.container}>
-      <LocationBar />
+      <LocationBar onPress={setLocation} location={location} />
       <Pressable onPress={handleOnPress} style={styles.buttonContainer}>
         <TKSearchIcon height={20} width={20} />
         <Text style={styles.buttonText}>{strings('labels.searchForProduct')}</Text>
       </Pressable>
-      <HomeProductListing />
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false} bounces={false}>
+        <ProductListingCarousel />
+        <View style={styles.productListingContainer}>
+          <HomeProductListing location={location} />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -53,5 +65,9 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     color: colors.placeHolderTextColor,
     fontFamily: fontFamily.regular,
+  },
+  productListingContainer: {
+    flex: 1,
+    paddingTop: moderateScale(16),
   },
 });
