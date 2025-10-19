@@ -23,7 +23,7 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
     });
   };
   const handleBuyNow = () => {
-    const message = `Hi! I'm interested in ${productDetails.name}, priced at ${productDetails.actualPrice}. Can you tell me more?`;
+    const message = `Hi! I'm interested in ${productDetails.name}, priced at ${productDetails.discountPrice}. Can you tell me more?`;
     const url =
       'whatsapp://send?text=' +
       encodeURIComponent(message) +

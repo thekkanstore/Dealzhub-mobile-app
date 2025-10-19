@@ -15,8 +15,8 @@ import CategoryHeaderTabBar from '../../components/Vendor/CategoryHeaderTabBar/C
 import {useGetCategoriesList} from '../../react-queries/categories/categoriesQuery';
 import {CategoryListHeaderTabs} from '../../config/common/constants';
 import {RouteProp} from '@react-navigation/native';
-import { VendorService } from '../../services/vendor/vendorService';
-import { fontFamily } from '../../config/styles/fontFamily';
+import {VendorService} from '../../services/vendor/vendorService';
+import {fontFamily} from '../../config/styles/fontFamily';
 
 interface Props {
   navigation: VendorScreenNavigationProp;

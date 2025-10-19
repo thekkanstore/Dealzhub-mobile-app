@@ -51,10 +51,10 @@ interface LXFilePickerProps {
 const TKFilePicker: React.FC<LXFilePickerProps> = ({
   onFilePicked,
   allowedTypes = ['image'],
-  maxSizeInMB = 5,
+  maxSizeInMB = 10,
   minSizeInMB = 0.03, // min 30 kb
   title = 'Select File',
-  imageQuality = 0.8 as PhotoQuality,
+  imageQuality = 0.9 as PhotoQuality,
   maxImageWidth = 1920,
   maxImageHeight = 1920,
   value,

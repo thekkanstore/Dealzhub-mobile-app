@@ -121,6 +121,7 @@ const ProductUpdateForm = () => {
     <>
       <TKHeader
         header={isUpdate ? strings('labels.updateProduct') : strings('labels.addProduct')}
+        containerStyle={styles.headerContainerStyle}
       />
       <Formik<IProductFormValue>
         initialValues={initialValues}
@@ -270,6 +271,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(16),
     paddingVertical: moderateScale(10),
     backgroundColor: colors.primaryBackgroundColor,
+  },
+  headerContainerStyle: {
+    paddingHorizontal: moderateScale(16),
   },
   addressInputStyle: {
     height: 100,

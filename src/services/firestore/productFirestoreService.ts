@@ -9,6 +9,28 @@ import {
   IProductTable,
 } from '../../config/models/product';
 
+function generateSearchTokens(text: string): string[] {
+  const tokens = new Set<string>();
+  const normalizedText = text.toLowerCase().trim();
+
+  // Split by spaces and create tokens
+  const words = normalizedText.split(/\s+/);
+
+  words.forEach(word => {
+    // Add full word
+    tokens.add(word);
+
+    // Add n-grams (substrings) for partial matching
+    for (let i = 0; i < word.length; i++) {
+      for (let j = i + 2; j <= word.length; j++) {
+        tokens.add(word.substring(i, j));
+      }
+    }
+  });
+
+  return Array.from(tokens);
+}
+
 async function createNewProduct(
   productData: IProductRequestBody,
 ): Promise<{success: boolean; productId: string | null; message: string}> {
@@ -16,10 +38,12 @@ async function createNewProduct(
     const storeCollection = firestore().collection(FireStoreCollections.PRODUCTS);
     const newProductRef = storeCollection.doc();
     const productId = newProductRef.id;
+
     const newProductData = {
       ...productData,
       id: productId,
       nameLower: productData.name?.toLowerCase(),
+      searchTokens: generateSearchTokens(productData.name.toLowerCase() || ''),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       isActive: true,
@@ -54,6 +78,7 @@ async function updateProductDetails(
       ...productData,
       id: productId,
       nameLower: productData.name?.toLowerCase(),
+      searchTokens: generateSearchTokens(productData.name.toLowerCase() || ''),
       updatedAt: serverTimestamp(),
     };
     await firestore()
@@ -192,9 +217,7 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
     const searchTerm = productName.toLowerCase();
     const query = firestore()
       .collection(FireStoreCollections.PRODUCTS)
-      .orderBy('nameLower')
-      .startAt(searchTerm)
-      .endAt(searchTerm + '\uf8ff')
+      .where('searchTokens', 'array-contains', searchTerm)
       .limit(20);
 
     const snapshot = await query.get();
@@ -344,6 +367,40 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   return chunks;
 }
 
+export async function updateAllProductsWithSearchTokens() {
+  try {
+    const snapshot = await firestore().collection(FireStoreCollections.PRODUCTS).get();
+
+    const batch = firestore().batch();
+    let batchCount = 0;
+
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      const productName = data.name || '';
+      const searchTokens = generateSearchTokens(productName);
+
+      batch.update(doc.ref, {
+        searchTokens: searchTokens,
+        nameLower: productName.toLowerCase(),
+      });
+
+      batchCount++;
+
+      // Firestore batch limit is 500 operations
+      if (batchCount === 500) {
+        await batch.commit();
+        batchCount = 0;
+      }
+    }
+
+    // Commit remaining operations
+    if (batchCount > 0) {
+      await batch.commit();
+    }
+  } catch (error) {
+    console.error('Error updating products:', error);
+  }
+}
 export {
   createNewProduct,
   getProductsList,

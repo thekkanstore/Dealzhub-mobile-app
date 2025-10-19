@@ -40,7 +40,7 @@ export const pickImageFromCamera = async (
     // We'll trust that the UI component has already handled permission requests
     const pickerOptions = {
       mediaType: 'photo' as MediaType,
-      quality: options.imageQuality || 0.8,
+      quality: options.imageQuality || 1,
       maxWidth: options.maxImageWidth || 1920,
       maxHeight: options.maxImageHeight || 1920,
       includeBase64: false,
@@ -106,7 +106,7 @@ export const pickImageFromGallery = async (
 
     const pickerOptions = {
       mediaType: 'photo' as MediaType,
-      quality: options.imageQuality || 0.8,
+      quality: options.imageQuality || 0.9,
       maxWidth: options.maxImageWidth || 1920,
       maxHeight: options.maxImageHeight || 1920,
       includeBase64: false,

@@ -13,7 +13,7 @@ import TKButton from '../../components/Common/TKButton/TKButton';
 const {width} = Dimensions.get('window');
 
 const Login = () => {
-  const bottomPadding = useSafeAreaBottom(15);
+  const bottomPadding = useSafeAreaBottom(50);
   const [isLoading, setIsLoading] = useState(false);
   const handleGetStarted = async () => {
     try {

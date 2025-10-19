@@ -12,7 +12,7 @@ export const productValidationsSchema = () => {
       .transform(value => value?.trim())
       .required('Address is required')
       .min(10, 'Minimum 10 characters required')
-      .max(100, 'Maximum 100 characters allowed'),
+      .max(500, 'Maximum 500 characters allowed'),
     actualPrice: amountValidation,
     discountPrice: amountValidation,
     category: Yup.object().required('Choose one Category'),

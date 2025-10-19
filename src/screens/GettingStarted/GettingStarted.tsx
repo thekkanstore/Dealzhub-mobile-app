@@ -31,7 +31,7 @@ const steps = [
 ];
 const GettingStarted = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const bottomPadding = useSafeAreaBottom(15);
+  const bottomPadding = useSafeAreaBottom(50);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
