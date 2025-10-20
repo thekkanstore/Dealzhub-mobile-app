@@ -31,7 +31,9 @@ const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVend
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{productDetails.name}</Text>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerText}>{productDetails.name}</Text>
+        </View>
         <View style={styles.priceContainer}>
           <Text style={styles.actualPrice}>₹ {productDetails.actualPrice}</Text>
           <Text style={styles.headerText}>₹ {productDetails.discountPrice}</Text>
@@ -74,12 +76,15 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
+  headerTextContainer: {
+    flex: 0.6,
+  },
   priceContainer: {
+    flex: 0.4,
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
     gap: moderateScale(10),
   },
   actualPrice: {
@@ -87,11 +92,13 @@ const styles = StyleSheet.create({
     color: colors.greyTextColor,
     fontFamily: fontFamily.medium,
     textDecorationLine: 'line-through',
+    textAlign: 'center',
   },
   headerText: {
     fontSize: fontScale(18),
     color: colors.primaryTextColor,
     fontFamily: fontFamily.bold,
+    // width: '60%',
   },
   descriptionText: {
     fontSize: fontScale(14),
