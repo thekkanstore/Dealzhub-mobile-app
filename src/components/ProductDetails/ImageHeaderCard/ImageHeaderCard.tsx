@@ -72,7 +72,7 @@ const ImageHeaderCard: React.FC<Props> = ({
         <FastImage
           style={styles.productImage}
           source={{uri: productDetails.image ?? '', priority: FastImage.priority.normal}}
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.contain}
         />
       </View>
       <View style={styles.buttonContainer}>
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
   productImage: {
     width: '100%',
     height: moderateScale(275),
+    backgroundColor: colors.backgroundContainerLight,
   },
   backButton: {
     padding: moderateScale(10),
