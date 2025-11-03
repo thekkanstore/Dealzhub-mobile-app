@@ -16,7 +16,10 @@ export const productValidationsSchema = () => {
     actualPrice: amountValidation,
     discountPrice: amountValidation,
     category: Yup.object().required('Choose one Category'),
-    image: Yup.mixed().required('Image is required'),
+    images: Yup.array()
+      .of(Yup.mixed())
+      .min(1, 'Images are required')
+      .max(5, 'Maximum 5 images allowed'),
     isActive: Yup.boolean().required('Please confirm the Active status'),
     isSecondHand: Yup.boolean().required('Please choose any of the option'),
     isSoldOut: Yup.boolean().required('Please confirm the Sold Out status'),

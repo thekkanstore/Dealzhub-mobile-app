@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../config/styles/colors';
 import {moderateScale} from '../../config/styles/responsiveSize';

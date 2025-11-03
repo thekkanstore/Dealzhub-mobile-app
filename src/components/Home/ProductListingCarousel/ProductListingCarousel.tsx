@@ -7,20 +7,16 @@ import {useAppSelector} from '../../../redux/hooks';
 
 const {width} = Dimensions.get('window');
 
-// const steps = [imagePath.carousel1, imagePath.carousel2, imagePath.carousel3];
-
 const ProductListingCarousel = () => {
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const currentIndexRef = useRef(0);
 
   const steps = useAppSelector(state => state.sessionStates.appConfig?.banners) ?? [];
-  // Auto-scroll effect
   useEffect(() => {
     if (steps.length <= 1) {
-      return; // Don't auto-scroll if there's only one item or no items
+      return;
     }
-
     const interval = setInterval(() => {
       if (steps.length > 0) {
         currentIndexRef.current = (currentIndexRef.current + 1) % steps.length;
@@ -29,8 +25,7 @@ const ProductListingCarousel = () => {
           animated: true,
         });
       }
-    }, 3000); // Auto-scroll every 3 seconds
-
+    }, 3000);
     return () => clearInterval(interval);
   }, [steps.length]);
 

@@ -26,12 +26,15 @@ import {useAddNewProduct, useUpdateProduct} from '../../react-queries/product/pr
 import {onlyDecimalNumbers} from '../../utils/common/numberUtils';
 import {VendorStackParamList} from '../../navigation/rootparamstypes';
 import {colors} from '../../config/styles/colors';
+import {FilePickerResult} from '../../utils/filePicker';
+import {showErrorToast} from '../../utils/common/toastUtils';
+import {removeExtraWhitespace, toSnakeCase} from '../../utils/common/stringsUtils';
 
 const ProductUpdateForm = () => {
   const {mutate: createProduct, isPending: createProductLoader} = useAddNewProduct();
   const {mutate: updateProduct, isPending: updateProductLoader} = useUpdateProduct();
   const [isLoader, setIsLoader] = useState(false);
-  const [deletedImageUri, setDeletedImageUri] = useState('');
+  const [deletedImageUri, setDeletedImageUri] = useState([]);
   const formRef = useRef<FormikProps<IProductFormValue>>(null);
 
   const {productDetails = null, isUpdate = false} =
@@ -52,33 +55,58 @@ const ProductUpdateForm = () => {
     return productDetailsInitalValues(storeDetails, productDetails);
   }, [storeDetails, productDetails]);
 
-  const handleOnDeleteImage = () => {
-    formRef.current?.setFieldValue('image', null);
-    if (deletedImageUri) return;
-    setDeletedImageUri(initialValues.image?.apiUri ?? '');
-  };
-  const handleSubmit = async (values: IProductFormValue) => {
-    if (isUpdate) {
-      handleUpdate(values);
-      return;
-    }
-    setIsLoader(true);
-    const {image, category, ...rest} = values;
-    const updatedImage = await uploadFilePickerResult(image);
-    createProduct(
-      {
-        ...rest,
-        image: updatedImage.url ?? '',
-        categoryId: category.value?.id,
-        category: category.value,
-      },
-      {
-        onSuccess: () => {
-          navigation.goBack();
-        },
-      },
+  const handleOnDeleteImage = (index = 0) => {
+    formRef.current?.setFieldValue(
+      'images',
+      formRef.current?.values.images.filter((item, i) => i !== index) ?? [],
     );
-    setIsLoader(false);
+    if (isUpdate && formRef.current?.values.images[index]?.apiUri)
+      setDeletedImageUri(
+        prev => [...prev, formRef.current?.values.images[index]?.apiUri] as never[],
+      );
+  };
+
+  const handleOnAddImage = (newImages: FilePickerResult[]) => {
+    formRef.current?.setFieldValue('images', [
+      ...(formRef.current?.values.images ?? []),
+      ...newImages,
+    ]);
+  };
+
+  const handleSubmit = async (values: IProductFormValue) => {
+    try {
+      setIsLoader(true);
+      if (isUpdate) {
+        handleUpdate(values);
+        return;
+      }
+      const {images, category, name, ...rest} = values;
+      const imagePath = `images/${toSnakeCase(values?.store?.storeName ?? '')}/${toSnakeCase(name ?? '')}`;
+      const updatedImages = await Promise.all(
+        images.map(item => {
+          return uploadFilePickerResult(item, imagePath);
+        }),
+      );
+      createProduct(
+        {
+          ...rest,
+          image: updatedImages[0]?.url ?? '', // need to remove this code in future versions
+          images: updatedImages.map(item => item.url ?? ''),
+          categoryId: category.value?.id,
+          category: category.value,
+          imagePath,
+        },
+        {
+          onSuccess: () => {
+            navigation.goBack();
+          },
+        },
+      );
+    } catch (error) {
+      showErrorToast('Error while creating product');
+    } finally {
+      setIsLoader(false);
+    }
   };
   useEffect(() => {
     if (categoryDropDownList && productDetails?.categoryId) {
@@ -90,31 +118,52 @@ const ProductUpdateForm = () => {
   }, [categoryDropDownList, productDetails?.categoryId]);
 
   const handleUpdate = async (values: IProductFormValue) => {
-    setIsLoader(true);
-    const {image, category, ...rest} = values;
-    let updatedImage = image.apiUri ?? '';
-    if (deletedImageUri) {
-      const newImage = await uploadFilePickerResult(image);
-      updatedImage = newImage?.url ?? '';
-    }
-    updateProduct(
-      {
-        ...rest,
-        id: productDetails?.id ?? '',
-        image: updatedImage ?? '',
-        categoryId: category.value?.id,
-        category: category.value,
-      },
-      {
-        onSuccess: () => {
-          if (deletedImageUri) {
-            deleteImageFromStorage(deletedImageUri);
-          }
-          navigation.goBack();
+    let updatedImages: string[] = [];
+    try {
+      setIsLoader(true);
+      const {images, category, ...rest} = values;
+      let finalImages = images.filter(item => item.apiUri).map(item => item.apiUri);
+      const newImages = images.filter(item => !item.apiUri);
+
+      if (newImages.length) {
+        if (newImages.length) {
+          updatedImages = (
+            await Promise.all(
+              newImages.map(item => {
+                return uploadFilePickerResult(item, values?.imagePath ?? '');
+              }),
+            )
+          )?.map(item => item?.url ?? '');
+          finalImages = [...updatedImages, ...finalImages];
+        }
+      }
+      updateProduct(
+        {
+          ...rest,
+          id: productDetails?.id ?? '',
+          image: finalImages[0],
+          images: finalImages,
+          categoryId: category.value?.id,
+          category: category.value,
         },
-      },
-    );
-    setIsLoader(false);
+        {
+          onSuccess: async () => {
+            console.log('finalImages', deletedImageUri);
+            if (deletedImageUri.length) {
+              await Promise.all(deletedImageUri.map(item => deleteImageFromStorage(item)));
+            }
+            navigation.goBack();
+          },
+        },
+      );
+    } catch (error) {
+      showErrorToast('Error while updating product');
+      if (updatedImages?.length) {
+        updatedImages.forEach(item => deleteImageFromStorage(item));
+      }
+    } finally {
+      setIsLoader(false);
+    }
   };
 
   return (
@@ -149,7 +198,7 @@ const ProductUpdateForm = () => {
                 label={strings('labels.productName')}
                 isRequired
                 value={values.name}
-                onChangeText={data => handleChange('name')(data)}
+                onChangeText={data => handleChange('name')(removeExtraWhitespace(data))}
                 onBlur={handleBlur('name')}
                 error={
                   shouldShowError<IProductFormValue>(initialValues, 'name', touched, errors)
@@ -217,14 +266,15 @@ const ProductUpdateForm = () => {
               <TKFilePicker
                 title={strings('labels.productImage')}
                 isRequired
-                value={values.image}
-                onFilePicked={data => setFieldValue('image', data)}
+                values={values.images}
+                onFilesPicked={handleOnAddImage}
                 error={
-                  shouldShowError<IProductFormValue>(initialValues, 'image', touched, errors)
-                    ? errors.image
+                  shouldShowError<IProductFormValue>(initialValues, 'images', touched, errors)
+                    ? errors.images
                     : undefined
                 }
                 onDelete={handleOnDeleteImage}
+                allowMultiple={true}
               />
               <View style={styles.radioButtonContainer}>
                 <View style={styles.radioButtonGroup}>

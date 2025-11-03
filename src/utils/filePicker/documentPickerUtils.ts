@@ -66,6 +66,7 @@ export const pickDocument = async (
   options: FilePickerOptions,
   onSuccess: (file: FilePickerResult) => void,
   onError: (error: string) => void,
+  onSuccessMultiple?: (files: FilePickerResult[]) => void,
 ): Promise<void> => {
   try {
     // Check document permissions first
@@ -95,75 +96,95 @@ export const pickDocument = async (
 
     const result = await pick({
       type: documentTypes.length > 0 ? documentTypes : [types.allFiles],
-      allowMultiSelection: false,
+      allowMultiSelection: Boolean(options.allowMultiple),
+      maxSelectable: options.maxSelectable || 1,
       allowVirtualFiles: true, // Allow virtual files like Google Drive documents
       copyTo: 'cachesDirectory', // Built-in copy to handle content URIs automatically
     });
-    if (result && result[0]) {
-      const file = result[0];
+    if (result && result.length) {
+      // If multiple selection is enabled, process all files; otherwise process the first
+      const filesToProcess = options.allowMultiple ? result : [result[0]];
+      const processedFiles: FilePickerResult[] = [];
 
-      // Validate file size using the new validation utility
-      if (file.size) {
-        const sizeValidation = validateFileSize(file.size, options);
-        if (!sizeValidation.isValid) {
-          onError(sizeValidation.errorMessage || 'Invalid file size');
-          return;
-        }
-      }
-
-      // Validate file type
-      const isValidFileType = () => {
-        if (allowedTypes.includes('image') && file.type?.includes('image')) {
-          return true;
-        }
-        if (allowedTypes.includes('pdf') && file.type?.includes('pdf')) {
-          return true;
-        }
-        if (
-          allowedTypes.includes('document') &&
-          (file.type?.includes('application/msword') ||
-            file.type?.includes('application/vnd.openxmlformats') ||
-            file.type?.includes('text/plain'))
-        ) {
-          return true;
-        }
-        return false;
-      };
-
-      if (!isValidFileType()) {
-        const allowedTypesText = allowedTypes.join(', ');
-        onError(`Only ${allowedTypesText} files are allowed`);
-        return;
-      }
-
-      let finalUri = file.uri;
-      let finalName = file.name || `document_${Date.now()}`;
-
-      try {
-        // Handle virtual files (Google Drive, etc.)
-        if ((file as any).isVirtual && (file as any).convertibleToMimeTypes) {
-          const result = await processVirtualFile(file, finalName);
-          finalUri = result.uri;
-          finalName = result.name;
-        }
-        // For regular content URIs, copy to cache directory as file
-        else if (file.uri.startsWith('content://')) {
-          const result = await processContentUri(file, finalName);
-          finalUri = result.uri;
-          finalName = result.name;
+      for (const file of filesToProcess) {
+        // Validate file size using the new validation utility
+        if (file.size) {
+          const sizeValidation = validateFileSize(file.size, options);
+          if (!sizeValidation.isValid) {
+            onError(sizeValidation.errorMessage || 'Invalid file size');
+            return;
+          }
         }
 
-        const fileResult: FilePickerResult = {
-          uri: finalUri,
-          name: finalName,
-          type: file.type || 'application/pdf',
-          size: file.size || 0,
-          path: finalUri,
+        // Validate file type
+        const isValidFileType = () => {
+          if (allowedTypes.includes('image') && file.type?.includes('image')) {
+            return true;
+          }
+          if (allowedTypes.includes('pdf') && file.type?.includes('pdf')) {
+            return true;
+          }
+          if (
+            allowedTypes.includes('document') &&
+            (file.type?.includes('application/msword') ||
+              file.type?.includes('application/vnd.openxmlformats') ||
+              file.type?.includes('text/plain'))
+          ) {
+            return true;
+          }
+          return false;
         };
 
-        onSuccess(fileResult);
-      } catch (processingError) {
-        onError('Failed to process document. Please try a different file.');
+        if (!isValidFileType()) {
+          const allowedTypesText = allowedTypes.join(', ');
+          onError(`Only ${allowedTypesText} files are allowed`);
+          continue;
+        }
+
+        let finalUri = file.uri;
+        let finalName = file.name || `document_${Date.now()}`;
+
+        try {
+          // Handle virtual files (Google Drive, etc.)
+          if ((file as any).isVirtual && (file as any).convertibleToMimeTypes) {
+            const conversion = await processVirtualFile(file, finalName);
+            finalUri = conversion.uri;
+            finalName = conversion.name;
+          }
+          // For regular content URIs, copy to cache directory as file
+          else if (file.uri.startsWith('content://')) {
+            const copied = await processContentUri(file, finalName);
+            finalUri = copied.uri;
+            finalName = copied.name;
+          }
+
+          const fileResult: FilePickerResult = {
+            uri: finalUri,
+            name: finalName,
+            type: file.type || 'application/pdf',
+            size: file.size || 0,
+            path: finalUri,
+          };
+          processedFiles.push(fileResult);
+        } catch (processingError) {
+          onError('Failed to process document. Please try a different file.');
+          continue;
+        }
+      }
+
+      if (options.allowMultiple) {
+        if (processedFiles.length) {
+          if (onSuccessMultiple) {
+            onSuccessMultiple(processedFiles);
+          } else {
+            // Fallback: deliver the first file for backward compatibility
+            onSuccess(processedFiles[0]);
+          }
+        } else {
+          onError('No valid files selected');
+        }
+      } else if (processedFiles[0]) {
+        onSuccess(processedFiles[0]);
       }
     }
   } catch (error) {
