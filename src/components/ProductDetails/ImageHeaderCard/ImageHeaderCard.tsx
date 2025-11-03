@@ -142,30 +142,35 @@ const ImageHeaderCard: React.FC<Props> = ({
           index,
         })}
       />
-      <View style={styles.bottomContent}>
-        <View style={styles.dotsContainer}>
-          {productImages.map((_, index) => {
-            const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-            const dotWidth = scrollX.interpolate({
-              inputRange,
-              outputRange: [moderateScale(8), moderateScale(30), moderateScale(8)],
-              extrapolate: 'clamp',
-            });
-            const backgroundColor = scrollX.interpolate({
-              inputRange,
-              outputRange: [
-                colors.neutralButtonBackgroundColor,
-                colors.primaryButtonBackgroundColor,
-                colors.neutralButtonBackgroundColor,
-              ],
-              extrapolate: 'clamp',
-            });
-            return (
-              <Animated.View key={index} style={[styles.dot, {width: dotWidth, backgroundColor}]} />
-            );
-          })}
+      <TKRenderIf isRender={productImages.length > 1}>
+        <View style={styles.bottomContent}>
+          <View style={styles.dotsContainer}>
+            {productImages.map((_, index) => {
+              const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+              const dotWidth = scrollX.interpolate({
+                inputRange,
+                outputRange: [moderateScale(8), moderateScale(30), moderateScale(8)],
+                extrapolate: 'clamp',
+              });
+              const backgroundColor = scrollX.interpolate({
+                inputRange,
+                outputRange: [
+                  colors.neutralButtonBackgroundColor,
+                  colors.primaryButtonBackgroundColor,
+                  colors.neutralButtonBackgroundColor,
+                ],
+                extrapolate: 'clamp',
+              });
+              return (
+                <Animated.View
+                  key={index}
+                  style={[styles.dot, {width: dotWidth, backgroundColor}]}
+                />
+              );
+            })}
+          </View>
         </View>
-      </View>
+      </TKRenderIf>
       <View style={styles.buttonContainer}>
         <Pressable onPress={handleBackPress} style={styles.backButton}>
           <TKArrowIcon width={16} height={16} color={colors.primaryTextColor} direction="left" />

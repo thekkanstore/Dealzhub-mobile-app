@@ -77,7 +77,7 @@ const ProductUpdateForm = () => {
     try {
       setIsLoader(true);
       if (isUpdate) {
-        handleUpdate(values);
+        await handleUpdate(values);
         return;
       }
       const {images, category, name, ...rest} = values;
@@ -90,6 +90,7 @@ const ProductUpdateForm = () => {
       createProduct(
         {
           ...rest,
+          name: removeExtraWhitespace(name),
           image: updatedImages[0]?.url ?? '', // need to remove this code in future versions
           images: updatedImages.map(item => item.url ?? ''),
           categoryId: category.value?.id,
@@ -120,7 +121,6 @@ const ProductUpdateForm = () => {
   const handleUpdate = async (values: IProductFormValue) => {
     let updatedImages: string[] = [];
     try {
-      setIsLoader(true);
       const {images, category, ...rest} = values;
       let finalImages = images.filter(item => item.apiUri).map(item => item.apiUri);
       const newImages = images.filter(item => !item.apiUri);
@@ -162,7 +162,7 @@ const ProductUpdateForm = () => {
         updatedImages.forEach(item => deleteImageFromStorage(item));
       }
     } finally {
-      setIsLoader(false);
+      // Loader state is controlled in the parent handleSubmit for update flow
     }
   };
 
@@ -198,7 +198,7 @@ const ProductUpdateForm = () => {
                 label={strings('labels.productName')}
                 isRequired
                 value={values.name}
-                onChangeText={data => handleChange('name')(removeExtraWhitespace(data))}
+                onChangeText={data => handleChange('name')(data)}
                 onBlur={handleBlur('name')}
                 error={
                   shouldShowError<IProductFormValue>(initialValues, 'name', touched, errors)
