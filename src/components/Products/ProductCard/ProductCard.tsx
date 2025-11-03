@@ -56,7 +56,10 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) =
           </TKRenderIf>
           <FastImage
             style={styles.productImage}
-            source={{uri: product?.image ?? '', priority: FastImage.priority.normal}}
+            source={{
+              uri: product?.image ?? product?.images?.[0] ?? '',
+              priority: FastImage.priority.normal,
+            }}
             resizeMode={FastImage.resizeMode.contain}
           />
         </View>

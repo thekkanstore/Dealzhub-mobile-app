@@ -17,6 +17,8 @@ export interface FilePickerOptions {
   imageQuality?: PhotoQuality;
   maxImageWidth?: number;
   maxImageHeight?: number;
+  allowMultiple?: boolean; // optional, defaults to single selection
+  maxSelectable?: number; // optional, defaults to 1
 }
 
 export type FilePickerType = 'camera' | 'gallery' | 'documents';

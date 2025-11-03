@@ -11,6 +11,8 @@ export interface IProductTable {
   nameLower: string;
   description: string;
   image: string | null;
+  images: string[] | null;
+  imagePath: string | null;
   actualPrice: string;
   discountPrice: string;
   // stockAccount: number;
@@ -31,14 +33,17 @@ export interface IProduct extends IProductTable {
 }
 
 export interface IProductFormValue
-  extends Omit<IProductTable, 'id' | 'createdAt' | 'updatedAt' | 'image' | 'categoryId'> {
+  extends Omit<
+    IProductTable,
+    'id' | 'createdAt' | 'updatedAt' | 'image' | 'categoryId' | 'images'
+  > {
   city: any;
   state: string | undefined;
   category: {
     value: ICategoryTable;
     name: string;
   };
-  image: ImageSourcePropType;
+  images: ImageSourcePropType[];
 }
 
 export interface IProductRequestBody

@@ -60,22 +60,9 @@ export const firestoreImageUploadService = async (
 export const deleteImageFromStorage = async (imageUrl: string): Promise<boolean> => {
   try {
     if (!imageUrl || typeof imageUrl !== 'string') {
-      console.error('Invalid image URL provided');
       return false;
     }
-
     const reference = storage().refFromURL(imageUrl);
-
-    // Check if file exists before trying to delete
-    try {
-      await reference.getMetadata();
-    } catch (metadataError: any) {
-      if (metadataError.code === 'storage/object-not-found') {
-        return true; // Consider it successful since the goal (file not existing) is achieved
-      }
-      throw metadataError;
-    }
-
     await reference.delete();
     return true;
   } catch (error: any) {
@@ -100,7 +87,6 @@ export const checkImageExists = async (imageUrl: string): Promise<boolean> => {
     if (error.code === 'storage/object-not-found') {
       return false;
     }
-    console.error('Error checking if image exists:', error);
     return false;
   }
 };

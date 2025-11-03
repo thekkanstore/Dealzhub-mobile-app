@@ -20,7 +20,7 @@ const ProductDetails: React.FC<Props> = ({route, navigation}) => {
   return (
     <View style={styles.container}>
       <View>
-        <TKRenderIf isRender={!!finalProductDetails?.image}>
+        <TKRenderIf isRender={!!finalProductDetails?.image || !!finalProductDetails?.images?.[0]}>
           <ImageHeaderCard
             productDetails={finalProductDetails}
             navigation={navigation}
@@ -28,7 +28,8 @@ const ProductDetails: React.FC<Props> = ({route, navigation}) => {
             isVendor={isVendor}
           />
         </TKRenderIf>
-        <TKRenderIf isRender={!!finalProductDetails?.image}>
+        <TKRenderIf
+          isRender={!!finalProductDetails?.image || !!finalProductDetails?.images?.length}>
           <ProductDetailsCard
             productDetails={finalProductDetails}
             navigation={navigation}
