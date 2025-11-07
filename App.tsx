@@ -13,18 +13,38 @@ import {persistor, store} from './src/redux/store';
 import TKStatusBar from './src/components/Common/TKStatusBar/TKStatusBar';
 import {ToastConfig} from './src/components/Common/TKToastConfig/TKToastConfig';
 import {TKGlobalModalManager} from './src/components/Common/TKGlobalModalManager/TKGlobalModalManager';
-import {SafeAreaProvider, initialWindowMetrics} from 'react-native-safe-area-context';
+import {initialWindowMetrics, SafeAreaProvider} from 'react-native-safe-area-context';
 import {GlobalSafeAreaProvider} from './src/providers/SafeAreaProvider';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Config from 'react-native-config';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+
+console.log("GOOGLE", Config.GOOGLE_CLIENT_ID);
+
 GoogleSignin.configure({
   webClientId: Config.GOOGLE_CLIENT_ID,
   scopes: ['https://www.googleapis.com/auth/user.phonenumbers.read'],
 });
+
 export const queryClient = new QueryClient();
+
 function App(): React.JSX.Element {
+  console.log('Firebase initialized:', firebase.apps.length > 0);
+
+  firestore()
+    .collection('test')
+    .doc('connection_check')
+    .get()
+    .then(doc => {
+      console.log('Firestore connection successful:', doc.exists);
+    })
+    .catch(error => {
+      console.log('Firestore connection error:', error);
+    });
+
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>

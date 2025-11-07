@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "143958591372-67c9ao7sdkuq82g782keg4n8d2f6483u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thekkanvendor",
+            "certificate_hash": "e62f54d28dc8b6075b2afd490993dad9642976e6"
+          }
+        },
+        {
           "client_id": "143958591372-a85o6vvb7pd1lncu1lredsl7oge19hsk.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,6 +45,13 @@
             {
               "client_id": "143958591372-a85o6vvb7pd1lncu1lredsl7oge19hsk.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "143958591372-0visfm9govrbikbk2ahmfekdhkav92u5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.ThekkanVendor"
+              }
             }
           ]
         }

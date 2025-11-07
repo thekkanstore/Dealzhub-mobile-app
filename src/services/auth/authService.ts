@@ -44,6 +44,7 @@ async function onGoogleButtonPress() {
     }
     return data;
   } catch (error) {
+    console.error("Google Sign-In Error: ", error);
     showErrorToast(strings('login.failedSignIn'));
   }
 }
