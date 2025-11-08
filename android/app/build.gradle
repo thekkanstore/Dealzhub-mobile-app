@@ -1,7 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-
+apply plugin: "com.google.gms.google-services"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -59,6 +60,14 @@ react {
  */
 def enableProguardInReleaseBuilds = false
 
+project.ext.envConfigFiles = [
+    dev: ".env.dev",
+    qc: ".env.qc",
+    stage: ".env.stage",
+    prod:".env"
+]
+
+
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
  *
@@ -85,6 +94,25 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    flavorDimensions 'default'
+    productFlavors {
+        dev {
+            dimension 'default'
+            // applicationIdSuffix ".dev"
+        }
+        qa {
+            dimension 'default'
+            // applicationIdSuffix ".qc"
+        }
+        stage {
+            dimension 'default'
+            // applicationIdSuffix ".stage"
+        }
+        prod {
+            dimension 'default'
+            // applicationIdSuffix ""
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -107,10 +135,15 @@ android {
     }
 }
 
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(':react-native-config')
 
+    implementation platform('com.google.firebase:firebase-bom:34.0.0')  
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore'
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

@@ -1,0 +1,3 @@
+API_URL=https:/$()/dev-api.example.com
+ENVIRONMENT=Dev
+GOOGLE_CLIENT_ID=143958591372-a85o6vvb7pd1lncu1lredsl7oge19hsk.apps.googleusercontent.com
