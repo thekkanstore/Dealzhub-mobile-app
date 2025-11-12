@@ -1,17 +1,7 @@
 // src/components/Common/TKHeader/TKHeader.tsx
-import React, {useState} from 'react';
-import {
-  Modal,
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React from 'react';
+import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import QRCodeSVG from 'react-native-qrcode-svg';
 
 import {colors} from '../../../config/styles/colors';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
@@ -19,7 +9,6 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 import {TKArrowIcon} from '../Icons/TKArrowIcon';
 import TKQRCode from '../Icons/TKQRCode';
-import TKButton from '../TKButton/TKButton.tsx';
 
 type Props = {
   header: string | React.ReactNode;
@@ -28,6 +17,7 @@ type Props = {
   onBackPress?: () => void;
   containerStyle?: StyleProp<ViewStyle>;
   qrValue?: string;
+  onQRPress?: () => void;
 };
 
 const TKHeader: React.FC<Props> = ({
@@ -36,16 +26,22 @@ const TKHeader: React.FC<Props> = ({
   showBackButton = true,
   onBackPress,
   containerStyle,
-  qrValue = 'https://example.com',
+  qrValue,
+  onQRPress,
 }) => {
   const navigation = useNavigation();
-  const [qrModalVisible, setQrModalVisible] = useState(false);
 
   const handleBackPress = () => {
     if (onBackPress) {
       onBackPress();
     } else {
       navigation.goBack();
+    }
+  };
+
+  const handleQRPress = () => {
+    if (onQRPress) {
+      onQRPress();
     }
   };
 
@@ -81,36 +77,17 @@ const TKHeader: React.FC<Props> = ({
         <View style={styles.rightContainer}>
           {renderRightChild()}
 
-          <Pressable
-            onPress={() => setQrModalVisible(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Open QR modal"
-            style={styles.qrButton}>
-            <TKQRCode width={24} height={24} />
-          </Pressable>
+          <TKRenderIf isRender={!!qrValue}>
+            <Pressable
+              onPress={handleQRPress}
+              accessibilityRole="button"
+              accessibilityLabel="Open QR screen"
+              style={styles.qrButton}>
+              <TKQRCode width={24} height={24} />
+            </Pressable>
+          </TKRenderIf>
         </View>
       </TKRenderIf>
-
-      <Modal
-        visible={qrModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setQrModalVisible(false)}>
-        <TouchableWithoutFeedback onPress={() => setQrModalVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-
-        <View style={styles.modalCenter}>
-          <View style={styles.modalContainer}>
-            <QRCodeSVG value={qrValue} size={180} />
-            <TKButton
-              title={'Close'}
-              onPress={() => setQrModalVisible(false)}
-              style={styles.closeButton}
-            />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -162,44 +139,5 @@ const styles = StyleSheet.create({
   },
   qrButton: {
     padding: moderateScale(4),
-  },
-
-  /* Modal styles */
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalCenter: {
-    position: 'absolute',
-    top: '30%',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: moderateScale(260),
-    backgroundColor: colors.primaryBackgroundColor,
-    padding: moderateScale(30),
-    borderRadius: moderateScale(12),
-    alignItems: 'center',
-    elevation: 4,
-  },
-  scanText: {
-    textAlign: 'left',
-    width: '100%',
-    marginBottom: moderateScale(16),
-    fontSize: fontScale(24),
-    fontWeight: 'bold',
-    color: colors.primaryButtonBackgroundColor,
-    fontFamily: fontFamily.regular,
-  },
-  closeButton: {
-    marginTop: moderateScale(24),
-
-    width: '100%',
-  },
-  closeButtonText: {
-    color: colors.primaryTextColor,
-    fontFamily: fontFamily.bold,
   },
 });

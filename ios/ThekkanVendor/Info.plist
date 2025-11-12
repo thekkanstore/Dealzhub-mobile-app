@@ -82,6 +82,14 @@
 				<string>com.googleusercontent.apps.143958591372-0visfm9govrbikbk2ahmfekdhkav92u5</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>dealszhub</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dealszhub</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
