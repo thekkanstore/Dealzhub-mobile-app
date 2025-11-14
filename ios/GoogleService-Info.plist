@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>143958591372-0visfm9govrbikbk2ahmfekdhkav92u5.apps.googleusercontent.com</string>
+	<string>298300377700-i751vk6l07afs2hbmrggp8oo2ppgvldo.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.143958591372-0visfm9govrbikbk2ahmfekdhkav92u5</string>
+	<string>com.googleusercontent.apps.298300377700-i751vk6l07afs2hbmrggp8oo2ppgvldo</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>143958591372-2g8gl4s2p2c4ne4fshil1pq86vocs1ns.apps.googleusercontent.com</string>
+	<string>298300377700-4pj39s4eada9ff7tqrhrf1o3baojd62t.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBn4srjFyYEaAS0K-EyjW7_eem4i0gUGks</string>
+	<string>AIzaSyDlzpq3-CrbCdUOMjZJ076yu_vOjwR5ROo</string>
 	<key>GCM_SENDER_ID</key>
-	<string>143958591372</string>
+	<string>298300377700</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>org.reactjs.native.example.ThekkanVendor</string>
 	<key>PROJECT_ID</key>
-	<string>thekkans</string>
+	<string>thekkan-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>thekkans.firebasestorage.app</string>
+	<string>thekkan-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:143958591372:ios:545683e94dc56404d7b8a9</string>
+	<string>1:298300377700:ios:6222c3cd52d65f273b2d71</string>
 </dict>
 </plist>

@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "143958591372",
-    "project_id": "thekkans",
-    "storage_bucket": "thekkans.firebasestorage.app"
+    "project_number": "298300377700",
+    "project_id": "thekkan-app",
+    "storage_bucket": "thekkan-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:143958591372:android:044c9f5a581fe915d7b8a9",
+        "mobilesdk_app_id": "1:298300377700:android:d6a2e60667b1d6db3b2d71",
         "android_client_info": {
-          "package_name": "com.thekkanvendor"
+          "package_name": "com.thekkanvendor.prod"
         }
       },
       "oauth_client": [
         {
-          "client_id": "143958591372-2g8gl4s2p2c4ne4fshil1pq86vocs1ns.apps.googleusercontent.com",
+          "client_id": "298300377700-nhr1cuqrrjp3u36clhj0oj3vr4uprk3r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.thekkanvendor",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "package_name": "com.thekkanvendor.prod",
+            "certificate_hash": "550c73452857b9b602ae9f022fdf203d8f9e7a69"
           }
         },
         {
-          "client_id": "143958591372-a85o6vvb7pd1lncu1lredsl7oge19hsk.apps.googleusercontent.com",
+          "client_id": "298300377700-4hrlh6u6v192i4qm6h5upkrems99sasf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBXeacUl-HWKE5TaB95qjr1YxCeuRgU_jU"
+          "current_key": "AIzaSyBgXHEzSKy7H3tT3B9A52Al3798ylIOc4g"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "143958591372-a85o6vvb7pd1lncu1lredsl7oge19hsk.apps.googleusercontent.com",
+              "client_id": "298300377700-4hrlh6u6v192i4qm6h5upkrems99sasf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
