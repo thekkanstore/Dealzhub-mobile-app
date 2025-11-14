@@ -169,6 +169,7 @@ const StoreDetailsForm = () => {
                     : undefined
                 }
                 placeholder={strings('placeholder.storeState')}
+                editable={false}
               />
             </KeyboardAwareScrollView>
 

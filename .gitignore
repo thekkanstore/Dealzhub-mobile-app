@@ -84,3 +84,5 @@ ios/Pods/
 ios/ThekkanVendor.xcworkspace/
 ios/ThekkanVendor.xcodeproj/project.xcworkspace/
 ios/ThekkanVendor.xcodeproj/xcuserdata/
+
+android/keystore.properties

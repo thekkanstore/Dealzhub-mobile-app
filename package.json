@@ -10,7 +10,10 @@
     "test": "jest",
     "android:dev-debug": "cross-env ENVFILE=.env.dev react-native run-android --mode=devDebug --active-arch-only",
     "android:dev-release": "cd android && ENVFILE=.env.dev ./gradlew assembleDevRelease && cd ..",
-    "ios:dev-debug": "ENVFILE=.env.dev npx react-native run-ios --mode Debug --scheme \"dev\" --simulator 'iPhone 16 Pro' "
+    "android:prod-debug": "cross-env ENVFILE=.env.prod react-native run-android --mode=prodDebug --active-arch-only --appId com.thekkanvendor.prod",
+    "android:prod-release": "cd android && ENVFILE=.env.prod ./gradlew assembleProdRelease && cd ..",
+    "ios:dev-debug": "ENVFILE=.env.dev npx react-native run-ios --mode Debug --scheme \"dev\" --simulator 'iPhone 16 Pro' ",
+    "ios:prod-debug": "ENVFILE=.env.prod npx react-native run-ios --mode Debug --scheme \"prod\" --simulator 'iPhone 16 Pro' "
   },
   "dependencies": {
     "@notifee/react-native": "^9.1.8",
