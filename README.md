@@ -86,6 +86,27 @@ You've successfully run and modified your React Native App. :partying_face:
 
 If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
+## Environment & Flavors (react-native-config)
+
+This project uses `react-native-config` to provide environment variables per Android flavor.
+
+- Android flavors → env files:
+  - `dev` → `.env.dev`
+  - `prod` → `.env.prod`
+  - `qa` → `.env.qc` (create if needed)
+  - `stage` → `.env.stage` (create if needed)
+
+Tips:
+- Ensure the env file for your target flavor exists and contains required keys (e.g., `GOOGLE_CLIENT_ID`).
+- You can explicitly select an env file when building via scripts:
+  - `npm run android:dev-debug`
+  - `npm run android:prod-debug`
+  - `npm run android:prod-release`
+- If variables appear undefined, try:
+  - `cd android && ./gradlew clean`
+  - Restart Metro with cache reset: `npm start -- --reset-cache`
+  - Rebuild with the correct flavor and env selection.
+
 # Learn More
 
 To learn more about React Native, take a look at the following resources:
