@@ -51,6 +51,10 @@ export type VendorStackParamList = {
     isStackChange?: boolean;
     isVendor?: boolean;
   };
+  QRCodeShare: {
+    qrValue: string;
+    storeName: string;
+  };
 };
 export type RegisterUserStackParamList = {
   UserDetails: {

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Thekkan</string>
+	<string>Dealzhub</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -80,6 +80,14 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.143958591372-0visfm9govrbikbk2ahmfekdhkav92u5</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>dealszhub</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dealszhub</string>
 			</array>
 		</dict>
 	</array>
