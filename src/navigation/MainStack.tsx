@@ -13,6 +13,7 @@ import {TKNotificationPermissionHandler} from '../components/Common/TKNotificati
 import {updateNotificationPermissionModalVisibility} from '../redux/systemSlice';
 import {RegisterUserStack} from './RegisterStack';
 import {useGetAppConfig} from '../react-queries/appConfig/appConfigQuery';
+import {linkingConfiguration} from './linkingConfiguration';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -50,7 +51,7 @@ export default function MainStack() {
     );
   };
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linkingConfiguration}>
       <View
         style={{
           flex: 1,

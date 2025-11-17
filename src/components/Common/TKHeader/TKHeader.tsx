@@ -1,3 +1,4 @@
+// src/components/Common/TKHeader/TKHeader.tsx
 import React from 'react';
 import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -7,6 +8,7 @@ import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 import {TKArrowIcon} from '../Icons/TKArrowIcon';
+import TKQRCode from '../Icons/TKQRCode';
 
 type Props = {
   header: string | React.ReactNode;
@@ -14,6 +16,8 @@ type Props = {
   showBackButton?: boolean;
   onBackPress?: () => void;
   containerStyle?: StyleProp<ViewStyle>;
+  qrValue?: string;
+  onQRPress?: () => void;
 };
 
 const TKHeader: React.FC<Props> = ({
@@ -22,6 +26,8 @@ const TKHeader: React.FC<Props> = ({
   showBackButton = true,
   onBackPress,
   containerStyle,
+  qrValue,
+  onQRPress,
 }) => {
   const navigation = useNavigation();
 
@@ -30,6 +36,12 @@ const TKHeader: React.FC<Props> = ({
       onBackPress();
     } else {
       navigation.goBack();
+    }
+  };
+
+  const handleQRPress = () => {
+    if (onQRPress) {
+      onQRPress();
     }
   };
 
@@ -46,6 +58,7 @@ const TKHeader: React.FC<Props> = ({
     }
     return rightComponent;
   };
+
   return (
     <View style={[styles.mainContainer, containerStyle]}>
       <View style={styles.leftContainer}>
@@ -61,7 +74,19 @@ const TKHeader: React.FC<Props> = ({
       </View>
 
       <TKRenderIf isRender={!!rightComponent}>
-        <View style={styles.rightContainer}>{renderRightChild()}</View>
+        <View style={styles.rightContainer}>
+          {renderRightChild()}
+
+          <TKRenderIf isRender={!!qrValue}>
+            <Pressable
+              onPress={handleQRPress}
+              accessibilityRole="button"
+              accessibilityLabel="Open QR screen"
+              style={styles.qrButton}>
+              <TKQRCode width={24} height={24} />
+            </Pressable>
+          </TKRenderIf>
+        </View>
       </TKRenderIf>
     </View>
   );
@@ -107,7 +132,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   rightContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: moderateScale(8),
+  },
+  qrButton: {
+    padding: moderateScale(4),
   },
 });
