@@ -47,12 +47,12 @@ export const pickImageFromCamera = async (
     };
 
     launchCamera(pickerOptions, (response: ImagePickerResponse) => {
-      if (response.didCancel) {
+      if (response?.didCancel) {
         onError('Image picking canceled');
         return;
       }
 
-      if (response.errorMessage) {
+      if (response?.errorMessage) {
         onError(`Failed to pick image: ${response.errorMessage}`);
         return;
       }
