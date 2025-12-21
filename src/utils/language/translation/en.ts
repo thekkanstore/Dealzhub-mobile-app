@@ -1,14 +1,12 @@
 export const en = {
   gettingStarted: {
     step1Title: 'New Products \nEveryday',
-    step1Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+    step1Description: 'Find your favourite products with new deals everyday!',
     step2Title: 'Minimal Look \nBetter Quality',
     step2Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+      'Dealzhub lets you shop and sell without the interference of any third-partyShop local, sell local, live smart',
     step3Title: 'Fastest Home \nDelivery',
-    step3Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+    step3Description: 'Shop local, sell local, live smart',
   },
   button: {
     gettingStarted: 'Get Started',
@@ -29,6 +27,7 @@ export const en = {
   },
   labels: {
     thekkan: 'THEKKAN',
+    dealzHub: 'DelazHub',
     location: 'Location',
     home: 'Home',
     profile: 'Profile',

@@ -36,8 +36,11 @@ export const pickImageFromCamera = async (
   onError: (error: string) => void,
 ): Promise<void> => {
   try {
-    // On iOS, react-native-image-picker handles permissions automatically
-    // We'll trust that the UI component has already handled permission requests
+    const hasPermission = await checkFilePickerPermissions('camera');
+    if (!hasPermission) {
+      handlePermissionDenied('camera', onError);
+      return;
+    }
     const pickerOptions = {
       mediaType: 'photo' as MediaType,
       quality: options.imageQuality ?? 1,
@@ -48,12 +51,16 @@ export const pickImageFromCamera = async (
 
     launchCamera(pickerOptions, (response: ImagePickerResponse) => {
       if (response?.didCancel) {
-        onError('Image picking canceled');
+        if (typeof onError === 'function') {
+          onError('Image picking canceled');
+        }
         return;
       }
 
       if (response?.errorMessage) {
-        onError(`Failed to pick image: ${response.errorMessage}`);
+        if (typeof onError === 'function') {
+          onError(`Failed to pick image: ${response.errorMessage}`);
+        }
         return;
       }
 
@@ -61,7 +68,9 @@ export const pickImageFromCamera = async (
         const asset = response.assets[0];
         const isValidImage = validateImageFile(asset, options);
         if (!isValidImage.isValid) {
-          onError(isValidImage.errorMessage || 'Invalid image file');
+          if (typeof onError === 'function') {
+            onError(isValidImage.errorMessage || 'Invalid image file');
+          }
           return;
         }
 
@@ -72,13 +81,21 @@ export const pickImageFromCamera = async (
           size: asset.fileSize || 0,
           path: asset.uri,
         };
-        onSuccess(fileResult);
+        if (typeof onSuccess === 'function') {
+          onSuccess(fileResult);
+        } else if (typeof onError === 'function') {
+          onError('Invalid success callback');
+        }
       } else {
-        onError('No image selected');
+        if (typeof onError === 'function') {
+          onError('No image selected');
+        }
       }
     });
   } catch (error) {
-    onError('Failed to pick image');
+    if (typeof onError === 'function') {
+      onError('Failed to pick image');
+    }
   }
 };
 
@@ -107,12 +124,16 @@ export const pickImageFromGallery = async (
 
     launchImageLibrary(pickerOptions, (response: ImagePickerResponse) => {
       if (response.didCancel) {
-        onError('Image picking canceled');
+        if (typeof onError === 'function') {
+          onError('Image picking canceled');
+        }
         return;
       }
 
       if (response.errorMessage) {
-        onError(`Failed to pick image: ${response.errorMessage}`);
+        if (typeof onError === 'function') {
+          onError(`Failed to pick image: ${response.errorMessage}`);
+        }
         return;
       }
 
@@ -123,7 +144,9 @@ export const pickImageFromGallery = async (
           for (const asset of response.assets) {
             const isValidImage = validateImageFile(asset, options);
             if (!isValidImage.isValid) {
-              onError(isValidImage.errorMessage || 'Invalid image file');
+              if (typeof onError === 'function') {
+                onError(isValidImage.errorMessage || 'Invalid image file');
+              }
               return;
             }
 
@@ -138,16 +161,24 @@ export const pickImageFromGallery = async (
           if (onSuccessMultiple) {
             onSuccessMultiple(files);
           } else if (files[0]) {
-            onSuccess(files[0]);
+            if (typeof onSuccess === 'function') {
+              onSuccess(files[0]);
+            } else if (typeof onError === 'function') {
+              onError('Invalid success callback');
+            }
           } else {
-            onError('No image selected');
+            if (typeof onError === 'function') {
+              onError('No image selected');
+            }
           }
         } else {
           // Single selection behavior
           const asset = response.assets[0];
           const isValidImage = validateImageFile(asset, options);
           if (!isValidImage.isValid) {
-            onError(isValidImage.errorMessage || 'Invalid image file');
+            if (typeof onError === 'function') {
+              onError(isValidImage.errorMessage || 'Invalid image file');
+            }
             return;
           }
 
@@ -158,13 +189,21 @@ export const pickImageFromGallery = async (
             size: asset.fileSize || 0,
             path: asset.uri,
           };
-          onSuccess(fileResult);
+          if (typeof onSuccess === 'function') {
+            onSuccess(fileResult);
+          } else if (typeof onError === 'function') {
+            onError('Invalid success callback');
+          }
         }
       } else {
-        onError('No image selected');
+        if (typeof onError === 'function') {
+          onError('No image selected');
+        }
       }
     });
   } catch (error) {
-    onError('Failed to pick image');
+    if (typeof onError === 'function') {
+      onError('Failed to pick image');
+    }
   }
 };

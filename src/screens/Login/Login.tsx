@@ -45,7 +45,7 @@ const Login = () => {
           start={{x: 0.5, y: 0}}
           end={{x: 0.5, y: 1}}>
           <View style={styles.contentWrapper}>
-            <Text style={styles.titleText}>{strings('labels.thekkan')}</Text>
+            <Text style={styles.titleText}>{strings('labels.dealzHub')}</Text>
             <Text style={styles.descriptionText}>{strings('login.loginDescription')}</Text>
           </View>
         </LinearGradient>

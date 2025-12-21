@@ -17,9 +17,9 @@ prepare_react_native_project!
 
 # Setup permissions for react-native-permissions
 setup_permissions([
-  'LocationAccuracy',
-  'LocationAlways', 
-  'LocationWhenInUse',
+  # 'LocationAccuracy',
+  # 'LocationAlways', 
+  # 'LocationWhenInUse',
   'Notifications',
   'MediaLibrary',
   'PhotoLibrary',
@@ -53,7 +53,12 @@ target 'ThekkanVendor' do
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    # Hermes is enabled by default. Set to false to disable.
+    :hermes_enabled => true,
+    # Enable to force building Hermes from source (ensures dSYM generation)
+    # Uncomment if pre-built binaries don't include dSYM
+    # :production => !ENV['FORCE_HERMES_SOURCE_BUILD'].nil?,
   )
 
 
@@ -65,6 +70,27 @@ target 'ThekkanVendor' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-
+    
+    # Ensure dSYM files are generated for all pods, especially Hermes
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+        config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+        
+        # Specific settings for Hermes to ensure dSYM is generated
+        # Check for both 'hermes-engine' and targets containing 'hermes'
+        if target.name == 'hermes-engine' || target.name.downcase.include?('hermes')
+          config.build_settings['GCC_GENERATE_DEBUGGING_SYMBOLS'] = 'YES'
+          config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
+          config.build_settings['STRIP_STYLE'] = 'non-global'
+          config.build_settings['COPY_PHASE_STRIP'] = 'NO'
+          
+          # Force dSYM generation for Release builds
+          if config.name == 'Release'
+            config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+          end
+        end
+      end
+    end
   end
 end
