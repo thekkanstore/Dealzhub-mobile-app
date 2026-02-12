@@ -27,7 +27,7 @@ export const en = {
   },
   labels: {
     thekkan: 'THEKKAN',
-    dealzHub: 'DelazHub',
+    dealzHub: 'DealzHub',
     location: 'Location',
     home: 'Home',
     profile: 'Profile',

@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, ScrollView} from 'react-native';
 import React from 'react';
 import {RouteProp} from '@react-navigation/native';
 import {VendorScreenNavigationProp, VendorStackParamList} from '../../navigation/rootparamstypes';
@@ -19,7 +19,7 @@ const ProductDetails: React.FC<Props> = ({route, navigation}) => {
   const finalProductDetails = productDetails ?? product;
   return (
     <View style={styles.container}>
-      <View>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <TKRenderIf isRender={!!finalProductDetails?.image || !!finalProductDetails?.images?.[0]}>
           <ImageHeaderCard
             productDetails={finalProductDetails}
@@ -36,7 +36,7 @@ const ProductDetails: React.FC<Props> = ({route, navigation}) => {
             isVendor={isVendor}
           />
         </TKRenderIf>
-      </View>
+      </ScrollView>
       <View>
         <ProductButtonAction
           productDetails={finalProductDetails}
@@ -55,5 +55,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     backgroundColor: colors.primaryBackgroundColor,
+  },
+  scrollView: {
+    flex: 1,
   },
 });
