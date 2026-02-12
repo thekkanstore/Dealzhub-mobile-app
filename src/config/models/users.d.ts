@@ -9,7 +9,7 @@ export interface IUserTable {
   role?: Array<string>; // default user, vendor
   notification?: string;
   vendorIsActive?: boolean;
-  vendorApprovalStatus?: string | null; // null, Pending , Approved , Rejected
+  vendorApprovalStatus?: string | null; // null, Pending, Approved, Rejected
 
   cartItems?: Array<string>; // array of products id
   favorites?: Array<string>; // array of products id

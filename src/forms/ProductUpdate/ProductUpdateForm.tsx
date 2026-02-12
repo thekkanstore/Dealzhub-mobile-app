@@ -81,7 +81,7 @@ const ProductUpdateForm = () => {
         return;
       }
       const {images, category, name, ...rest} = values;
-      const imagePath = `images/${toSnakeCase(values?.store?.storeName ?? '')}/${toSnakeCase(name ?? '')}`;
+      const imagePath = `images/${toSnakeCase(values?.store?.id ?? '')}/${toSnakeCase(name ?? '')}`;
       const updatedImages = await Promise.all(
         images.map(item => {
           return uploadFilePickerResult(item, imagePath);

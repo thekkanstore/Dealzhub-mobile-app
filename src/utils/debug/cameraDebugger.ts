@@ -1,10 +1,8 @@
-import {Platform, Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import {launchCamera, MediaType} from 'react-native-image-picker';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {check, PERMISSIONS, request} from 'react-native-permissions';
 
 export const testCameraDirectly = () => {
-  console.log('=== TESTING CAMERA DIRECTLY ===');
-
   const options = {
     mediaType: 'photo' as MediaType,
     quality: 0.8,
@@ -14,8 +12,6 @@ export const testCameraDirectly = () => {
   };
 
   launchCamera(options, response => {
-    console.log('Direct camera response:', response);
-
     if (response.didCancel) {
       Alert.alert('Camera', 'User canceled camera');
     } else if (response.errorMessage) {

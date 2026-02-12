@@ -73,8 +73,6 @@ def enableProguardInReleaseBuilds = false
 
 project.ext.envConfigFiles = [
     dev: ".env.dev",
-    qc: ".env.qc",
-    stage: ".env.stage",
     prod: ".env.prod"
 ]
 
@@ -109,29 +107,32 @@ android {
     productFlavors {
         dev {
             dimension 'default'
+            versionCode 2
+            versionName "1.0.0"
             // applicationIdSuffix ".dev"
-        }
-        qa {
-            dimension 'default'
-            // applicationIdSuffix ".qc"
-        }
-        stage {
-            dimension 'default'
-            // applicationIdSuffix ".stage"
         }
         prod {
             dimension 'default'
             applicationIdSuffix ".prod"
+            versionCode 6
+            versionName "1.0.3"
             targetSdkVersion rootProject.ext.targetSdkVersion
             resValue "string", "build_config_package", "com.thekkanvendor"
         }
     }
     signingConfigs {
         debug {
-    storeFile file('debug.keystore')
-    storePassword 'android'
-    keyAlias 'androiddebugkey'
-    keyPassword 'android'        
+     if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            } else {
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }      
         }
         release {
             if (keystorePropertiesFile.exists()) {

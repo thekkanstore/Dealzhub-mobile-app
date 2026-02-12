@@ -104,7 +104,7 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
     setActiveOption(type);
 
     const onSuccess = (file: FilePickerResult) => {
-      onFilePicked(file);
+      onFilesPicked?.([file]);
       setIsShowOptionModal(false);
       setActiveOption(null);
     };

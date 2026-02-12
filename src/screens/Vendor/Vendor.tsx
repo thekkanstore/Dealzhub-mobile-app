@@ -22,6 +22,7 @@ interface Props {
   navigation: VendorScreenNavigationProp;
   route: RouteProp<VendorStackParamList, 'Vendor'>;
 }
+
 const Vendor: React.FC<Props> = ({navigation, route}) => {
   const {isFromProductDetails = false, storeId = ''} = route.params || {};
   const {data: storeDetails, isPending} = useGetStoreDetails(storeId);
@@ -34,11 +35,23 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
     });
   };
 
+  const handleQRPress = () => {
+    if (storeDetails?.id) {
+      navigation.navigate(navigationStrings.QR_CODE_SHARE, {
+        qrValue: `dealszhub://vendor/${storeDetails.id}`,
+        storeName: storeDetails.storeName || 'Store',
+      });
+    }
+  };
+
   const renderHelpButton = () => {
     if (isPending || isFromProductDetails) {
       return null;
     }
     if (storeDetails && !isFromProductDetails) {
+      if (storeDetails.vendorStatus?.toUpperCase() === 'APPROVED') {
+        return <></>;
+      }
       return (
         <Text style={[style.statusText, {color: VendorService.getStoreStatusColors(storeDetails)}]}>
           {storeDetails.vendorStatus?.toUpperCase()}
@@ -78,9 +91,12 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
         showBackButton={isFromProductDetails}
+        qrValue={storeDetails?.id ? `dealszhub://vendor/${storeDetails.id}` : undefined}
+        onQRPress={handleQRPress}
       />
       <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
         <StoreDetailsCard
+          // @ts-expect-error TS2322
           storeDetails={storeDetails}
           navigation={navigation}
           isFromProductDetails={isFromProductDetails}

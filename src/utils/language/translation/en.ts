@@ -1,14 +1,12 @@
 export const en = {
   gettingStarted: {
     step1Title: 'New Products \nEveryday',
-    step1Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+    step1Description: 'Find your favourite products with new deals everyday!',
     step2Title: 'Minimal Look \nBetter Quality',
     step2Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+      'Dealzhub lets you shop and sell without the interference of any third-partyShop local, sell local, live smart',
     step3Title: 'Fastest Home \nDelivery',
-    step3Description:
-      'Shopee adds new designs every day. Explore and find the best furniture for your home and offices.',
+    step3Description: 'Shop local, sell local, live smart',
   },
   button: {
     gettingStarted: 'Get Started',
@@ -29,6 +27,7 @@ export const en = {
   },
   labels: {
     thekkan: 'THEKKAN',
+    dealzHub: 'DealzHub',
     location: 'Location',
     home: 'Home',
     profile: 'Profile',
@@ -87,6 +86,20 @@ export const en = {
     selectDistrict: 'Select District',
     isOutOfStock: 'Is Out of Stock',
     isSoldOut: 'Is Sold Out',
+    shareYourStore: 'Share Your Store',
+    myStore: 'My Store',
+    share: 'Share',
+    download: 'Download',
+    success: 'Success',
+    error: 'Error',
+    qrCodeSaved: 'QR Code saved to',
+    failedToSaveQRCode: 'Failed to save QR code',
+    qrCodeNotReady: 'QR code is not ready yet',
+    shareStore: 'Share Store',
+    checkOutMyStore: 'Check out my store',
+    failedToShareQRCode: 'Failed to share QR code',
+    permissionDenied: 'Permission Denied',
+    storagePermissionRequired: 'Storage permission is required to save the QR code',
   },
   notificationPermission: {
     title: 'Enable Notifications',

@@ -3376,6 +3376,35 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-view-shot (4.0.3):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - React-NativeModulesApple (0.80.1):
     - boost
     - DoubleConversion
@@ -3884,26 +3913,28 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBApp (23.4.1):
+  - RNFBApp (23.5.0):
     - Firebase/CoreOnly (= 12.4.0)
     - React-Core
-  - RNFBAuth (23.4.1):
+  - RNFBAuth (23.5.0):
     - Firebase/Auth (= 12.4.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (23.4.1):
+  - RNFBFirestore (23.5.0):
     - Firebase/Firestore (= 12.4.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (23.4.1):
+  - RNFBMessaging (23.5.0):
     - Firebase/Messaging (= 12.4.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNFBStorage (23.4.1):
+  - RNFBStorage (23.5.0):
     - Firebase/Storage (= 12.4.0)
     - React-Core
     - RNFBApp
+  - RNFS (2.20.0):
+    - React-Core
   - RNGestureHandler (2.27.1):
     - boost
     - DoubleConversion
@@ -4208,6 +4239,35 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNShare (12.2.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNSVG (15.12.0):
     - boost
     - DoubleConversion
@@ -4357,6 +4417,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -4395,12 +4456,14 @@ DEPENDENCIES:
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (~> 0.7.1)
   - SplashView (from `../node_modules/react-native-splash-view`)
@@ -4541,6 +4604,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keyboard-controller"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-view-shot:
+    :path: "../node_modules/react-native-view-shot"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -4617,6 +4682,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNFBStorage:
     :path: "../node_modules/@react-native-firebase/storage"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
@@ -4629,6 +4696,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   SplashView:
@@ -4714,6 +4783,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 9bceb747cd6cde22a3416ffdc819d11b5b11f156
   react-native-keyboard-controller: dbd9a7de10c53ccd6ddffc84733b3b958fe4ca08
   react-native-safe-area-context: 1253cc163c459494057aaae3e8c02fcdad674f0d
+  react-native-view-shot: 2a3fb8aadfc702b79a168576c9b93d29f33ff1f3
   React-NativeModulesApple: 2a261739a86fb0fc82de4b9cc8c9199083b4cea2
   React-oscompat: 114036cd8f064558c9c1a0c04fc9ae5e1453706a
   React-perflogger: e7287fee27c16e3c8bd4d470f2361572b63be16b
@@ -4748,17 +4818,19 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: f30b3a83064e28b0fc46f1fbd3834589ed64c7b9
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
-  RNFBApp: 4d2d631b593081c39565f67403f90b188c0f22f7
-  RNFBAuth: 467585d128b84d278579379fb84c25ac0075fb06
-  RNFBFirestore: 4a843093485cd165f56fbaab8db64d600e80143f
-  RNFBMessaging: 50ae400edc5874bde8720104cdfc4b898be07479
-  RNFBStorage: 38247a7e69b518bc764ecf1bcaf13cc37db4aefd
+  RNFBApp: 78d866e12b98c79b7cb141fcdcdf9813eae09b15
+  RNFBAuth: a05c02d5b47251b04a6c74b686053e81e2ba783a
+  RNFBFirestore: 776e439929bd1dda95d1b4dd6c5f0e6ae66dacb1
+  RNFBMessaging: e16ebeae1f64f57603a193f1be6f3be7ab55c5e4
+  RNFBStorage: 98cb7d2e10709be8b121dddec7c161b1cb99e2ee
+  RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
   RNGestureHandler: 1fb6ea7f6b3e07214d6fb8e5951f1beba36a1401
   RNGoogleSignin: 0f9deae0357018403a3c34b367456dee09c95b2c
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
-  RNPermissions: 98fbaae5b6801709b25228d764e71251592ac5f8
+  RNPermissions: 002ab76990f3ed53a891588950f74371a32aed11
   RNReanimated: 1fc076ab0b4d40b56de45b06b631ea6e590c93b1
   RNScreens: eff474e98669c2a4dbe7e43ee9464682711182ea
+  RNShare: 9fbcfe8a315939279082864ace5ea32acb2b86e2
   RNSVG: bc7ccfe884848ac924d2279d9025d41b5f05cb0c
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
@@ -4766,6 +4838,6 @@ SPEC CHECKSUMS:
   SplashView: 14c9428dd2ab3ca7446ad9e36cfbf8dced2c85b7
   Yoga: 2b7a0cd38b4b0b4fdd7f353017fde11914148f98
 
-PODFILE CHECKSUM: 12dd79c071f3e5bcc99030fc1f73c1e9acd53ebc
+PODFILE CHECKSUM: a969dc71b687cf6bd21cf8b00d1b8b279e273b6e
 
 COCOAPODS: 1.16.2

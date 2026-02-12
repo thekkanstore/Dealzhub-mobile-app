@@ -47,7 +47,7 @@ const CartIemCard: React.FC<CartIemProp> = ({product}) => {
     <TKItemCard style={styles.container}>
       <FastImage
         style={styles.productImage}
-        source={{uri: product?.image ?? '', priority: FastImage.priority.normal}}
+        source={{uri: product?.images?.[0] ?? '', priority: FastImage.priority.normal}}
         resizeMode={FastImage.resizeMode.cover}
       />
       <View style={styles.detailsContainer}>
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     height: moderateScale(100),
     width: moderateScale(80),
     borderRadius: moderateScale(20),
-    backgroundColor: 'red',
   },
   detailsContainer: {
     flex: 1,

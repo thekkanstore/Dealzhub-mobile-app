@@ -3,4 +3,5 @@ export interface IAdmin {
   adminNo: string;
   banners: string[];
   termsAndConditions: string;
+  isStoreReview?: boolean;
 }

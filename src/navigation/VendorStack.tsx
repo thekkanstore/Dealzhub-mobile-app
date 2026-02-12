@@ -6,6 +6,7 @@ import {RegisterUserStack} from './RegisterStack';
 import Vendor from '../screens/Vendor/Vendor';
 import ProductUpdate from '../screens/ProductUpdate/ProductUpdate';
 import ProductDetailsScreen from '../screens/ProductDetails/ProductDetails';
+import QRCodeShare from '../screens/Vendor/QRCodeShare';
 
 const Stack = createStackNavigator<VendorStackParamList>();
 
@@ -30,6 +31,11 @@ export const VendorStack = () => {
       <Stack.Screen
         name={navigationStrings.PRODUCT_DETAILS as 'ProductDetails'}
         component={ProductDetailsScreen}
+        options={{gestureEnabled: false}}
+      />
+      <Stack.Screen
+        name={navigationStrings.QR_CODE_SHARE as 'QRCodeShare'}
+        component={QRCodeShare}
         options={{gestureEnabled: false}}
       />
     </Stack.Navigator>

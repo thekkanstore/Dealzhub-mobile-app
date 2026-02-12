@@ -3,13 +3,13 @@ import {
   getAuth,
   signInWithCredential,
   signOut,
+  signInWithEmailAndPassword,
 } from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import messaging from '@react-native-firebase/messaging';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
 import {updateNewUserStatus, updateUserInfo} from '../../redux/userSlice';
-import {updateNotificationPermissionModalVisibility} from '../../redux/systemSlice';
 import {
   checkIsUserRegistrationCompleted,
   updateNotificationStatus,
@@ -44,7 +44,53 @@ async function onGoogleButtonPress() {
     }
     return data;
   } catch (error) {
+    console.error('Google Sign-In Error: ', error);
     showErrorToast(strings('login.failedSignIn'));
+  }
+}
+
+async function onDemoLogin(email: string, password: string) {
+  try {
+    const auth = getAuth();
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    try {
+      const userExists = await checkIsUserRegistrationCompleted(user.uid);
+      updateNewUserStatus(!userExists);
+    } catch (error) {
+      /* empty */
+    }
+
+    const idToken = await user.getIdToken();
+    const mockGoogleUser = {
+      user: {
+        id: user.uid,
+        name: user.displayName || 'Demo User',
+        email: user.email || email,
+        photo: user.photoURL,
+        familyName: '',
+        givenName: user.displayName || 'Demo User',
+      },
+      idToken: idToken,
+      serverAuthCode: null,
+      scopes: [],
+    };
+
+    updateUserInfo(mockGoogleUser);
+
+    try {
+      const token = await messaging().getToken();
+      updateNotificationStatus(user.uid, token);
+    } catch (error) {
+      // Handle error if needed
+    }
+
+    return userCredential;
+  } catch (error) {
+    console.error('Demo Login Error: ', error);
+    showErrorToast('Failed to sign in with demo account');
+    throw error;
   }
 }
 
@@ -66,4 +112,4 @@ async function logout() {
   }
 }
 
-export default {onGoogleSignIn: onGoogleButtonPress, logout};
+export default {onGoogleSignIn: onGoogleButtonPress, logout, onDemoLogin};

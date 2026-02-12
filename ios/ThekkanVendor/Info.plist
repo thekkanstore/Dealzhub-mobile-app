@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Thekkan</string>
+	<string>Dealzhub</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -56,12 +56,15 @@
 	<string>This app needs camera access to take photos for your store and product listings.</string>
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>This app needs access to your documents to select files for your store and product listings.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app needs access to your media library to select media files for your store and product listings.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need access to your location to provide features.</string>
+	<string>We need access to your location to show nearby stores and provide location-based services.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We need access to your location even when the app is in the background.</string>
+	<string>We need access to your location to show nearby stores even when the app is in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need access to your location to provide personalized services.</string>
+	<string>We need access to your location to show nearby stores and provide personalized services.</string>
+
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs microphone access to record videos with audio.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -89,6 +92,18 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- <key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array> -->
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

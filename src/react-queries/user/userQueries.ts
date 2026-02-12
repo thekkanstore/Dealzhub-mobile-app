@@ -199,7 +199,7 @@ export const useUpdateCartItemsList = () => {
           return;
         }
         const data = await addToCart(user?.user.id ?? '', id);
-        showSuccessToast('Favorite Added successfully');
+        showSuccessToast('Cart updated successfully');
         return data;
       } catch (error) {
         return Promise.reject(error);
