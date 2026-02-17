@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --mode=devDebug --appId=\"com.thekkanvendor.dev\" --main-activity=\".MainActivity\"\n",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
@@ -46,7 +46,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.27.1",
     "react-native-image-picker": "^8.2.1",
-    "react-native-keyboard-controller": "^1.17.5",
+    "react-native-keyboard-controller": "^1.20.7",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-permissions": "^5.4.1",
