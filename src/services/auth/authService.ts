@@ -15,30 +15,31 @@ import {
   updateNotificationStatus,
 } from '../firestore/userFirestoreService';
 
-async function onGoogleButtonPress() {
+const onGoogleButtonPress = async () => {
   try {
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
     // Get the users ID token
-    const signInResult = await GoogleSignin.signIn();
+    const signInResult = (await GoogleSignin.signIn())?.data;
 
-    if (!signInResult.data?.idToken || !signInResult.data?.user.id) {
+    console.log('signInResult', signInResult);
+    if (!signInResult.idToken || !signInResult.user.id) {
       throw new Error('No ID token found');
     }
     // Create a Google credential with the token
-    const googleCredential = GoogleAuthProvider.credential(signInResult.data?.idToken);
+    const googleCredential = GoogleAuthProvider.credential(signInResult.idToken);
     const data = await signInWithCredential(getAuth(), googleCredential);
     try {
-      const userExists = await checkIsUserRegistrationCompleted(signInResult.data?.user.id ?? '');
+      const userExists = await checkIsUserRegistrationCompleted(signInResult.user.id ?? '');
       updateNewUserStatus(!userExists);
     } catch (error) {
       /* empty */
     } finally {
-      updateUserInfo(signInResult.data);
+      updateUserInfo(signInResult);
     }
     try {
       const token = await messaging().getToken();
-      updateNotificationStatus(signInResult.data?.user.id ?? '', token);
+      updateNotificationStatus(signInResult.user.id ?? '', token);
     } catch (error) {
       // Handle error if needed
     }
@@ -47,7 +48,7 @@ async function onGoogleButtonPress() {
     console.error('Google Sign-In Error: ', error);
     showErrorToast(strings('login.failedSignIn'));
   }
-}
+};
 
 async function onDemoLogin(email: string, password: string) {
   try {

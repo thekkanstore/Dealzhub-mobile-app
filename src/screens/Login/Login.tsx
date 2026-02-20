@@ -12,7 +12,7 @@ import TKButton from '../../components/Common/TKButton/TKButton';
 import {useAppSelector} from '../../redux/hooks';
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 // TODO: Replace with valid demo account credentials created in Firebase Console
 const DEMO_EMAIL = 'reviewer@dealzhub.com';
 const DEMO_PASSWORD = 'Reviewer123!';
@@ -56,7 +56,7 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <TKStatusBar barStyle="light-content" backgroundColor="transparent" />
-      <ImageBackground source={imagePath.loginBackground} style={[styles.image, {width}]}>
+      <ImageBackground source={imagePath.loginBackground} style={[styles.image, {width}, {height}]} resizeMode={'cover'}>
         <LinearGradient
           colors={['rgba(0, 0, 0, 0)', '#000000']}
           locations={[0.0788, 0.9994]}
