@@ -13,7 +13,7 @@ import {TKHomeSelectedIcon} from '../components/Common/Icons/TKHomeSelectedIcon'
 import {TKHomeUnselectedIcon} from '../components/Common/Icons/TKHomeUnselectedIcon';
 import TKCustomBottomTabBar from '../components/Common/TKCustomBottomTabBar/TKCustomBottomTabBar';
 import {TKVendorSelectedIcon} from '../components/Common/Icons/TKVendorSelectedIcon';
-import {TKVendorUnSelectedIcon} from '../components/Common/Icons/TKVendorUnSelectedIcon';
+import {TKVendorUnselectedIcon} from '../components/Common/Icons/TKVendorUnselectedIcon';
 import {VendorStack} from './VendorStack';
 import {FavoritesStack} from './FavoritesStack';
 import {CartStack} from './CartStack';
@@ -26,9 +26,9 @@ const screens = [
     component: HomeStack,
     icon: (focused: boolean) =>
       focused ? (
-        <TKHomeSelectedIcon width={30} height={30} />
+        <TKHomeSelectedIcon width={27} height={27} />
       ) : (
-        <TKHomeUnselectedIcon width={30} height={30} />
+        <TKHomeUnselectedIcon width={27} height={27} />
       ),
   },
   {
@@ -36,9 +36,9 @@ const screens = [
     component: FavoritesStack,
     icon: (focused: boolean) =>
       focused ? (
-        <TKHeartSelectedIcon width={30} height={30} />
+        <TKHeartSelectedIcon width={27} height={27} />
       ) : (
-        <TKHeartUnselectedIcon width={30} height={30} />
+        <TKHeartUnselectedIcon width={27} height={27} />
       ),
   },
   {
@@ -46,9 +46,9 @@ const screens = [
     component: VendorStack,
     icon: (focused: boolean) =>
       focused ? (
-        <TKVendorSelectedIcon width={30} height={30} />
+        <TKVendorSelectedIcon width={26} height={26} />
       ) : (
-        <TKVendorUnSelectedIcon width={30} height={30} />
+        <TKVendorUnselectedIcon width={25} height={25} />
       ),
     listeners: ({navigation}: any) => ({
       tabPress: (e: any) => {
@@ -74,7 +74,7 @@ const screens = [
     component: CartStack,
     label: 'Profile',
     icon: (focused: boolean) =>
-      focused ? <TKCartIcon width={30} height={30} /> : <TKCartUnselectedIcon />,
+      focused ? <TKCartIcon width={27} height={27} /> : <TKCartUnselectedIcon width={27} height={27} />,
   },
 ] as const;
 const BottomTabBarStack: React.FC = () => {
