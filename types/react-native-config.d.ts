@@ -13,6 +13,10 @@ declare module 'react-native-config' {
     BASE_URL: string;
     GOOGLE_CLIENT_ID: string;
     IS_REVIEW_MODE: string;
+    APPLE_SERVICE_ID: string;
+    APPLE_TEAM_ID: string;
+    APPLE_KEY_ID: string;
+    APPLE_REDIRECT_URI: string;
   }
 
   export const Config: NativeConfig;
