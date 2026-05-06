@@ -123,6 +123,7 @@ export const en = {
   login: {
     loginDescription: 'Simple Deals. Smart Living.',
     signInWithGoogle: 'Sign In With Google',
+    signInWithApple: 'Sign In With Apple',
     failedSignIn: 'Failed to Sign In',
     logoutMessage: 'Logout successful',
   },

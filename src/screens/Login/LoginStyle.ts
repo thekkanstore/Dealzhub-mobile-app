@@ -21,12 +21,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   contentWrapper: {
-    position: 'absolute',
-    bottom: '20%',
-    left: 0,
-    right: 0,
     paddingHorizontal: moderateScale(20),
     gap: moderateScale(16),
+    alignItems: 'center',
   },
 
   titleText: {
@@ -41,13 +38,19 @@ export const styles = StyleSheet.create({
     color: colors.secondaryTextColor,
     textAlign: 'center',
     lineHeight: moderateScale(22),
+    marginTop: -10,
+    marginBottom: 5,
+  },
+  gradientContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  spacer: {
+    flex: 1,
   },
   bottomContent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: moderateScale(20),
+    paddingTop: moderateScale(30),
     paddingBottom: moderateScale(20),
     gap: moderateScale(16),
   },
@@ -78,5 +81,18 @@ export const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontFamily: fontFamily.semiBold,
     color: colors.neutralButtonTextColor,
+  },
+  appleButton: {
+    marginHorizontal: 30,
+    backgroundColor: '#000000',
+    paddingVertical: 10,
+    borderWidth: 0.5,
+    borderColor: '#ffffff',
+  },
+  appleSignInText: {
+    fontSize: moderateScale(16),
+    fontFamily: fontFamily.semiBold,
+    color: '#FFFFFF',
+    marginLeft: moderateScale(8),
   },
 });
