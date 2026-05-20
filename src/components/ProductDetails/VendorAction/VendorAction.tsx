@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import TKButton from '../../Common/TKButton/TKButton';
 import {strings} from '../../../utils/language/langauageUtils';
@@ -6,7 +6,13 @@ import {IProduct} from '../../../config/models/product';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import TKConfirmModal from '../../Common/TKConfirmModal/TKConfirmModal';
-import {useUpdateProductStatus} from '../../../react-queries/product/productQueries';
+import {
+  useUpdateProductStatus,
+  useDeleteProduct,
+} from '../../../react-queries/product/productQueries';
+import {TKTrashIcon} from '../../Common/Icons/TKTrashIcon';
+import {colors} from '../../../config/styles/colors';
+import {moderateScale} from '../../../config/styles/responsiveSize';
 
 interface Props {
   productDetails: IProduct;
@@ -14,7 +20,9 @@ interface Props {
 }
 const VendorAction: React.FC<Props> = ({productDetails, navigation}) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const {mutate: updateStatus, isPending} = useUpdateProductStatus();
+  const {mutate: deleteProduct, isPending: isDeletePending} = useDeleteProduct();
   const handleOnPressEdit = () => {
     navigation.navigate(navigationStrings.PRODUCT_UPDATE, {
       productDetails,
@@ -37,6 +45,20 @@ const VendorAction: React.FC<Props> = ({productDetails, navigation}) => {
   const handleCancel = () => {
     setIsVisible(false);
   };
+  const handleDeleteConfirm = () => {
+    deleteProduct(
+      {id: productDetails.id},
+      {
+        onSuccess: () => {
+          setIsDeleteVisible(false);
+          navigation.goBack();
+        },
+      },
+    );
+  };
+  const handleDeleteCancel = () => {
+    setIsDeleteVisible(false);
+  };
   return (
     <>
       <TKButton
@@ -51,6 +73,15 @@ const VendorAction: React.FC<Props> = ({productDetails, navigation}) => {
         style={styles.button}
         onPress={() => setIsVisible(true)}
       />
+      <TouchableOpacity
+        style={styles.deleteButtonContainer}
+        onPress={() => setIsDeleteVisible(true)}>
+        <TKTrashIcon
+          width={moderateScale(20)}
+          height={moderateScale(20)}
+          color={colors.errorTextColor}
+        />
+      </TouchableOpacity>
       <TKConfirmModal
         isVisible={isVisible}
         title={strings('labels.areYouSure')}
@@ -65,6 +96,16 @@ const VendorAction: React.FC<Props> = ({productDetails, navigation}) => {
         cancelButtonAction={handleCancel}
         isConfirmLoader={isPending}
       />
+      <TKConfirmModal
+        isVisible={isDeleteVisible}
+        title={strings('labels.areYouSure')}
+        bodyText={strings('labels.deleteProduct')}
+        confirmButtonText={strings('button.delete')}
+        cancelButtonText={strings('button.cancel')}
+        confirmButtonAction={handleDeleteConfirm}
+        cancelButtonAction={handleDeleteCancel}
+        isConfirmLoader={isDeletePending}
+      />
     </>
   );
 };
@@ -73,6 +114,14 @@ export default VendorAction;
 
 const styles = StyleSheet.create({
   button: {
-    width: '45%',
+    width: '38%',
+  },
+  deleteButtonContainer: {
+    width: '18%',
+    height: moderateScale(39),
+    backgroundColor: 'rgba(189, 52, 59, 0.1)', // Light red background for dustbin
+    borderRadius: moderateScale(24),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
