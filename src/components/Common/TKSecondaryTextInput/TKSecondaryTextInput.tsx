@@ -13,7 +13,6 @@ import {fontScale, moderateScale, verticalScale} from '../../../config/styles/re
 import {colors} from '../../../config/styles/colors';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
-import {stylesUtils} from '../../../utils/styles/styles';
 
 type TKTextInputProps = TextInputProps & {
   // Optional label for the input
@@ -157,12 +156,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.inputBackgroundSecondary,
     height: verticalScale(45),
     width: '100%',
-    ...stylesUtils.darkShadow({
-      shadowOffset: {width: 1, height: 1},
-      shadowOpacity: 0.3,
-      shadowRadius: 2,
-      elevation: 0.75,
-    }),
+    borderWidth: 1,
+    borderColor: 'rgb(82, 142, 107, 0.4)',
   },
   disabledContainer: {
     backgroundColor: colors.backgroundContainerLight,
@@ -172,7 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(4),
   },
   focusedContainer: {
-    borderColor: colors.inputBorder,
+    borderColor: 'rgb(82, 142, 107, 0.5)',
   },
   errorContainer: {
     borderWidth: 1,

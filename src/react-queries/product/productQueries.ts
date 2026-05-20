@@ -13,6 +13,7 @@ import {
   getProductById,
   updateProductDetails,
   updateProductStatus,
+  deleteProduct,
   searchProductsByName,
 } from '../../services/firestore/productFirestoreService';
 import {useAddCategoriesToStore} from '../store/storeQueries';
@@ -64,6 +65,28 @@ export const useUpdateProductStatus = () => {
     },
   });
 };
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['deleteProduct'],
+    mutationFn: async (payload: {id: string}) => {
+      try {
+        const data = await deleteProduct(payload.id);
+        return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getProductsList']});
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+  });
+};
+
 export const useUpdateProduct = () => {
   const {mutateAsync} = useAddCategoriesToStore();
   const queryClient = useQueryClient();

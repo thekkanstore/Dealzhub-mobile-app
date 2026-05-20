@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Alert, Linking, StyleSheet, View} from 'react-native';
+import {Alert, Image, Linking, StyleSheet, Text, View} from 'react-native';
 import {Formik} from 'formik';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
@@ -8,7 +8,7 @@ import {strings} from '../../utils/language/langauageUtils';
 import TKSecondaryTextInput from '../../components/Common/TKSecondaryTextInput/TKSecondaryTextInput';
 import TKButton from '../../components/Common/TKButton/TKButton';
 import {shouldShowError} from '../../utils/common/errorUtils';
-import {moderateScale} from '../../config/styles/responsiveSize';
+import {fontScale, moderateScale} from '../../config/styles/responsiveSize';
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {storeDetailsInitialValues} from '../../utils/initialValues/storeDetailsInitialValues';
 import {IStoreRequestBody} from '../../config/models/store';
@@ -23,6 +23,8 @@ import {
 import {updateNewUserStatus} from '../../redux/userSlice';
 import {colors} from '../../config/styles/colors';
 import {useAppSelector} from '../../redux/hooks';
+
+import {fontFamily} from '../../config/styles/fontFamily';
 
 const StoreDetailsForm = () => {
   const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
@@ -179,7 +181,15 @@ const StoreDetailsForm = () => {
             </KeyboardAwareScrollView>
 
             <TKButton
-              title={strings('button.continue')}
+              title={
+                <View style={styles.buttonTitleContainer}>
+                  <Image
+                    source={require('../../assets/images/whatsapp-icon.png')}
+                    style={styles.whatsappIcon}
+                  />
+                  <Text style={styles.buttonText}>Send for Approval</Text>
+                </View>
+              }
               onPress={() => handleSubmit()}
               isLoading={createStoreLoader || updateStoreLoader}
               isDisabled={!isValid || !dirty}
@@ -206,5 +216,20 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: moderateScale(16),
+  },
+  buttonTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(8),
+  },
+  whatsappIcon: {
+    width: moderateScale(20),
+    height: moderateScale(20),
+    resizeMode: 'contain',
+  },
+  buttonText: {
+    fontSize: fontScale(14),
+    fontFamily: fontFamily.semiBold,
+    color: colors.secondaryTextColor,
   },
 });

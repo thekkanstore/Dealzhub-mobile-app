@@ -23,6 +23,7 @@ export const en = {
     enable: 'Enable',
     moveToWishlist: 'Move to Wishlist',
     remove: 'Remove',
+    delete: 'Delete',
     termsAndConditions: 'Terms and Conditions',
   },
   labels: {
@@ -75,6 +76,7 @@ export const en = {
     areYouSure: 'Are you sure?',
     disableProduct: 'Do you want to disable this product?',
     enableProduct: 'Do you want to enable this product?',
+    deleteProduct: 'Do you want to delete this product?',
     myCart: 'My Cart',
     searchForProduct: 'Search for a product',
     sorryNoResultFound: 'Sorry, No results found!',

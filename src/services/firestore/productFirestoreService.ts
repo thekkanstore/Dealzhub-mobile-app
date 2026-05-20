@@ -212,6 +212,24 @@ async function updateProductStatus(
   }
 }
 
+async function deleteProduct(productId: string): Promise<{success: boolean; message: string; productId: string}> {
+  try {
+    await firestore().collection(FireStoreCollections.PRODUCTS).doc(productId).delete();
+    return {
+      success: true,
+      message: 'Product deleted successfully',
+      productId: productId,
+    };
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return {
+      success: false,
+      message: `Error deleting product: ${error}`,
+      productId: productId,
+    };
+  }
+}
+
 async function searchProductsByName(productName: string): Promise<IProductTable[]> {
   try {
     const searchTerm = productName.toLowerCase();
@@ -408,5 +426,6 @@ export {
   getProductById,
   updateProductDetails,
   updateProductStatus,
+  deleteProduct,
   searchProductsByName,
 };

@@ -4,8 +4,10 @@ import {
   signInWithCredential,
   signOut,
   signInWithEmailAndPassword,
+  OAuthProvider,
 } from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 import messaging from '@react-native-firebase/messaging';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
@@ -47,6 +49,80 @@ const onGoogleButtonPress = async () => {
   } catch (error) {
     console.error('Google Sign-In Error: ', error);
     showErrorToast(strings('login.failedSignIn'));
+  }
+};
+
+const onAppleButtonPress = async () => {
+  try {
+    // Perform Apple sign-in request
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+
+    // Ensure the request returned an identity token
+    const {identityToken, nonce, fullName, email} = appleAuthRequestResponse;
+
+    if (!identityToken) {
+      throw new Error('Apple Sign-In failed – no identity token returned');
+    }
+
+    // Create a Firebase OAuthProvider credential
+    const appleCredential = new OAuthProvider('apple.com').credential({
+      idToken: identityToken,
+      rawNonce: nonce,
+    });
+
+    // Sign in to Firebase with the Apple credential
+    const data = await signInWithCredential(getAuth(), appleCredential);
+    const firebaseUid = data.user.uid;
+
+    // Apple only provides full name & email on the FIRST sign-in
+    const displayName =
+      [fullName?.givenName, fullName?.familyName].filter(Boolean).join(' ') ||
+      data.user.displayName ||
+      'Apple User';
+
+    // Check if the user has completed registration
+    try {
+      const userExists = await checkIsUserRegistrationCompleted(firebaseUid);
+      updateNewUserStatus(!userExists);
+    } catch (error) {
+      /* empty */
+    }
+
+    // Map to the same shape as Google sign-in for Redux consistency
+    const appleUser = {
+      user: {
+        id: firebaseUid,
+        name: displayName,
+        email: email || data.user.email || '',
+        photo: data.user.photoURL || null,
+        familyName: fullName?.familyName || '',
+        givenName: fullName?.givenName || '',
+      },
+      idToken: identityToken,
+      serverAuthCode: null,
+      scopes: [],
+    };
+
+    updateUserInfo(appleUser);
+
+    // Register FCM token
+    try {
+      const token = await messaging().getToken();
+      updateNotificationStatus(firebaseUid, token);
+    } catch (error) {
+      // Handle error if needed
+    }
+
+    return data;
+  } catch (error: any) {
+    // Don't show error toast if user cancelled the flow
+    if (error?.code !== appleAuth.Error.CANCELED) {
+      console.error('Apple Sign-In Error: ', error);
+      showErrorToast(strings('login.failedSignIn'));
+    }
   }
 };
 
@@ -113,4 +189,4 @@ async function logout() {
   }
 }
 
-export default {onGoogleSignIn: onGoogleButtonPress, logout, onDemoLogin};
+export default {onGoogleSignIn: onGoogleButtonPress, onAppleSignIn: onAppleButtonPress, logout, onDemoLogin};
