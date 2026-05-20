@@ -10,6 +10,7 @@ import {TKSettingsIcon} from '../../Common/Icons/TKSettingsIcon';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
+import CustomerSupportCard from '../CustomerSupportCard/CustomerSupportCard';
 
 const screenNames = [
   // {
@@ -66,7 +67,14 @@ const ProfileOptions = () => {
       </Pressable>
     );
   };
-  return <FlatList data={screenNames} renderItem={renderItem} style={style.container} />;
+  return (
+    <FlatList
+      data={screenNames}
+      renderItem={renderItem}
+      style={style.container}
+      ListFooterComponent={<CustomerSupportCard />}
+    />
+  );
 };
 
 export default ProfileOptions;
