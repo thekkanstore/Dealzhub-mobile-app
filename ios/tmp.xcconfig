@@ -1,0 +1,7 @@
+API_URL=https:/$()/dev-api.example.com
+ENVIRONMENT=Dev
+GOOGLE_CLIENT_ID=298300377700-4hrlh6u6v192i4qm6h5upkrems99sasf.apps.googleusercontent.com
+APPLE_TEAM_ID=H47QGWW68Q
+APPLE_KEY_ID=375PYV968K
+APPLE_SERVICE_ID=org.reactjs.native.example.ThekkanVendor.signin
+APPLE_REDIRECT_URI=https:/$()/dev-api.example.com/auth/apple/callback

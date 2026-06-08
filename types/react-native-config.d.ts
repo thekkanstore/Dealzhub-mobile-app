@@ -1,0 +1,24 @@
+declare module 'react-native-config' {
+  export interface NativeConfig {
+    APPLICATION_ID: string;
+    BUILD_TYPE: string;
+    DEBUG: boolean;
+    ENVIRONMENT: string;
+    FLAVOR: string;
+    IS_HERMES_ENABLED: boolean;
+    IS_NEW_ARCHITECTURE_ENABLED: boolean;
+    VERSION_CODE: number;
+    VERSION_NAME: string;
+    GOOGLE_MAPS_API_KEY: string;
+    BASE_URL: string;
+    GOOGLE_CLIENT_ID: string;
+    IS_REVIEW_MODE: string;
+    APPLE_SERVICE_ID: string;
+    APPLE_TEAM_ID: string;
+    APPLE_KEY_ID: string;
+    APPLE_REDIRECT_URI: string;
+  }
+
+  export const Config: NativeConfig;
+  export default Config;
+}

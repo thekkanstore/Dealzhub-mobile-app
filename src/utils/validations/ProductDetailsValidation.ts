@@ -1,0 +1,28 @@
+import * as Yup from 'yup';
+import {amountValidation} from './commonValiddations';
+
+export const productValidationsSchema = () => {
+  return Yup.object({
+    name: Yup.string()
+      .transform(value => value?.trim())
+      .required('Product is required')
+      .min(3, 'Minimum 3 characters required')
+      .max(50, 'Maximum 50 characters allowed'),
+    description: Yup.string()
+      .transform(value => value?.trim())
+      .required('Address is required')
+      .min(10, 'Minimum 10 characters required')
+      .max(500, 'Maximum 500 characters allowed'),
+    actualPrice: amountValidation,
+    discountPrice: amountValidation,
+    category: Yup.object().required('Choose one Category'),
+    images: Yup.array()
+      .of(Yup.mixed())
+      .min(1, 'Images are required')
+      .max(5, 'Maximum 5 images allowed'),
+    isActive: Yup.boolean().required('Please confirm the Active status'),
+    isSecondHand: Yup.boolean().required('Please choose any of the option'),
+    isSoldOut: Yup.boolean().required('Please confirm the Sold Out status'),
+    isOutOfStock: Yup.boolean().required('Please confirm the Out of Stock status'),
+  });
+};

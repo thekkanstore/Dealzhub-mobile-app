@@ -1,0 +1,111 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+def node_require(script)
+  # Resolve script with node to allow for hoisting
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
+
+# Use it to require both react-native's and this package's scripts:
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+# Setup permissions for react-native-permissions
+setup_permissions([
+  # 'LocationAccuracy',
+  # 'LocationAlways', 
+  # 'LocationWhenInUse',
+  'Notifications',
+  'MediaLibrary',
+  'PhotoLibrary',
+  'Camera',
+])
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
+
+# Fix for react-native-permissions when using use_frameworks!
+pre_install do |installer|
+  installer.pod_targets.each do |pod|
+    if pod.name.eql?('RNPermissions') || pod.name.start_with?('Permission-')
+      def pod.build_type
+        Pod::BuildType.static_library
+      end
+    end
+  end
+end
+
+target 'ThekkanVendor' do
+  config = use_native_modules!
+  pod 'react-native-config/Extension', :path => '../node_modules/react-native-config'
+  
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    # Hermes is enabled by default. Set to false to disable.
+    :hermes_enabled => true,
+    # Enable to force building Hermes from source (ensures dSYM generation)
+    # Uncomment if pre-built binaries don't include dSYM
+    # :production => !ENV['FORCE_HERMES_SOURCE_BUILD'].nil?,
+  )
+
+
+  post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+    
+    # Fix fmt consteval issue with Xcode 26 / Clang 17+
+    # Patch base.h to disable consteval for all Apple clang (it's broken in Xcode 26)
+    fmt_base_h = "#{installer.sandbox.root}/fmt/include/fmt/base.h"
+    if File.exist?(fmt_base_h)
+      content = File.read(fmt_base_h)
+      patched = content.gsub(
+        /defined\(__apple_build_version__\) && __apple_build_version__ < \d+L/,
+        'defined(__apple_build_version__)'
+      )
+      if patched != content
+        File.chmod(0644, fmt_base_h)
+        File.write(fmt_base_h, patched)
+      end
+    end
+
+    # Ensure dSYM files are generated for all pods, especially Hermes
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+        config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+        
+        # Specific settings for Hermes to ensure dSYM is generated
+        # Check for both 'hermes-engine' and targets containing 'hermes'
+        if target.name == 'hermes-engine' || target.name.downcase.include?('hermes')
+          config.build_settings['GCC_GENERATE_DEBUGGING_SYMBOLS'] = 'YES'
+          config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
+          config.build_settings['STRIP_STYLE'] = 'non-global'
+          config.build_settings['COPY_PHASE_STRIP'] = 'NO'
+          
+          # Force dSYM generation for Release builds
+          if config.name == 'Release'
+            config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+          end
+        end
+      end
+    end
+  end
+end
