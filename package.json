@@ -16,7 +16,11 @@
     "ios:dev-debug": "ENVFILE=.env npx react-native run-ios --mode Debug --scheme \"dev\" --simulator 'iPhone 17 Pro' ",
     "ios:prod-debug": "ENVFILE=.env.prod npx react-native run-ios --mode Debug --scheme \"prod\" --simulator 'iPhone 16 Pro' "
   },
+  "resolutions": {
+    "react-native-fast-image": "npm:@d11/react-native-fast-image"
+  },
   "dependencies": {
+    "react-native-fast-image": "npm:@d11/react-native-fast-image",
     "@d11/react-native-fast-image": "^8.13.0",
     "@invertase/react-native-apple-authentication": "^2.5.1",
     "@notifee/react-native": "^9.1.8",

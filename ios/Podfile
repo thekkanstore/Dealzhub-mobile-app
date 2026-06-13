@@ -70,6 +70,35 @@ target 'ThekkanVendor' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Ensure react-native-config tmp.xcconfig is included in Pods xcconfig
+    installer.pods_project.targets.each do |target|
+      next unless target.name == "Pods-ThekkanVendor"
+      target.build_configurations.each do |config|
+        ref = config.base_configuration_reference
+        next unless ref
+        xcconfig_path = ref.real_path
+        xcconfig_content = File.read(xcconfig_path)
+        include_line = '#include "../../../tmp.xcconfig"'
+        unless xcconfig_content.include?(include_line)
+          File.write(xcconfig_path, "#{include_line}\n#{xcconfig_content}")
+        end
+      end
+    end
+
+    # Add react-native-config Build Phase to main Xcode project if missing
+    require 'xcodeproj'
+    project_path = installer.sandbox.root.parent + 'ThekkanVendor.xcodeproj'
+    project = Xcodeproj::Project.open(project_path)
+    app_target = project.targets.find { |t| t.name == 'ThekkanVendor' }
+    if app_target
+      unless app_target.build_phases.any? { |p| p.respond_to?(:name) && p.name == 'Generate RNCConfig' }
+        phase = app_target.new_shell_script_build_phase('Generate RNCConfig')
+        phase.shell_script = '"${SRCROOT}/../node_modules/react-native-config/ios/ReactNativeConfig/BuildXCConfig.rb" "${SRCROOT}/.." "${SRCROOT}/tmp.xcconfig"'
+        app_target.build_phases.unshift(app_target.build_phases.pop)
+        project.save
+      end
+    end
     
     # Fix fmt consteval issue with Xcode 26 / Clang 17+
     # Patch base.h to disable consteval for all Apple clang (it's broken in Xcode 26)
