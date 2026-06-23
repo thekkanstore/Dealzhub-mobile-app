@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ImageBackground, Text, View, Dimensions, Image, Platform} from 'react-native';
+import {ImageBackground, Text, View, Dimensions, Image, Platform, TouchableOpacity} from 'react-native';
 
 import {imagePath} from '../../assets/imagePath';
 import TKStatusBar from '../../components/Common/TKStatusBar/TKStatusBar';
@@ -89,10 +89,12 @@ const Login = () => {
                     start={{x: 0.5, y: 0}}
                     end={{x: 0.5, y: 1}}>
                     <View style={styles.spacer}/>
-                    <View style={styles.contentWrapper}>
-                        <Text style={styles.titleText}>{strings('labels.dealzHub')}</Text>
-                        <Text style={styles.descriptionText}>{strings('login.loginDescription')}</Text>
-                    </View>
+                        <TouchableOpacity onLongPress={handleDemoLogin} activeOpacity={0.8} delayLongPress={2000}>
+                            <View style={styles.contentWrapper}>
+                                <Text style={styles.titleText}>{strings('labels.dealzHub')}</Text>
+                                <Text style={styles.descriptionText}>{strings('login.loginDescription')}</Text>
+                            </View>
+                        </TouchableOpacity>
                     <View style={[styles.bottomContent, {paddingBottom: bottomPadding}]}>
                         <TKButton
                             title={renderTitle()}
