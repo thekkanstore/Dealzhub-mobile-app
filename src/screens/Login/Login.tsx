@@ -12,6 +12,8 @@ import TKButton from '../../components/Common/TKButton/TKButton';
 import {useAppSelector} from '../../redux/hooks';
 import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {TKAppleIcon} from '../../components/Common/Icons/TKAppleIcon';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
+import {updateGuestStatus} from '../../redux/userSlice';
 
 const {width, height} = Dimensions.get('window');
 // TODO: Replace with valid demo account credentials created in Firebase Console
@@ -59,6 +61,10 @@ const Login = () => {
         }
     };
 
+    const handleGuestLogin = () => {
+        updateGuestStatus(true);
+    };
+
     const renderTitle = () => {
         return (
             <View style={styles.googleLogoContainer}>
@@ -104,7 +110,7 @@ const Login = () => {
                             isDisabled={isAnyLoading}
                             isLoading={isGoogleLoading}
                         />
-                        {Platform.OS === 'ios' && (
+                        {Platform.OS === 'ios' && appleAuth.isSupported && (
                             <TKButton
                                 title={renderAppleTitle()}
                                 onPress={handleAppleSignIn}
@@ -123,6 +129,10 @@ const Login = () => {
                                 isLoading={isGoogleLoading}
                             />
                         </TKRenderIf>
+
+                        <TouchableOpacity onPress={handleGuestLogin} activeOpacity={0.8} style={{marginTop: 10, alignSelf: 'center'}}>
+                            <Text style={{color: '#FFFFFF', fontSize: 16, textDecorationLine: 'underline'}}>Continue as Guest</Text>
+                        </TouchableOpacity>
                     </View>
                 </LinearGradient>
             </ImageBackground>

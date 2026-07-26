@@ -16,6 +16,9 @@ import {
   checkIsUserRegistrationCompleted,
   updateNotificationStatus,
 } from '../firestore/userFirestoreService';
+import firestore from '@react-native-firebase/firestore';
+import {FireStoreCollections} from '../../config/common/firestoreCollections';
+import {store} from '../../redux/store';
 
 const onGoogleButtonPress = async () => {
   try {
@@ -120,8 +123,8 @@ const onAppleButtonPress = async () => {
   } catch (error: any) {
     // Don't show error toast if user cancelled the flow
     if (error?.code !== appleAuth.Error.CANCELED) {
-      console.error('Apple Sign-In Error: ', error);
-      showErrorToast(strings('login.failedSignIn'));
+      console.error('Apple Sign-In Error Code: ', error?.code, 'Message: ', error?.message, error);
+      showErrorToast(strings('login.failedSignIn') + ' (' + (error?.code || 'Unknown') + ')');
     }
   }
 };
@@ -173,20 +176,74 @@ async function onDemoLogin(email: string, password: string) {
 
 async function logout() {
   try {
-    // Sign out from Firebase
-    await signOut(getAuth());
+    // Sign out from Firebase (may fail if user was just deleted)
+    try {
+      await signOut(getAuth());
+    } catch (e) {
+      console.log('Firebase signout skipped/failed', e);
+    }
 
-    // Sign out from Google
-    await GoogleSignin.signOut();
-
-    // Clear user info from Redux
-    updateUserInfo(null);
-
-    return {success: true};
+    // Sign out from Google (may fail if not logged in via Google)
+    try {
+      await GoogleSignin.signOut();
+    } catch (e) {
+      console.log('Google signout skipped/failed', e);
+    }
   } catch (error) {
-    showErrorToast('Failed to logout');
+    console.error('Logout error', error);
+  } finally {
+    // Always clear local Redux state so the user is never trapped
+    updateUserInfo(null);
+  }
+  return {success: true};
+}
+
+async function deleteAccount() {
+  try {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      throw new Error('No authenticated user found');
+    }
+
+    // Delete user from Firestore DB using the ID currently stored in Redux
+    // This is required because Google Sign-In stores the DB document under the Google ID, not the Firebase UID.
+    try {
+      const state = store.getState();
+      const reduxUserId = state.user.user?.user?.id;
+      
+      // Delete using Redux ID if available, otherwise fallback to Firebase UID
+      const docIdToDelete = reduxUserId || currentUser.uid;
+      
+      if (docIdToDelete) {
+        await firestore().collection(FireStoreCollections.USERS).doc(docIdToDelete).delete();
+      }
+      
+      // Also attempt to delete by Firebase UID just in case it's different and exists
+      if (reduxUserId && reduxUserId !== currentUser.uid) {
+        await firestore().collection(FireStoreCollections.USERS).doc(currentUser.uid).delete();
+      }
+    } catch (dbError) {
+      console.error('Failed to delete user from Firestore:', dbError);
+    }
+
+    // Delete user from Firebase Auth
+    await currentUser.delete();
+
+    // Clear local state using existing logout flow
+    await logout();
+    
+    return {success: true};
+  } catch (error: any) {
+    console.error('Delete Account Error: ', error);
+    if (error.code === 'auth/requires-recent-login') {
+        showErrorToast('Please logout and login again to delete your account.');
+    } else {
+        showErrorToast('Failed to delete account. Please try again.');
+    }
     return {success: false, error};
   }
 }
 
-export default {onGoogleSignIn: onGoogleButtonPress, onAppleSignIn: onAppleButtonPress, logout, onDemoLogin};
+export default {onGoogleSignIn: onGoogleButtonPress, onAppleSignIn: onAppleButtonPress, logout, onDemoLogin, deleteAccount};

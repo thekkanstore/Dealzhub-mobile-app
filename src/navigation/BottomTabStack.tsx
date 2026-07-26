@@ -13,7 +13,7 @@ import {TKHomeSelectedIcon} from '../components/Common/Icons/TKHomeSelectedIcon'
 import {TKHomeUnselectedIcon} from '../components/Common/Icons/TKHomeUnselectedIcon';
 import TKCustomBottomTabBar from '../components/Common/TKCustomBottomTabBar/TKCustomBottomTabBar';
 import {TKVendorSelectedIcon} from '../components/Common/Icons/TKVendorSelectedIcon';
-import {TKVendorUnselectedIcon} from '../components/Common/Icons/TKVendorUnSelectedIcon';
+import {TKVendorUnselectedIcon} from '../components/Common/Icons/TKVendorUnselectedIcon';
 import {VendorStack} from './VendorStack';
 import {FavoritesStack} from './FavoritesStack';
 import {CartStack} from './CartStack';

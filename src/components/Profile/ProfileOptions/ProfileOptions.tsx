@@ -1,6 +1,8 @@
 import React from 'react';
-import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Pressable, StyleSheet, Text, View, Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import authService from '../../../services/auth/authService';
+import TKConfirmModal from '../../Common/TKConfirmModal/TKConfirmModal';
 
 import TKItemCard from '../../Common/TKItemCard/TKItemCard';
 import {strings} from '../../../utils/language/langauageUtils';
@@ -37,6 +39,13 @@ const screenNames = [
     name: strings('labels.settings'),
     routeName: navigationStrings.SETTINGS,
   },
+  {
+    id: 5,
+    icon: TKSettingsIcon, // using the same icon as a placeholder, can be replaced
+    name: 'Delete Account',
+    routeName: 'DELETE_ACCOUNT',
+    textColor: '#FF3B30',
+  },
 ];
 
 interface ScreenName {
@@ -44,11 +53,22 @@ interface ScreenName {
   icon: React.FC<any>;
   name: string;
   routeName: string;
+  textColor?: string;
 }
 const ProfileOptions = () => {
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = React.useState(false);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const handleNavigate = (item: ScreenName) => {
+    if (item.routeName === 'DELETE_ACCOUNT') {
+      setIsDeleteModalVisible(true);
+      return;
+    }
     navigation.navigate(item.routeName as any);
+  };
+
+  const handleDeleteConfirm = () => {
+    setIsDeleteModalVisible(false);
+    authService.deleteAccount();
   };
   const renderItem = ({item}: {item: ScreenName}) => {
     const Icon = item.icon;
@@ -62,18 +82,29 @@ const ProfileOptions = () => {
               color={colors.greyTextColor}
             />
           </View>
-          <Text style={style.itemText}>{item.name}</Text>
+          <Text style={[style.itemText, item.textColor ? {color: item.textColor} : {}]}>{item.name}</Text>
         </TKItemCard>
       </Pressable>
     );
   };
   return (
-    <FlatList
-      data={screenNames}
-      renderItem={renderItem}
-      style={style.container}
-      ListFooterComponent={<CustomerSupportCard />}
-    />
+    <>
+      <FlatList
+        data={screenNames}
+        renderItem={renderItem}
+        style={style.container}
+        ListFooterComponent={<CustomerSupportCard />}
+      />
+      <TKConfirmModal
+        isVisible={isDeleteModalVisible}
+        title="Delete Account"
+        bodyText="Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost."
+        confirmButtonText="Delete"
+        confirmButtonAction={handleDeleteConfirm}
+        cancelButtonText="Cancel"
+        cancelButtonAction={() => setIsDeleteModalVisible(false)}
+      />
+    </>
   );
 };
 

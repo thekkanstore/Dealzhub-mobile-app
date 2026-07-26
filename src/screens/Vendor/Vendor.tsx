@@ -17,6 +17,8 @@ import {CategoryListHeaderTabs} from '../../config/common/constants';
 import {RouteProp} from '@react-navigation/native';
 import {VendorService} from '../../services/vendor/vendorService';
 import {fontFamily} from '../../config/styles/fontFamily';
+import {useAppSelector} from '../../redux/hooks';
+import {updateGuestStatus} from '../../redux/userSlice';
 
 interface Props {
   navigation: VendorScreenNavigationProp;
@@ -27,6 +29,11 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const {isFromProductDetails = false, storeId = ''} = route.params || {};
   const {data: storeDetails, isPending} = useGetStoreDetails(storeId);
   const {data: categoryList} = useGetCategoriesList();
+  const isGuest = useAppSelector(state => state.user.isGuest);
+
+  const handleLoginPress = () => {
+    updateGuestStatus(false);
+  };
 
   const handleAddStore = () => {
     navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
@@ -38,14 +45,14 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const handleQRPress = () => {
     if (storeDetails?.id) {
       navigation.navigate(navigationStrings.QR_CODE_SHARE, {
-        qrValue: `dealszhub://vendor/${storeDetails.id}`,
+        qrValue: `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`,
         storeName: storeDetails.storeName || 'Store',
       });
     }
   };
 
   const renderHelpButton = () => {
-    if (isPending || isFromProductDetails) {
+    if (isPending || isFromProductDetails || (isGuest && !isFromProductDetails)) {
       return null;
     }
     if (storeDetails && !isFromProductDetails) {
@@ -91,21 +98,30 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
         showBackButton={isFromProductDetails}
-        qrValue={storeDetails?.id ? `dealszhub://vendor/${storeDetails.id}` : undefined}
+        qrValue={storeDetails?.id ? `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}` : undefined}
         onQRPress={handleQRPress}
       />
-      <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
-        <StoreDetailsCard
-          // @ts-expect-error TS2322
-          storeDetails={storeDetails}
-          navigation={navigation}
-          isFromProductDetails={isFromProductDetails}
-        />
-        <CategoryHeaderTabBar
-          headerTabItems={headerList}
-          storeDetails={storeDetails}
-          isFromProductDetails={isFromProductDetails}
-        />
+      <TKRenderIf isRender={!isGuest || isFromProductDetails}>
+        <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
+          <StoreDetailsCard
+            // @ts-expect-error TS2322
+            storeDetails={storeDetails}
+            navigation={navigation}
+            isFromProductDetails={isFromProductDetails}
+          />
+          <CategoryHeaderTabBar
+            headerTabItems={headerList}
+            storeDetails={storeDetails}
+            isFromProductDetails={isFromProductDetails}
+          />
+        </TKRenderIf>
+      </TKRenderIf>
+      <TKRenderIf isRender={isGuest && !isFromProductDetails}>
+        <View style={style.guestContainer}>
+          <Text style={style.guestTitle}>Manage Your Store</Text>
+          <Text style={style.guestSubtitle}>Login or register to become a vendor and manage your products.</Text>
+          <TKButton title="Login / Register" onPress={handleLoginPress} type="primary" style={style.loginButton} />
+        </View>
       </TKRenderIf>
     </View>
   );
@@ -129,5 +145,27 @@ const style = StyleSheet.create({
   statusText: {
     fontSize: moderateScale(12),
     fontFamily: fontFamily.medium,
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(30),
+  },
+  guestTitle: {
+    fontSize: moderateScale(20),
+    fontFamily: fontFamily.bold,
+    color: colors.primaryTextColor,
+    marginBottom: moderateScale(10),
+  },
+  guestSubtitle: {
+    fontSize: moderateScale(14),
+    fontFamily: fontFamily.regular,
+    color: colors.secondaryTextColor,
+    textAlign: 'center',
+    marginBottom: moderateScale(30),
+  },
+  loginButton: {
+    width: '100%',
   },
 });
