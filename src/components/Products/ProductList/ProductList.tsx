@@ -54,7 +54,15 @@ const ProductList: React.FC<ProductListProps> = ({
   } = useGetProductsList({storeId, categoryId, limit, isActive, location});
 
   // Flatten all pages into a single array
-  const products = data?.pages.flatMap(page => page.products) || [];
+  let products = data?.pages.flatMap(page => page.products) || [];
+
+  if (!isVendor) {
+    products = products.filter(p => {
+      const status = p.store?.vendorStatus?.toLowerCase();
+      return status !== 'inactive' && status !== 'private';
+    });
+  }
+
   const renderProduct: ListRenderItem<IProductTable> = useCallback(
     ({item}) => (
       <ProductCard product={item} onPress={() => onProductPress?.(item)} isVendor={isVendor} />

@@ -247,7 +247,24 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
           id: doc.id,
         }) as unknown as IProductTable,
     );
-    return products;
+
+    if (products.length === 0) return products;
+
+    const uniqueStoreIds = [...new Set(products.map(p => p.storeId))];
+    const uniqueCategoryIds = [...new Set(products.map(p => p.categoryId))];
+
+    const [storesMap, categoriesMap] = await Promise.all([
+      batchGetStores(uniqueStoreIds),
+      batchGetCategories(uniqueCategoryIds),
+    ]);
+
+    const productsWithDetails: IProductTable[] = products.map(product => ({
+      ...product,
+      store: storesMap[product.storeId],
+      category: categoriesMap[product.categoryId],
+    })) as unknown as IProductTable[];
+
+    return productsWithDetails;
   } catch (error: any) {
     console.error('Error searching products by name:', error);
     throw new Error(`Failed to search products: ${error}`);

@@ -68,9 +68,16 @@ const SearchItems: React.FC<Props> = ({productName}) => {
     );
   }
 
+  const filteredProductList = useMemo(() => {
+    return (productList || []).filter(p => {
+      const status = p.store?.vendorStatus?.toLowerCase();
+      return status !== 'inactive' && status !== 'private';
+    });
+  }, [productList]);
+
   return (
     <FlatList
-      data={productList ?? []}
+      data={filteredProductList}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item?.id}-${index}`}
       onEndReachedThreshold={0.1}
