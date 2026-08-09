@@ -59,6 +59,13 @@ const SearchItems: React.FC<Props> = ({productName}) => {
     [handleOnPressItem],
   );
 
+  const filteredProductList = useMemo(() => {
+    return (productList || []).filter(p => {
+      const status = p.store?.vendorStatus?.toLowerCase();
+      return status !== 'inactive' && status !== 'private';
+    });
+  }, [productList]);
+
   if (isPending) {
     return (
       <View style={styles.loadingContainer}>
@@ -67,13 +74,6 @@ const SearchItems: React.FC<Props> = ({productName}) => {
       </View>
     );
   }
-
-  const filteredProductList = useMemo(() => {
-    return (productList || []).filter(p => {
-      const status = p.store?.vendorStatus?.toLowerCase();
-      return status !== 'inactive' && status !== 'private';
-    });
-  }, [productList]);
 
   return (
     <FlatList

@@ -250,8 +250,8 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
 
     if (products.length === 0) return products;
 
-    const uniqueStoreIds = [...new Set(products.map(p => p.storeId))];
-    const uniqueCategoryIds = [...new Set(products.map(p => p.categoryId))];
+    const uniqueStoreIds = [...new Set(products.map(p => p.storeId).filter(Boolean))];
+    const uniqueCategoryIds = [...new Set(products.map(p => p.categoryId).filter(Boolean))];
 
     const [storesMap, categoriesMap] = await Promise.all([
       batchGetStores(uniqueStoreIds),
@@ -277,6 +277,7 @@ async function getProductsListWithDetails({
   limit = 10,
   lastDoc,
   isActive,
+  location,
 }: IGetProductsParams): Promise<IGetProductsWithDetailsResponse> {
   try {
     // First, get the products using the existing logic
@@ -286,6 +287,7 @@ async function getProductsListWithDetails({
       limit,
       lastDoc,
       isActive,
+      location,
     });
 
     if (productsResponse.products.length === 0) {
@@ -298,8 +300,8 @@ async function getProductsListWithDetails({
     }
 
     // Extract unique store IDs and category IDs from products
-    const uniqueStoreIds = [...new Set(productsResponse.products.map(p => p.storeId))];
-    const uniqueCategoryIds = [...new Set(productsResponse.products.map(p => p.categoryId))];
+    const uniqueStoreIds = [...new Set(productsResponse.products.map(p => p.storeId).filter(Boolean))];
+    const uniqueCategoryIds = [...new Set(productsResponse.products.map(p => p.categoryId).filter(Boolean))];
 
     // Batch fetch stores and categories
     const [storesMap, categoriesMap] = await Promise.all([
