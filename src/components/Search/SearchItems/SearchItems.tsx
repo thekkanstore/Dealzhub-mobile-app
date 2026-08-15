@@ -9,6 +9,7 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import ProductCard from '../../Products/ProductCard/ProductCard';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {useGetSearchProductList} from '../../../react-queries/product/productQueries';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
 import {strings} from '../../../utils/language/langauageUtils';
 
@@ -54,9 +55,12 @@ const SearchItems: React.FC<Props> = ({productName}) => {
     },
     [navigation],
   );
+  const {data: userDetails} = useGetUserDetails(true);
+  const favorites = userDetails?.favorites || [];
+
   const renderProduct: ListRenderItem<IProductTable | null> = useCallback(
-    ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} />,
-    [handleOnPressItem],
+    ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} isFavorite={favorites.includes(item!.id)} />,
+    [handleOnPressItem, favorites],
   );
 
   const filteredProductList = useMemo(() => {
