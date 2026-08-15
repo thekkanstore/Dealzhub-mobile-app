@@ -25,6 +25,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ThekkanVendor/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ThekkanVendor/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1C80324F87354E9FBD606777 /* Nunito-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Nunito-Bold.ttf"; path = "../src/assets/fonts/Nunito-Bold.ttf"; sourceTree = "<group>"; };
+		40DB08152FEA64D80075D9D4 /* ThekkanVendor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ThekkanVendor.entitlements; path = ThekkanVendor/ThekkanVendor.entitlements; sourceTree = "<group>"; };
 		52C364A7FAA14A4198A00C08 /* Nunito-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Nunito-SemiBold.ttf"; path = "../src/assets/fonts/Nunito-SemiBold.ttf"; sourceTree = "<group>"; };
 		624500D37FA6045A979C71EB /* Pods-ThekkanVendor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThekkanVendor.debug.xcconfig"; path = "Target Support Files/Pods-ThekkanVendor/Pods-ThekkanVendor.debug.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ThekkanVendor/AppDelegate.swift; sourceTree = "<group>"; };
@@ -52,6 +53,7 @@
 		13B07FAE1A68108700A75B9A /* ThekkanVendor */ = {
 			isa = PBXGroup;
 			children = (
+				40DB08152FEA64D80075D9D4 /* ThekkanVendor.entitlements */,
 				C6089E062E33FF5A00B15AC3 /* GoogleService-Info.plist */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
@@ -124,9 +126,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* ThekkanVendor */ = {
+		13B07F861A680F5B00A75B9A /* 	 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ThekkanVendor" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "	" */;
 			buildPhases = (
 				9F1ABAFD5C6D9B885FDA7F79 /* [CP] Check Pods Manifest.lock */,
 				9F94A0C26D947AC8814736CA /* Generate RNCConfig */,
@@ -143,7 +145,7 @@
 			);
 			dependencies = (
 			);
-			name = ThekkanVendor;
+			name = "	";
 			productName = ThekkanVendor;
 			productReference = 13B07F961A680F5B00A75B9A /* ThekkanVendor.app */;
 			productType = "com.apple.product-type.application";
@@ -175,7 +177,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* ThekkanVendor */,
+				13B07F861A680F5B00A75B9A /* 	 */,
 			);
 		};
 /* End PBXProject section */
@@ -350,7 +352,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CODE_SIGN_ENTITLEMENTS = ThekkanVendor/ThekkanVendor.entitlements;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = H47QGWW68Q;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ThekkanVendor/Info.plist;
@@ -359,13 +362,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.ThekkanVendor;
 				PRODUCT_NAME = ThekkanVendor;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -379,7 +382,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CODE_SIGN_ENTITLEMENTS = ThekkanVendor/ThekkanVendor.entitlements;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = H47QGWW68Q;
 				INFOPLIST_FILE = ThekkanVendor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -387,13 +391,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.ThekkanVendor;
 				PRODUCT_NAME = ThekkanVendor;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -578,7 +582,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ThekkanVendor" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "	" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,

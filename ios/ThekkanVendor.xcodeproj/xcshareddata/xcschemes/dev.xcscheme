@@ -17,7 +17,7 @@
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                      BuildableName = "ThekkanVendor.app"
-                     BlueprintName = "ThekkanVendor"
+                     BlueprintName = "&#9;"
                      ReferencedContainer = "container:ThekkanVendor.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
@@ -33,7 +33,7 @@
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                      BuildableName = "ThekkanVendor.app"
-                     BlueprintName = "ThekkanVendor"
+                     BlueprintName = "&#9;"
                      ReferencedContainer = "container:ThekkanVendor.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
@@ -51,7 +51,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "ThekkanVendor.app"
-               BlueprintName = "ThekkanVendor"
+               BlueprintName = "&#9;"
                ReferencedContainer = "container:ThekkanVendor.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -89,7 +89,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "ThekkanVendor.app"
-            BlueprintName = "ThekkanVendor"
+            BlueprintName = "&#9;"
             ReferencedContainer = "container:ThekkanVendor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -106,7 +106,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "ThekkanVendor.app"
-            BlueprintName = "ThekkanVendor"
+            BlueprintName = "&#9;"
             ReferencedContainer = "container:ThekkanVendor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
