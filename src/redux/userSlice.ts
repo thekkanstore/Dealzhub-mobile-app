@@ -6,11 +6,13 @@ export type IFeatures = string | null;
 interface IFeatureInitialState {
   user: User | null;
   isNewUser: boolean;
+  isGuest: boolean;
 }
 
 const initialState: IFeatureInitialState = {
   user: null,
   isNewUser: false,
+  isGuest: false,
 };
 
 const userSlice = createSlice({
@@ -23,10 +25,13 @@ const userSlice = createSlice({
     setNewUser(state, action) {
       state.isNewUser = action.payload;
     },
+    setGuestStatus(state, action) {
+      state.isGuest = action.payload;
+    },
   },
 });
 
-export const {setUserInfo, setNewUser} = userSlice.actions;
+export const {setUserInfo, setNewUser, setGuestStatus} = userSlice.actions;
 export default userSlice.reducer;
 
 export const updateUserInfo = (data: User | null) => {
@@ -34,4 +39,7 @@ export const updateUserInfo = (data: User | null) => {
 };
 export const updateNewUserStatus = (data: boolean) => {
   store.dispatch(setNewUser(data));
+};
+export const updateGuestStatus = (data: boolean) => {
+  store.dispatch(setGuestStatus(data));
 };

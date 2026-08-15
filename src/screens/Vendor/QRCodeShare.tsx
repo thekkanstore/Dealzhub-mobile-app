@@ -59,20 +59,19 @@ const QRCodeShare: React.FC<Props> = ({route}) => {
     try {
       // Request storage permission for Android
       if (Platform.OS === 'android') {
-        const permission =
-          Platform.Version >= 33
-            ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-            : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-
-        const result = await check(permission);
-        if (result !== RESULTS.GRANTED) {
-          const requestResult = await request(permission);
-          if (requestResult !== RESULTS.GRANTED) {
-            Alert.alert(
-              strings('labels.permissionDenied'),
-              strings('labels.storagePermissionRequired'),
-            );
-            return;
+        if (Number(Platform.Version) < 33) {
+          const permission = PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+          
+          const result = await check(permission);
+          if (result !== RESULTS.GRANTED) {
+            const requestResult = await request(permission);
+            if (requestResult !== RESULTS.GRANTED) {
+              Alert.alert(
+                strings('labels.permissionDenied'),
+                strings('labels.storagePermissionRequired'),
+              );
+              return;
+            }
           }
         }
       }

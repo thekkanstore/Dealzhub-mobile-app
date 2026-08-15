@@ -27,6 +27,7 @@ export default function MainStack() {
   }, []);
   const isUserDetails = useAppSelector(state => state.user.user);
   const isNewUser = useAppSelector(state => state.user.isNewUser);
+  const isGuest = useAppSelector(state => state.user.isGuest);
 
   // const handleNotification = () => {
   //   updateNotificationPermissionModalVisibility(false);
@@ -55,11 +56,11 @@ export default function MainStack() {
       <View
         style={{
           flex: 1,
-          paddingTop: isUserDetails ? insets.top : 0,
-          paddingBottom: isUserDetails ? insets.bottom : 0,
+          paddingTop: isUserDetails || isGuest ? insets.top : 0,
+          paddingBottom: isUserDetails || isGuest ? insets.bottom : 0,
         }}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          {!isUserDetails ? (
+          {!isUserDetails && !isGuest ? (
             <Stack.Screen
               name={navigationStrings.AUTH_STACK}
               component={AuthStack}

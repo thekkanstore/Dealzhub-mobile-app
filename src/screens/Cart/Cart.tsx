@@ -4,12 +4,32 @@ import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
 import CartItemsComponent from '../../components/Cart/CartItems/CartItems';
 import {moderateScale} from '../../config/styles/responsiveSize';
+import {useAppSelector} from '../../redux/hooks';
+import TKButton from '../../components/Common/TKButton/TKButton';
+import {updateGuestStatus} from '../../redux/userSlice';
+import {colors} from '../../config/styles/colors';
+import {fontFamily} from '../../config/styles/fontFamily';
+import {Text} from 'react-native';
 
 const Cart = () => {
+  const isGuest = useAppSelector(state => state.user.isGuest);
+
+  const handleLoginPress = () => {
+    updateGuestStatus(false);
+  };
+
   return (
     <View style={styles.container}>
       <TKHeader header={strings('labels.myCart')} containerStyle={styles.headerContainer} />
-      <CartItemsComponent />
+      {isGuest ? (
+        <View style={styles.guestContainer}>
+          <Text style={styles.guestTitle}>Your Cart is Waiting</Text>
+          <Text style={styles.guestSubtitle}>Login or create an account to start adding items to your cart.</Text>
+          <TKButton title="Login / Register" onPress={handleLoginPress} type="primary" style={styles.loginButton} />
+        </View>
+      ) : (
+        <CartItemsComponent />
+      )}
     </View>
   );
 };
@@ -20,5 +40,27 @@ const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#fff'},
   headerContainer: {
     paddingHorizontal: moderateScale(16),
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(30),
+  },
+  guestTitle: {
+    fontSize: moderateScale(20),
+    fontFamily: fontFamily.bold,
+    color: colors.primaryTextColor,
+    marginBottom: moderateScale(10),
+  },
+  guestSubtitle: {
+    fontSize: moderateScale(14),
+    fontFamily: fontFamily.regular,
+    color: colors.secondaryTextColor,
+    textAlign: 'center',
+    marginBottom: moderateScale(30),
+  },
+  loginButton: {
+    width: '100%',
   },
 });

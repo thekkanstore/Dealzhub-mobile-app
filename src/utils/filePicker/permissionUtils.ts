@@ -39,17 +39,10 @@ const getAndroidApiLevel = (): number => {
 const getAndroidGalleryPermissions = (): string[] => {
   const apiLevel = getAndroidApiLevel();
 
-  if (apiLevel >= ANDROID_API_LEVELS.UPSIDE_DOWN_CAKE) {
-    // Android 14+: Support partial access with new permission
-    return [
-      PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
-      PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
-      // Note: READ_MEDIA_VISUAL_USER_SELECTED not available in react-native-permissions yet
-      // Will be handled by system photo picker for partial access
-    ];
-  } else if (apiLevel >= ANDROID_API_LEVELS.TIRAMISU) {
-    // Android 13: New granular media permissions
-    return [PERMISSIONS.ANDROID.READ_MEDIA_IMAGES, PERMISSIONS.ANDROID.READ_MEDIA_VIDEO];
+  if (apiLevel >= ANDROID_API_LEVELS.TIRAMISU) {
+    // Android 13+: System photo picker doesn't need permissions
+    // We removed READ_MEDIA_IMAGES and READ_MEDIA_VIDEO to comply with Play Store policies
+    return [];
   } else if (apiLevel >= ANDROID_API_LEVELS.MARSHMALLOW) {
     // Android 6-12: Legacy READ_EXTERNAL_STORAGE
     return [PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE];
@@ -141,8 +134,8 @@ const getAndroidDocumentPermissions = (): string[] => {
   const apiLevel = getAndroidApiLevel();
 
   if (apiLevel >= ANDROID_API_LEVELS.TIRAMISU) {
-    // Android 13+: Request granular media permissions for documents that might contain media
-    return [PERMISSIONS.ANDROID.READ_MEDIA_IMAGES, PERMISSIONS.ANDROID.READ_MEDIA_VIDEO];
+    // Android 13+: System picker doesn't need permissions
+    return [];
   } else if (apiLevel >= ANDROID_API_LEVELS.MARSHMALLOW) {
     // Android 6-12: Legacy READ_EXTERNAL_STORAGE for document access
     return [PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE];
