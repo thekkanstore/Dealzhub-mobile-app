@@ -14,10 +14,10 @@ interface ProductItemProps {
   product: IProductTable;
   onPress?: () => void;
   isVendor?: boolean;
+  isFavorite?: boolean;
 }
 
-const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) => {
-  const {data: userDetails} = useGetUserDetails(true);
+const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor, isFavorite = false}) => {
   const renderStatus = () => {
     if (!product?.isOutOfStock && !product?.isSoldOut) {
       return null;
@@ -50,7 +50,7 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor}) =
           <TKRenderIf isRender={!isVendor}>
             <Favorite
               productId={product?.id}
-              isFavorite={userDetails?.favorites?.includes(product?.id) ?? false}
+              isFavorite={isFavorite}
               containerStyle={styles.favoriteIcon}
             />
           </TKRenderIf>
@@ -159,4 +159,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductCard;
+export default React.memo(ProductCard, (prevProps, nextProps) => {
+  return (
+    prevProps.product?.id === nextProps.product?.id &&
+    prevProps.isVendor === nextProps.isVendor &&
+    prevProps.isFavorite === nextProps.isFavorite &&
+    prevProps.product?.isOutOfStock === nextProps.product?.isOutOfStock &&
+    prevProps.product?.isSoldOut === nextProps.product?.isSoldOut &&
+    prevProps.product?.actualPrice === nextProps.product?.actualPrice &&
+    prevProps.product?.discountPrice === nextProps.product?.discountPrice
+  );
+});

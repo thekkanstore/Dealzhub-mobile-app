@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 
 import TKHeader from '../../components/Common/TKHeader/TKHeader';
 import {strings} from '../../utils/language/langauageUtils';
@@ -29,7 +29,17 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const {isFromProductDetails = false, storeId = ''} = route.params || {};
   const {data: storeDetails, isPending} = useGetStoreDetails(storeId);
   const {data: categoryList} = useGetCategoriesList();
-  const isGuest = useAppSelector(state => state.user.isGuest);
+  const {user, isGuest} = useAppSelector(state => state.user);
+
+  const isStoreOwner = useMemo(() => {
+    return !!user?.user?.id && storeDetails?.userId === user.user.id;
+  }, [user, storeDetails]);
+
+  const isStoreInactive = useMemo(() => {
+    if (!storeDetails) return false;
+    const status = storeDetails.vendorStatus?.toLowerCase();
+    return status === 'inactive' || status === 'rejected';
+  }, [storeDetails]);
 
   const handleLoginPress = () => {
     updateGuestStatus(false);
@@ -102,7 +112,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         onQRPress={handleQRPress}
       />
       <TKRenderIf isRender={!isGuest || isFromProductDetails}>
-        <TKRenderIf isRender={!!storeDetails && !!headerList?.length}>
+        <TKRenderIf isRender={!!storeDetails && !!headerList?.length && (!isStoreInactive || isStoreOwner)}>
           <StoreDetailsCard
             // @ts-expect-error TS2322
             storeDetails={storeDetails}
@@ -115,6 +125,20 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
             isFromProductDetails={isFromProductDetails}
           />
         </TKRenderIf>
+      </TKRenderIf>
+
+      <TKRenderIf isRender={!!storeDetails && isStoreInactive && !isStoreOwner}>
+        <View style={style.inactiveContainer}>
+          <Image source={require('../../assets/images/appLogo.png')} style={style.inactiveLogo} resizeMode="contain" />
+          <Text style={style.guestTitle}>Store Inactive</Text>
+          <Text style={style.guestSubtitle}>This store is currently inactive and cannot be viewed.</Text>
+          <TKButton 
+            title="Go to Home Page" 
+            onPress={() => navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never)} 
+            type="primary" 
+            style={style.loginButton} 
+          />
+        </View>
       </TKRenderIf>
       <TKRenderIf isRender={isGuest && !isFromProductDetails}>
         <View style={style.guestContainer}>
@@ -167,5 +191,17 @@ const style = StyleSheet.create({
   },
   loginButton: {
     width: '100%',
+  },
+  inactiveContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(30),
+    backgroundColor: colors.primaryBackgroundColor,
+  },
+  inactiveLogo: {
+    width: moderateScale(100),
+    height: moderateScale(100),
+    marginBottom: moderateScale(20),
   },
 });

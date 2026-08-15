@@ -70,7 +70,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
     });
   };
 
-  if (!isFromProductDetails && storeDetails.vendorStatus !== 'approved') {
+  if (!isFromProductDetails && storeDetails.vendorStatus !== 'approved' && storeDetails.vendorStatus !== 'private') {
     return null;
   }
   return (

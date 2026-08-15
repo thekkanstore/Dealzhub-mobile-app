@@ -9,6 +9,7 @@ import {
   ListRenderItem,
 } from 'react-native';
 import {useGetProductsList} from '../../../react-queries/product/productQueries';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import {IProductTable} from '../../../config/models/product';
 import {colors} from '../../../config/styles/colors';
 import {fontScale, moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
@@ -53,13 +54,30 @@ const ProductList: React.FC<ProductListProps> = ({
     error,
   } = useGetProductsList({storeId, categoryId, limit, isActive, location});
 
-  // Flatten all pages into a single array
-  const products = data?.pages.flatMap(page => page.products) || [];
+  const products = React.useMemo(() => {
+    let allProducts = data?.pages.flatMap(page => page.products) || [];
+    if (!isVendor) {
+      allProducts = allProducts.filter(p => {
+        const status = p.store?.vendorStatus?.toLowerCase();
+        return status !== 'inactive' && status !== 'private';
+      });
+    }
+    return allProducts;
+  }, [data?.pages, isVendor]);
+
+  const {data: userDetails} = useGetUserDetails(true);
+  const favorites = userDetails?.favorites || [];
+
   const renderProduct: ListRenderItem<IProductTable> = useCallback(
     ({item}) => (
-      <ProductCard product={item} onPress={() => onProductPress?.(item)} isVendor={isVendor} />
+      <ProductCard 
+        product={item} 
+        onPress={() => onProductPress?.(item)} 
+        isVendor={isVendor} 
+        isFavorite={favorites.includes(item.id)}
+      />
     ),
-    [onProductPress, isVendor],
+    [onProductPress, isVendor, favorites],
   );
 
   const renderFooter = () => (
