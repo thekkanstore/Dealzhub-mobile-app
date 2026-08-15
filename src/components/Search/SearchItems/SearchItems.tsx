@@ -9,6 +9,7 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import ProductCard from '../../Products/ProductCard/ProductCard';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {useGetSearchProductList} from '../../../react-queries/product/productQueries';
+import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
 import {strings} from '../../../utils/language/langauageUtils';
 
@@ -54,10 +55,20 @@ const SearchItems: React.FC<Props> = ({productName}) => {
     },
     [navigation],
   );
+  const {data: userDetails} = useGetUserDetails(true);
+  const favorites = userDetails?.favorites || [];
+
   const renderProduct: ListRenderItem<IProductTable | null> = useCallback(
-    ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} />,
-    [handleOnPressItem],
+    ({item}) => <ProductCard product={item!} onPress={() => handleOnPressItem(item!)} isFavorite={favorites.includes(item!.id)} />,
+    [handleOnPressItem, favorites],
   );
+
+  const filteredProductList = useMemo(() => {
+    return (productList || []).filter(p => {
+      const status = p.store?.vendorStatus?.toLowerCase();
+      return status !== 'inactive' && status !== 'private';
+    });
+  }, [productList]);
 
   if (isPending) {
     return (
@@ -70,7 +81,7 @@ const SearchItems: React.FC<Props> = ({productName}) => {
 
   return (
     <FlatList
-      data={productList ?? []}
+      data={filteredProductList}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item?.id}-${index}`}
       onEndReachedThreshold={0.1}
