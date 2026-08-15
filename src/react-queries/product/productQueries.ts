@@ -10,6 +10,7 @@ import {
 import {
   createNewProduct,
   getProductsList,
+  getProductsListWithDetails,
   getProductById,
   updateProductDetails,
   updateProductStatus,
@@ -122,7 +123,7 @@ export const useGetProductsList = ({
     queryKey: ['getProductsList', storeId, categoryId, location],
     queryFn: async ({pageParam}) => {
       try {
-        const data = await getProductsList({
+        const data = await getProductsListWithDetails({
           storeId,
           categoryId,
           limit,
