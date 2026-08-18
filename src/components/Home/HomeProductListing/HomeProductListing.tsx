@@ -14,6 +14,7 @@ import FastImage from 'react-native-fast-image';
 import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {strings} from '../../../utils/language/langauageUtils';
 import {imagePath} from '../../../assets/imagePath';
+import ProductListingCarousel from '../ProductListingCarousel/ProductListingCarousel';
 
 const TabItems: ICategoryTable[] = [
   {
@@ -73,8 +74,11 @@ const HomeProductListing = ({location}: Props) => {
       </TouchableOpacity>
     );
   };
-  return (
+
+  const renderListHeader = () => (
     <View>
+      <ProductListingCarousel />
+      <View style={{height: moderateScale(16)}} />
       <FlatList
         ref={flatListRef}
         data={categoryFinalList ?? []}
@@ -97,19 +101,27 @@ const HomeProductListing = ({location}: Props) => {
           });
         }}
       />
-      <View style={styles.productListContainer}>
-        <ProductList
-          key={activeTab?.id}
-          categoryId={activeTab?.id === 'ALL' ? undefined : activeTab?.id}
-          onProductPress={handleOnPressItem}
-          location={location}
-        />
-      </View>
+      <View style={{height: moderateScale(16)}} />
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <ProductList
+        key={activeTab?.id}
+        categoryId={activeTab?.id === 'ALL' ? undefined : activeTab?.id}
+        onProductPress={handleOnPressItem}
+        location={location}
+        ListHeaderComponent={renderListHeader()}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   contentContainerStyle: {
     paddingHorizontal: moderateScale(20),
   },

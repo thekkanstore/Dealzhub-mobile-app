@@ -1,5 +1,5 @@
 import {Linking, StyleSheet, Alert} from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import TKButton from '../../Common/TKButton/TKButton';
 import {strings} from '../../../utils/language/langauageUtils';
 import {IProduct} from '../../../config/models/product';
@@ -7,7 +7,6 @@ import {useGetUserDetails, useUpdateCartItemsList} from '../../../react-queries/
 import {useAppSelector} from '../../../redux/hooks';
 import {updateGuestStatus} from '../../../redux/userSlice';
 import TKConfirmModal from '../../Common/TKConfirmModal/TKConfirmModal';
-import {useState} from 'react';
 
 interface Props {
   productDetails: IProduct;
@@ -22,9 +21,11 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
 
   const isGuest = useAppSelector(state => state.user.isGuest);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [isBuyNowFlow, setIsBuyNowFlow] = useState(false);
 
   const handleAddToCart = () => {
     if (isGuest) {
+      setIsBuyNowFlow(false);
       setIsLoginModalVisible(true);
       return;
     }
@@ -33,24 +34,26 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
       updateStatus: 'add',
     });
   };
-  const handleBuyNow = () => {
-    if (isGuest) {
-      setIsLoginModalVisible(true);
-      return;
-    }
+
+  const executeBuyNow = () => {
     const message = `Hi! I'm interested in ${productDetails.name}, priced at ${productDetails.discountPrice}. Can you tell me more?`;
     const rawPhone = productDetails.store.phoneNumber || '';
     const cleanPhone = rawPhone.replace(/\D/g, ''); // Remove non-digit characters
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
-    const url =
-      'whatsapp://send?text=' +
-      encodeURIComponent(message) +
-      '&phone=' +
-      formattedPhone;
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${formattedPhone}`;
     Linking.openURL(url)
       .then(() => {})
       .catch(() => Alert.alert('Error', 'Make sure WhatsApp installed on your device'));
+  };
+
+  const handleBuyNow = () => {
+    if (isGuest) {
+      setIsBuyNowFlow(true);
+      setIsLoginModalVisible(true);
+      return;
+    }
+    executeBuyNow();
   };
 
   return (
@@ -83,6 +86,15 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
         }}
         cancelButtonText="Cancel"
         cancelButtonAction={() => setIsLoginModalVisible(false)}
+        thirdButtonText={isBuyNowFlow ? 'Continue without login' : undefined}
+        thirdButtonAction={
+          isBuyNowFlow
+            ? () => {
+                setIsLoginModalVisible(false);
+                executeBuyNow();
+              }
+            : undefined
+        }
       />
     </>
   );

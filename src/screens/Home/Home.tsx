@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../config/styles/colors';
 import {moderateScale} from '../../config/styles/responsiveSize';
 import HomeProductListing from '../../components/Home/HomeProductListing/HomeProductListing';
@@ -9,7 +9,6 @@ import {TKSearchIcon} from '../../components/Common/Icons/TKSearchIcon';
 import {HomeScreenNavigationProp} from '../../navigation/rootparamstypes';
 import {navigationStrings} from '../../navigation/navigationStrings';
 import {useGetUserDetails} from '../../react-queries/user/userQueries';
-import ProductListingCarousel from '../../components/Home/ProductListingCarousel/ProductListingCarousel';
 import LocationBar from '../../components/Home/LocationBar/LocationBar';
 import {useAppSelector} from '../../redux/hooks';
 import {updateSelectedLocation} from '../../redux/sessionStatesSlice';
@@ -23,7 +22,6 @@ const Home: React.FC<Props> = ({navigation}) => {
   };
   const {data: userDetails} = useGetUserDetails();
   const {selectedLocation} = useAppSelector(state => state.sessionStates);
-  // const [location, setLocation] = useState<string>(selectedLocation);
 
   useEffect(() => {
     if (!selectedLocation) {
@@ -37,12 +35,7 @@ const Home: React.FC<Props> = ({navigation}) => {
         <TKSearchIcon height={20} width={20} />
         <Text style={styles.buttonText}>{strings('labels.searchForProduct')}</Text>
       </Pressable>
-      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false} bounces={false}>
-        <ProductListingCarousel />
-        <View style={styles.productListingContainer}>
-          <HomeProductListing location={selectedLocation} />
-        </View>
-      </ScrollView>
+      <HomeProductListing location={selectedLocation} />
     </View>
   );
 };
@@ -71,9 +64,5 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     color: colors.placeHolderTextColor,
     fontFamily: fontFamily.regular,
-  },
-  productListingContainer: {
-    flex: 1,
-    paddingTop: moderateScale(16),
   },
 });

@@ -108,11 +108,16 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
         showBackButton={isFromProductDetails}
-        qrValue={storeDetails?.id ? `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}` : undefined}
+        qrValue={
+          storeDetails?.id
+            ? `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`
+            : undefined
+        }
         onQRPress={handleQRPress}
       />
       <TKRenderIf isRender={!isGuest || isFromProductDetails}>
-        <TKRenderIf isRender={!!storeDetails && !!headerList?.length && (!isStoreInactive || isStoreOwner)}>
+        <TKRenderIf
+          isRender={!!storeDetails && !!headerList?.length && (!isStoreInactive || isStoreOwner)}>
           <StoreDetailsCard
             // @ts-expect-error TS2322
             storeDetails={storeDetails}
@@ -129,22 +134,49 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
 
       <TKRenderIf isRender={!!storeDetails && isStoreInactive && !isStoreOwner}>
         <View style={style.inactiveContainer}>
-          <Image source={require('../../assets/images/appLogo.png')} style={style.inactiveLogo} resizeMode="contain" />
+          <Image
+            source={require('../../assets/images/appLogo.png')}
+            style={style.inactiveLogo}
+            resizeMode="contain"
+          />
           <Text style={style.guestTitle}>Store Inactive</Text>
-          <Text style={style.guestSubtitle}>This store is currently inactive and cannot be viewed.</Text>
-          <TKButton 
-            title="Go to Home Page" 
-            onPress={() => navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never)} 
-            type="primary" 
-            style={style.loginButton} 
+          <Text style={style.guestSubtitle}>
+            This store is currently inactive and cannot be viewed.
+          </Text>
+          <TKButton
+            title="Go to Home Page"
+            onPress={() => navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never)}
+            type="primary"
+            style={style.loginButton}
           />
         </View>
       </TKRenderIf>
       <TKRenderIf isRender={isGuest && !isFromProductDetails}>
         <View style={style.guestContainer}>
           <Text style={style.guestTitle}>Manage Your Store</Text>
-          <Text style={style.guestSubtitle}>Login or register to become a vendor and manage your products.</Text>
-          <TKButton title="Login / Register" onPress={handleLoginPress} type="primary" style={style.loginButton} />
+          <Text style={style.guestSubtitle}>
+            Login or register to become a vendor and manage your products.
+          </Text>
+          <TKButton
+            title="Login / Register"
+            onPress={handleLoginPress}
+            type="primary"
+            style={style.loginButton}
+          />
+        </View>
+      </TKRenderIf>
+      <TKRenderIf isRender={!isGuest && !storeDetails && !isPending && !isFromProductDetails}>
+        <View style={style.guestContainer}>
+          <Text style={style.guestTitle}>Create Your Store</Text>
+          <Text style={style.guestSubtitle}>
+            {"You don't have a store yet. Create one now to start selling your products."}
+          </Text>
+          <TKButton
+            title={strings('labels.addStore')}
+            onPress={handleAddStore}
+            type="primary"
+            style={style.loginButton}
+          />
         </View>
       </TKRenderIf>
     </View>

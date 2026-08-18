@@ -212,7 +212,9 @@ async function updateProductStatus(
   }
 }
 
-async function deleteProduct(productId: string): Promise<{success: boolean; message: string; productId: string}> {
+async function deleteProduct(
+  productId: string,
+): Promise<{success: boolean; message: string; productId: string}> {
   try {
     await firestore().collection(FireStoreCollections.PRODUCTS).doc(productId).delete();
     return {
@@ -232,13 +234,27 @@ async function deleteProduct(productId: string): Promise<{success: boolean; mess
 
 async function searchProductsByName(productName: string): Promise<IProductTable[]> {
   try {
-    const searchTerm = productName.toLowerCase();
-    const query = firestore()
-      .collection(FireStoreCollections.PRODUCTS)
-      .where('searchTokens', 'array-contains', searchTerm)
-      .limit(20);
+    const searchWords = productName.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    if (searchWords.length === 0) {
+      return [];
+    }
 
-    const snapshot = await query.get();
+    // Sort words by length descending to query with the most specific word
+    const sortedWords = [...searchWords].sort((a, b) => b.length - a.length);
+    const queryWord = sortedWords[0];
+
+    let query: any = firestore().collection(FireStoreCollections.PRODUCTS);
+
+    if (queryWord.length < 2) {
+      query = query
+        .where('nameLower', '>=', queryWord)
+        .where('nameLower', '<=', queryWord + '\uf8ff');
+    } else {
+      query = query.where('searchTokens', 'array-contains', queryWord);
+    }
+
+    // Retrieve up to 100 products to filter them in memory
+    const snapshot = await query.limit(100).get();
 
     const products: IProductTable[] = snapshot.docs.map(
       doc =>
@@ -250,15 +266,27 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
 
     if (products.length === 0) return products;
 
-    const uniqueStoreIds = [...new Set(products.map(p => p.storeId).filter(Boolean))];
-    const uniqueCategoryIds = [...new Set(products.map(p => p.categoryId).filter(Boolean))];
+    // Filter products in memory to ensure they match all search terms
+    const filteredProducts = products.filter(product => {
+      const productNameLower = product.name?.toLowerCase() || '';
+      const tokens = (product as any).searchTokens || [];
+      return searchWords.every(word => productNameLower.includes(word) || tokens.includes(word));
+    });
+
+    if (filteredProducts.length === 0) return [];
+
+    // Slice to the limit of 20 to mimic original limit behavior
+    const finalProducts = filteredProducts.slice(0, 20);
+
+    const uniqueStoreIds = [...new Set(finalProducts.map(p => p.storeId).filter(Boolean))];
+    const uniqueCategoryIds = [...new Set(finalProducts.map(p => p.categoryId).filter(Boolean))];
 
     const [storesMap, categoriesMap] = await Promise.all([
       batchGetStores(uniqueStoreIds),
       batchGetCategories(uniqueCategoryIds),
     ]);
 
-    const productsWithDetails: IProductTable[] = products.map(product => ({
+    const productsWithDetails: IProductTable[] = finalProducts.map(product => ({
       ...product,
       store: storesMap[product.storeId],
       category: categoriesMap[product.categoryId],
@@ -300,8 +328,12 @@ async function getProductsListWithDetails({
     }
 
     // Extract unique store IDs and category IDs from products
-    const uniqueStoreIds = [...new Set(productsResponse.products.map(p => p.storeId).filter(Boolean))];
-    const uniqueCategoryIds = [...new Set(productsResponse.products.map(p => p.categoryId).filter(Boolean))];
+    const uniqueStoreIds = [
+      ...new Set(productsResponse.products.map(p => p.storeId).filter(Boolean)),
+    ];
+    const uniqueCategoryIds = [
+      ...new Set(productsResponse.products.map(p => p.categoryId).filter(Boolean)),
+    ];
 
     // Batch fetch stores and categories
     const [storesMap, categoriesMap] = await Promise.all([
@@ -333,7 +365,6 @@ async function batchGetStores(storeIds: string[]): Promise<Record<string, any>> 
     if (storeIds.length === 0) return {};
 
     const storesMap: Record<string, any> = {};
-    const batch = firestore().batch();
 
     // Firestore batch read limit is 500, but we'll use smaller chunks for better performance
     const chunks = chunkArray(storeIds, 100);

@@ -2,7 +2,7 @@ import React from 'react';
 import TKModal from '../TKModal/TKModal';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 import TKButton from '../TKButton/TKButton';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {colors} from '../../../config/styles/colors';
@@ -16,6 +16,8 @@ type LXConfirmModalProps = {
   cancelButtonText?: string;
   cancelButtonAction: () => void;
   isConfirmLoader?: boolean;
+  thirdButtonText?: string;
+  thirdButtonAction?: () => void;
 };
 
 const TKConfirmModal: React.FC<LXConfirmModalProps> = ({
@@ -27,6 +29,8 @@ const TKConfirmModal: React.FC<LXConfirmModalProps> = ({
   cancelButtonAction,
   isVisible,
   isConfirmLoader = false,
+  thirdButtonText,
+  thirdButtonAction,
 }) => {
   return (
     <TKModal
@@ -51,6 +55,14 @@ const TKConfirmModal: React.FC<LXConfirmModalProps> = ({
         style={style.MT_20}
         isLoading={isConfirmLoader}
       />
+      <TKRenderIf isRender={!!thirdButtonText && !!thirdButtonAction}>
+        <TouchableOpacity
+          onPress={thirdButtonAction}
+          style={style.thirdButtonContainer}
+          activeOpacity={0.7}>
+          <Text style={style.thirdButtonText}>{thirdButtonText}</Text>
+        </TouchableOpacity>
+      </TKRenderIf>
     </TKModal>
   );
 };
@@ -71,5 +83,17 @@ const style = StyleSheet.create({
   },
   bodyContainer: {
     paddingHorizontal: moderateScale(16),
+  },
+  thirdButtonContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+  thirdButtonText: {
+    color: colors.primaryButtonBackgroundColor,
+    fontSize: fontScale(14),
+    fontFamily: fontFamily.semiBold,
+    textDecorationLine: 'underline',
   },
 });
