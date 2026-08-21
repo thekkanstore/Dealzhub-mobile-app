@@ -86,3 +86,4 @@ ios/ThekkanVendor.xcodeproj/project.xcworkspace/
 ios/ThekkanVendor.xcodeproj/xcuserdata/
 
 android/keystore.properties
+android/app/keystore.properties

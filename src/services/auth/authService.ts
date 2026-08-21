@@ -126,7 +126,7 @@ const onAppleButtonPress = async () => {
   }
 };
 
-async function onDemoLogin(email: string, password: string) {
+async function onEmailLogin(email: string, password: string) {
   try {
     const auth = getAuth();
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -243,4 +243,4 @@ async function deleteAccount() {
   }
 }
 
-export default {onGoogleSignIn: onGoogleButtonPress, onAppleSignIn: onAppleButtonPress, logout, onDemoLogin, deleteAccount};
+export default {onGoogleSignIn: onGoogleButtonPress, onAppleSignIn: onAppleButtonPress, logout, onEmailLogin, deleteAccount};

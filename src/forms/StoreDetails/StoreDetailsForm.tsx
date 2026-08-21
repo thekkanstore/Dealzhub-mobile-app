@@ -59,17 +59,12 @@ const StoreDetailsForm = () => {
       );
       return;
     }
-    // FOR APPLICATION REVIEW
-    if (values.storeName === 'TEST_STORE_FOR_RREVIEW') {
-      values.vendorStatus = 'approved';
-    }
     createStore(
       {...values, city: values.city.value ?? ''},
       {
         onSuccess: () => {
           updateNewUserStatus(false);
           navigation.goBack();
-          if (values.vendorStatus === 'approved') return; // for application review
           setTimeout(() => {
             handelMessage(values.storeName);
           }, 300);

@@ -14,16 +14,17 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {TKAppleIcon} from '../../components/Common/Icons/TKAppleIcon';
 import {appleAuth} from '@invertase/react-native-apple-authentication';
 import {updateGuestStatus} from '../../redux/userSlice';
+import TKTextInput from '../../components/Common/TKTextInput/TKTextInput';
 
 const {width, height} = Dimensions.get('window');
-// TODO: Replace with valid demo account credentials created in Firebase Console
-const DEMO_EMAIL = 'reviewer@dealzhub.com';
-const DEMO_PASSWORD = 'Reviewer123!';
 
 const Login = () => {
     const bottomPadding = useSafeAreaBottom(50);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [isAppleLoading, setIsAppleLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showEmailForm, setShowEmailForm] = useState(false);
     const appConfig = useAppSelector(state => state.sessionStates.appConfig);
 
     const isAnyLoading = isGoogleLoading || isAppleLoading;
@@ -39,10 +40,11 @@ const Login = () => {
         }
     };
 
-    const handleDemoLogin = async () => {
+    const handleEmailLogin = async () => {
+        if (!email || !password) return;
         try {
             setIsGoogleLoading(true);
-            await authService.onDemoLogin(DEMO_EMAIL, DEMO_PASSWORD);
+            await authService.onEmailLogin(email, password);
         } catch (error) {
             //
         } finally {
@@ -95,40 +97,66 @@ const Login = () => {
                     start={{x: 0.5, y: 0}}
                     end={{x: 0.5, y: 1}}>
                     <View style={styles.spacer}/>
-                        <TouchableOpacity onLongPress={handleDemoLogin} activeOpacity={0.8} delayLongPress={2000}>
-                            <View style={styles.contentWrapper}>
-                                <Text style={styles.titleText}>{strings('labels.dealzHub')}</Text>
-                                <Text style={styles.descriptionText}>{strings('login.loginDescription')}</Text>
-                            </View>
-                        </TouchableOpacity>
+                    <View style={styles.contentWrapper}>
+                        <Text style={styles.titleText}>{strings('labels.dealzHub')}</Text>
+                        <Text style={styles.descriptionText}>{strings('login.loginDescription')}</Text>
+                    </View>
                     <View style={[styles.bottomContent, {paddingBottom: bottomPadding}]}>
-                        <TKButton
-                            title={renderTitle()}
-                            onPress={handleGetStarted}
-                            style={{marginHorizontal: 30}}
-                            type={'neutral'}
-                            isDisabled={isAnyLoading}
-                            isLoading={isGoogleLoading}
-                        />
-                        {Platform.OS === 'ios' && appleAuth.isSupported && (
-                            <TKButton
-                                title={renderAppleTitle()}
-                                onPress={handleAppleSignIn}
-                                style={styles.appleButton}
-                                isDisabled={isAnyLoading}
-                                isLoading={isAppleLoading}
-                            />
+                        {!showEmailForm ? (
+                            <>
+                                <TKButton
+                                    title={renderTitle()}
+                                    onPress={handleGetStarted}
+                                    style={{marginHorizontal: 30}}
+                                    type={'neutral'}
+                                    isDisabled={isAnyLoading}
+                                    isLoading={isGoogleLoading}
+                                />
+                                {Platform.OS === 'ios' && appleAuth.isSupported && (
+                                    <TKButton
+                                        title={renderAppleTitle()}
+                                        onPress={handleAppleSignIn}
+                                        style={styles.appleButton}
+                                        isDisabled={isAnyLoading}
+                                        isLoading={isAppleLoading}
+                                    />
+                                )}
+                                <TouchableOpacity onPress={() => setShowEmailForm(true)} activeOpacity={0.8} style={{marginTop: 10, alignSelf: 'center'}}>
+                                    <Text style={{color: '#FFFFFF', fontSize: 16, textDecorationLine: 'underline'}}>Sign in with Email</Text>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <View style={{gap: 12, marginHorizontal: 30}}>
+                                <TKTextInput
+                                    placeholder="Email"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    autoCapitalize="none"
+                                    keyboardType="email-address"
+                                    inputStyle={{color: '#121212'}}
+                                    placeholderTextColor="#A0A0A0"
+                                />
+                                <TKTextInput
+                                    placeholder="Password"
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    secureTextEntry={true}
+                                    autoCapitalize="none"
+                                    inputStyle={{color: '#121212'}}
+                                    placeholderTextColor="#A0A0A0"
+                                />
+                                <TKButton
+                                    title="Sign In"
+                                    onPress={handleEmailLogin}
+                                    type={'primary'}
+                                    isDisabled={isAnyLoading || !email || !password}
+                                    isLoading={isGoogleLoading}
+                                />
+                                <TouchableOpacity onPress={() => setShowEmailForm(false)} activeOpacity={0.8} style={{marginTop: 10, alignSelf: 'center'}}>
+                                    <Text style={{color: '#FFFFFF', fontSize: 16, textDecorationLine: 'underline'}}>Back to Social Sign In</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
-                        <TKRenderIf isRender={!!appConfig?.isStoreReview}>
-                            <TKButton
-                                title="Reviewer Login"
-                                onPress={handleDemoLogin}
-                                style={{marginHorizontal: 30}}
-                                type={'primary'}
-                                isDisabled={isAnyLoading}
-                                isLoading={isGoogleLoading}
-                            />
-                        </TKRenderIf>
 
                         <TouchableOpacity onPress={handleGuestLogin} activeOpacity={0.8} style={{marginTop: 10, alignSelf: 'center'}}>
                             <Text style={{color: '#FFFFFF', fontSize: 16, textDecorationLine: 'underline'}}>Continue as Guest</Text>
