@@ -11,7 +11,7 @@ import {appleAuth} from '@invertase/react-native-apple-authentication';
 import messaging from '@react-native-firebase/messaging';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
-import {updateNewUserStatus, updateUserInfo} from '../../redux/userSlice';
+import {updateNewUserStatus, updateUserInfo, updateGuestStatus} from '../../redux/userSlice';
 import {
   checkIsUserRegistrationCompleted,
   updateNotificationStatus,
@@ -191,6 +191,8 @@ async function logout() {
   } finally {
     // Always clear local Redux state so the user is never trapped
     updateUserInfo(null);
+    updateNewUserStatus(false);
+    updateGuestStatus(false);
   }
   return {success: true};
 }

@@ -1,14 +1,41 @@
 import firestore, {serverTimestamp} from '@react-native-firebase/firestore';
+import {getAuth} from '@react-native-firebase/auth';
 import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {IStoreTable} from '../../config/models/store';
 
 // Get specific user data
 async function getStoreBasedOnUserIdData(userId: string): Promise<IStoreTable | null> {
   try {
+    console.log('[getStoreBasedOnUserIdData] userId:', userId);
+    
+    const queryList = [userId];
+    if (!userId.includes('@')) {
+      // Fallback 1: Current authenticated user's email
+      const authEmail = getAuth().currentUser?.email;
+      if (authEmail) {
+        queryList.push(authEmail);
+      }
+
+      // Fallback 2: Look up user document's email field by UID query
+      const idSnapshot = await firestore()
+        .collection(FireStoreCollections.USERS)
+        .where('id', '==', userId)
+        .get();
+      if (!idSnapshot.empty) {
+        const email = idSnapshot.docs[0].data()?.email;
+        if (email && !queryList.includes(email)) {
+          queryList.push(email);
+        }
+      }
+    }
+    
+    console.log('[getStoreBasedOnUserIdData] queryList:', queryList);
+
     const storeSnapshot = await firestore()
       .collection(FireStoreCollections.STORES)
-      .where('userId', '==', userId)
+      .where('userId', 'in', queryList)
       .get();
+    console.log('[getStoreBasedOnUserIdData] storeSnapshot empty:', storeSnapshot.empty);
     if (!storeSnapshot.empty) {
       const storeDoc = storeSnapshot.docs[0];
       return {
@@ -78,14 +105,14 @@ async function createNewUserStore(
 async function updateUserStore(
   userId: string,
   updateData: Partial<Omit<IStoreTable, 'id' | 'userId' | 'createdAt'>>,
-): Promise<{success: boolean; userId: string | null; message: string}> {
+): Promise<{success: boolean; userId: string | null; message: string; data?: IStoreTable}> {
   try {
     const storeCollection = firestore().collection(FireStoreCollections.STORES);
 
-    // Find the store document for this user
-    const storeSnapshot = await storeCollection.where('userId', '==', userId).get();
+    // Find the store document for this user using getStoreBasedOnUserIdData (supports UID & email resolution)
+    const storeDetails = await getStoreBasedOnUserIdData(userId);
 
-    if (storeSnapshot.empty) {
+    if (!storeDetails) {
       return Promise.reject({
         success: false,
         userId: null,
@@ -93,13 +120,12 @@ async function updateUserStore(
       });
     }
 
-    const storeDoc = storeSnapshot.docs[0];
     const updatedStoreData = {
       ...updateData,
       updatedAt: serverTimestamp(),
     };
 
-    await storeDoc.ref.update(updatedStoreData);
+    await storeCollection.doc(storeDetails.id).update(updatedStoreData);
 
     // Verify the store was updated
     const updatedStoreDetails = await getStoreBasedOnUserIdData(userId);

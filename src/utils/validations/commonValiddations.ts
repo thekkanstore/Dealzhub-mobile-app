@@ -20,7 +20,7 @@ export const nameValidation = (name = 'Name') =>
     .required(`${name} is required`)
     .matches(
       onlyAlphabeticRegExp,
-      'Only alphabetic characters and single space allowed between words',
+      'Only letters, numbers, spaces, dots, hyphens, and apostrophes allowed',
     );
 
 export const phoneNumberIndia = Yup.string()
@@ -114,7 +114,7 @@ export const personNameValidation = Yup.string()
   .max(50, 'Maximum 50 characters allowed')
   .matches(
     onlyAlphabeticRegExp,
-    'Only alphabetic characters and single space allowed between words',
+    'Only letters, numbers, spaces, dots, hyphens, and apostrophes allowed',
   );
 export const addressValidation = Yup.string()
   .transform(value => value?.trim())

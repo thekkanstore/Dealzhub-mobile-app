@@ -1,13 +1,52 @@
 import firestore, {FieldValue, serverTimestamp} from '@react-native-firebase/firestore';
+import {getAuth} from '@react-native-firebase/auth';
 import {IUserTable} from '../../config/models/users';
 import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {Roles} from '../../config/common/constants';
 import {getStoreBasedOnUserIdData} from './storeFirestoreService';
 
+// Helper function to resolve user document by UID or by email field fallback
+async function getUserDocument(userId: string) {
+  let userDoc = await firestore().collection(FireStoreCollections.USERS).doc(userId).get();
+  
+  if (!userDoc.exists() && !userId.includes('@')) {
+    // Try querying by the 'id' field matching the UID first
+    const idSnapshot = await firestore()
+      .collection(FireStoreCollections.USERS)
+      .where('id', '==', userId)
+      .get();
+    if (!idSnapshot.empty) {
+      userDoc = idSnapshot.docs[0] as any;
+    } else {
+      // Fallback: Query by current user's email
+      const email = getAuth().currentUser?.email;
+      if (email) {
+        const emailSnapshot = await firestore()
+          .collection(FireStoreCollections.USERS)
+          .where('email', '==', email)
+          .get();
+        if (!emailSnapshot.empty) {
+          userDoc = emailSnapshot.docs[0] as any;
+        }
+      }
+    }
+  }
+  return userDoc;
+}
+
+// Helper function to update user document (supporting UID vs email resolution)
+async function updateUserDocument(userId: string, data: any) {
+  const userDoc = await getUserDocument(userId);
+  if (!userDoc.exists()) {
+    throw new Error('User not found');
+  }
+  await userDoc.ref.update(data);
+}
+
 // Enhanced check user exists with more data
 async function checkUserExists(userId: string): Promise<boolean> {
   try {
-    const userDoc = await firestore().collection(FireStoreCollections.USERS).doc(userId).get();
+    const userDoc = await getUserDocument(userId);
     return userDoc.exists();
   } catch (error) {
     console.error('Error checking user existence:', error);
@@ -16,12 +55,17 @@ async function checkUserExists(userId: string): Promise<boolean> {
 }
 async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean> {
   try {
-    const userDoc = await firestore().collection(FireStoreCollections.USERS).doc(userId).get();
-    if (!userDoc.exists()) return false;
-    const {role = []} = userDoc.data() as IUserTable;
+    console.log('[checkIsUserRegistrationCompleted] userId:', userId);
+    const userDoc = await getUserDocument(userId);
+    console.log('[checkIsUserRegistrationCompleted] userDoc exists:', userDoc.exists);
+    if (!userDoc.exists) return false;
+    const data = userDoc.data();
+    console.log('[checkIsUserRegistrationCompleted] userDoc data:', data);
+    const {role = []} = data as IUserTable;
     if (role.length === 0) return false;
     if (role.includes(Roles.VENDOR)) {
-      const storeDetails = await getStoreBasedOnUserIdData(userId);
+      const storeDetails = await getStoreBasedOnUserIdData(userDoc.id);
+      console.log('[checkIsUserRegistrationCompleted] storeDetails:', storeDetails);
       return !!storeDetails;
     }
     return true;
@@ -34,7 +78,7 @@ async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean
 // Get specific user data
 async function getUserData(userId: string): Promise<IUserTable | null> {
   try {
-    const userDoc = await firestore().collection(FireStoreCollections.USERS).doc(userId).get();
+    const userDoc = await getUserDocument(userId);
 
     if (userDoc.exists()) {
       const userData = {id: userDoc.id, ...userDoc.data()};
@@ -79,11 +123,11 @@ async function createNewUser(
 
     if (isUpdate) {
       delete newUserData.createdAt;
-      await usersCollection.doc(userData.id).update(newUserData);
+      await updateUserDocument(userData.id, newUserData);
     } else {
       await usersCollection.doc(userData.id).set(newUserData);
     }
-    const verifyUser = await usersCollection.doc(userData.id).get();
+    const verifyUser = await getUserDocument(userData.id);
     if (verifyUser.exists()) {
       return Promise.resolve({
         success: true,
@@ -119,7 +163,7 @@ async function updateUserRoles(
     }
 
     // Update user roles with timestamp
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       role: roles,
       updatedAt: serverTimestamp(),
     });
@@ -161,7 +205,7 @@ async function addUserRole(
 
     const updatedRoles = [...currentRoles, newRole];
 
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       role: updatedRoles,
       updatedAt: serverTimestamp(),
     });
@@ -208,7 +252,7 @@ async function removeUserRole(
     const updatedRoles = currentRoles.filter(role => role !== roleToRemove);
 
     // Update user with filtered roles
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       role: updatedRoles,
       updatedAt: serverTimestamp(),
     });
@@ -239,7 +283,7 @@ async function addToFavorite(
     }
     const favoritesList = userData.favorites || [];
     const updateFavorites = [...favoritesList, id];
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       favorites: updateFavorites,
       updatedAt: serverTimestamp(),
     });
@@ -271,7 +315,7 @@ async function removeFromFavorite(
 
     const updateFavorites = favoritesList.filter(item => item !== id);
 
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       favorites: updateFavorites,
       updatedAt: serverTimestamp(),
     });
@@ -299,7 +343,7 @@ async function addToCart(userId: string, id: string): Promise<{success: boolean;
     }
     const cartList = userData.cartItems || [];
     const updatedCartItems = [...cartList, id];
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       cartItems: updatedCartItems,
       updatedAt: serverTimestamp(),
     });
@@ -329,7 +373,7 @@ async function removeFromCart(
     }
     const cartItemsList = userData.cartItems || [];
     const updatedCartItems = cartItemsList.filter(item => item !== id);
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       cartItems: updatedCartItems,
       updatedAt: serverTimestamp(),
     });
@@ -359,7 +403,7 @@ async function updateNotificationStatus(
     }
 
     // Update user roles with timestamp
-    await firestore().collection(FireStoreCollections.USERS).doc(userId).update({
+    await updateUserDocument(userId, {
       notification,
       updatedAt: serverTimestamp(),
     });

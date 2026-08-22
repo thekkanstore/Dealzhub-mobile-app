@@ -34,7 +34,7 @@ export default function MainStack() {
   // };
 
   const getUserStack = () => {
-    if (isNewUser) {
+    if (isNewUser && !isGuest) {
       return (
         <Stack.Screen
           name={navigationStrings.REGISTER_STACK as 'RegisterUserStack'}

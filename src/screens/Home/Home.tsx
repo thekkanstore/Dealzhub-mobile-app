@@ -25,7 +25,7 @@ const Home: React.FC<Props> = ({navigation}) => {
 
   useEffect(() => {
     if (!selectedLocation) {
-      updateSelectedLocation(userDetails?.city ?? '');
+      updateSelectedLocation(userDetails?.city || 'Ernakulam');
     }
   }, [userDetails?.city, selectedLocation]);
   return (
