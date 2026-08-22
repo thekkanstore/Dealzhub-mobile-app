@@ -47,6 +47,7 @@ pre_install do |installer|
 end
 
 target 'ThekkanVendor' do
+  project 'ThekkanVendor.xcodeproj'
   config = use_native_modules!
   pod 'react-native-config/Extension', :path => '../node_modules/react-native-config'
   
