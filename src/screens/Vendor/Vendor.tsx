@@ -38,8 +38,28 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const isStoreInactive = useMemo(() => {
     if (!storeDetails) return false;
     const status = storeDetails.vendorStatus?.toLowerCase();
-    return status === 'inactive' || status === 'rejected';
+    return status === 'inactive' || status === 'rejected' || status === 'pending';
   }, [storeDetails]);
+
+  const getInactiveMessage = () => {
+    const status = storeDetails?.vendorStatus?.toLowerCase();
+    if (status === 'pending') {
+      return {
+        title: 'Store Pending Approval',
+        subtitle: 'This store is pending approval and cannot be viewed yet.',
+      };
+    }
+    if (status === 'rejected') {
+      return {
+        title: 'Store Rejected',
+        subtitle: 'This store has been rejected and cannot be viewed.',
+      };
+    }
+    return {
+      title: 'Store Inactive',
+      subtitle: 'This store is currently inactive and cannot be viewed.',
+    };
+  };
 
   const handleLoginPress = () => {
     updateGuestStatus(false);
@@ -139,10 +159,8 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
             style={style.inactiveLogo}
             resizeMode="contain"
           />
-          <Text style={style.guestTitle}>Store Inactive</Text>
-          <Text style={style.guestSubtitle}>
-            This store is currently inactive and cannot be viewed.
-          </Text>
+          <Text style={style.guestTitle}>{getInactiveMessage().title}</Text>
+          <Text style={style.guestSubtitle}>{getInactiveMessage().subtitle}</Text>
           <TKButton
             title="Go to Home Page"
             onPress={() => navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never)}

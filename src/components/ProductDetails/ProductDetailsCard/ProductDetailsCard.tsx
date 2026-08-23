@@ -1,5 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {useGetSubCategories} from '../../../react-queries/categories/subcategoryQuery';
 import {IProductTable} from '../../../config/models/product';
 import {fontScale, moderateScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
@@ -19,6 +20,19 @@ interface Props {
   isVendor?: boolean;
 }
 const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVendor}) => {
+  const {data: subCategories = []} = useGetSubCategories(
+    productDetails.storeId || productDetails.store?.id || '',
+    productDetails.categoryId || '',
+  );
+
+  const selectedSubcategoryNames = React.useMemo(() => {
+    if (!productDetails.subcategoryIds?.length) return '';
+    return productDetails.subcategoryIds
+      .map(id => subCategories.find(sub => sub.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  }, [productDetails.subcategoryIds, subCategories]);
+
   const handleOnClickVendor = () => {
     updateIsFromProductDetails(true);
     setTimeout(() => {
@@ -47,6 +61,12 @@ const ProductDetailsCard: React.FC<Props> = ({productDetails, navigation, isVend
           <Text style={styles.descriptionText}>{strings('labels.name')} :</Text>
           <Text style={styles.descriptionText}>{productDetails?.category?.name ?? ''}</Text>
         </View>
+        <TKRenderIf isRender={!!selectedSubcategoryNames}>
+          <View style={styles.subContainer}>
+            <Text style={styles.descriptionText}>{strings('labels.subCategories')} :</Text>
+            <Text style={styles.descriptionText}>{selectedSubcategoryNames}</Text>
+          </View>
+        </TKRenderIf>
       </>
 
       <TKRenderIf isRender={!isVendor && !!productDetails?.store}>

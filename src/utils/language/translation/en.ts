@@ -25,6 +25,7 @@ export const en = {
     remove: 'Remove',
     delete: 'Delete',
     termsAndConditions: 'Terms and Conditions',
+    add: 'Add',
   },
   labels: {
     thekkan: 'THEKKAN',
@@ -102,6 +103,7 @@ export const en = {
     failedToShareQRCode: 'Failed to share QR code',
     permissionDenied: 'Permission Denied',
     storagePermissionRequired: 'Storage permission is required to save the QR code',
+    subCategories: 'Sub-categories',
   },
   notificationPermission: {
     title: 'Enable Notifications',
@@ -149,6 +151,7 @@ export const en = {
     productQuantity: 'Enter your product quantity',
     actualPrice: 'Enter your actual price',
     discountPrice: 'Enter your discount price',
+    subCategory: 'Enter sub-category name',
   },
   validations: {
     emailInvalid: 'Please enter a valid email address',
@@ -159,5 +162,6 @@ export const en = {
     addressRequired: 'Address is required',
     cityRequired: 'City is required',
     stateRequired: 'State is required',
+    subCategoryExists: 'Sub-category already exists',
   },
 };

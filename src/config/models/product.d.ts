@@ -25,6 +25,7 @@ export interface IProductTable {
   isOutOfStock: boolean;
   createdAt: Date;
   updatedAt: Date;
+  subcategoryIds?: string[];
 }
 
 export interface IProduct extends IProductTable {

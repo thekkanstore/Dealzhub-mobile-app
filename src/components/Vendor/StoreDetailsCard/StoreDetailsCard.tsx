@@ -33,7 +33,7 @@ const StoreDetailsCard: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.detailText}>{VendorService.getStoreAddressInfo(storeDetails)}</Text>
-      <TKRenderIf isRender={!isFromProductDetails && (storeDetails.vendorStatus?.toLowerCase() === 'approved' || storeDetails.vendorStatus?.toLowerCase() === 'private')}>
+      <TKRenderIf isRender={!isFromProductDetails}>
         <View style={styles.buttonContainer}>
           <TKButton
             title={strings('button.edit')}

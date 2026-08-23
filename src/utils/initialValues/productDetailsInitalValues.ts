@@ -41,5 +41,6 @@ export const productDetailsInitalValues = (
     store: productDetails?.store ?? storeDetails,
     userId: productDetails?.store?.userId ?? storeDetails?.userId,
     imagePath,
+    subcategoryIds: productDetails?.subcategoryIds ?? [],
   };
 };

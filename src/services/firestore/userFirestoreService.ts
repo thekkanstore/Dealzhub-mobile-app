@@ -55,17 +55,13 @@ async function checkUserExists(userId: string): Promise<boolean> {
 }
 async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean> {
   try {
-    console.log('[checkIsUserRegistrationCompleted] userId:', userId);
     const userDoc = await getUserDocument(userId);
-    console.log('[checkIsUserRegistrationCompleted] userDoc exists:', userDoc.exists);
     if (!userDoc.exists) return false;
     const data = userDoc.data();
-    console.log('[checkIsUserRegistrationCompleted] userDoc data:', data);
     const {role = []} = data as IUserTable;
     if (role.length === 0) return false;
     if (role.includes(Roles.VENDOR)) {
       const storeDetails = await getStoreBasedOnUserIdData(userDoc.id);
-      console.log('[checkIsUserRegistrationCompleted] storeDetails:', storeDetails);
       return !!storeDetails;
     }
     return true;

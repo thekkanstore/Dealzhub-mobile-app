@@ -28,6 +28,7 @@ interface ProductListProps {
   isVendor?: boolean;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
+  selectedSubCategoryId?: string | null;
 
   location?: string;
 }
@@ -41,6 +42,7 @@ const ProductList: React.FC<ProductListProps> = ({
   ListFooterComponent,
   isActive,
   isVendor,
+  selectedSubCategoryId,
   location,
 }) => {
   const {
@@ -59,11 +61,17 @@ const ProductList: React.FC<ProductListProps> = ({
     if (!isVendor) {
       allProducts = allProducts.filter(p => {
         const status = p.store?.vendorStatus?.toLowerCase();
-        return status !== 'inactive' && status !== 'private';
+        if (storeId) {
+          return status === 'approved' || status === 'private';
+        }
+        return status === 'approved';
       });
     }
+    if (selectedSubCategoryId) {
+      allProducts = allProducts.filter(p => p.subcategoryIds?.includes(selectedSubCategoryId));
+    }
     return allProducts;
-  }, [data?.pages, isVendor]);
+  }, [data?.pages, isVendor, storeId, selectedSubCategoryId]);
 
   const {data: userDetails} = useGetUserDetails(true);
   const favorites = userDetails?.favorites || [];

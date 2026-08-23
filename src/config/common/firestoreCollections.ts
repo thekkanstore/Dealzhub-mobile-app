@@ -4,4 +4,5 @@ export const FireStoreCollections = {
   CATEGORIES: 'categories',
   PRODUCTS: 'products',
   APP_CONFIG: 'appConfig',
+  SUB_CATEGORIES: 'sub_categories',
 };

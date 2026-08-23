@@ -6,7 +6,6 @@ import {IStoreTable} from '../../config/models/store';
 // Get specific user data
 async function getStoreBasedOnUserIdData(userId: string): Promise<IStoreTable | null> {
   try {
-    console.log('[getStoreBasedOnUserIdData] userId:', userId);
     
     const queryList = [userId];
     if (!userId.includes('@')) {
@@ -29,13 +28,12 @@ async function getStoreBasedOnUserIdData(userId: string): Promise<IStoreTable | 
       }
     }
     
-    console.log('[getStoreBasedOnUserIdData] queryList:', queryList);
 
     const storeSnapshot = await firestore()
       .collection(FireStoreCollections.STORES)
       .where('userId', 'in', queryList)
       .get();
-    console.log('[getStoreBasedOnUserIdData] storeSnapshot empty:', storeSnapshot.empty);
+
     if (!storeSnapshot.empty) {
       const storeDoc = storeSnapshot.docs[0];
       return {

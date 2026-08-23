@@ -15,7 +15,11 @@ export class VendorService {
       case 'approved':
         return colors.successText;
       case 'rejected':
-        return colors.rejectedText;
+        return colors.errorTextColor;
+      case 'private':
+        return colors.primaryButtonBackgroundColor;
+      case 'inactive':
+        return colors.errorTextColor;
       default:
         return '';
     }

@@ -66,7 +66,8 @@ const SearchItems: React.FC<Props> = ({productName}) => {
   const filteredProductList = useMemo(() => {
     return (productList || []).filter(p => {
       const status = p.store?.vendorStatus?.toLowerCase();
-      return status !== 'inactive' && status !== 'private';
+      // Only approved stores should show up in public search results
+      return status === 'approved';
     });
   }, [productList]);
 
