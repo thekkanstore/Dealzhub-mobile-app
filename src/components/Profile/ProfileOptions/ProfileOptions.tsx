@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, Pressable, StyleSheet, Text, View, Alert} from 'react-native';
+import {FlatList, Pressable, StyleSheet, Text, View, Alert, Linking} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import authService from '../../../services/auth/authService';
 import TKConfirmModal from '../../Common/TKConfirmModal/TKConfirmModal';
@@ -9,6 +9,7 @@ import {strings} from '../../../utils/language/langauageUtils';
 import {moderateScale} from '../../../config/styles/responsiveSize';
 import {colors} from '../../../config/styles/colors';
 import {TKSettingsIcon} from '../../Common/Icons/TKSettingsIcon';
+import {TKUserIcon} from '../../Common/Icons/TKUserIcon';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
@@ -40,6 +41,27 @@ const screenNames = [
     routeName: navigationStrings.SETTINGS,
   },
   {
+    id: 6,
+    icon: TKUserIcon,
+    name: 'About Us',
+    routeName: 'ABOUT_US',
+    url: 'https://www.dealzhub.co.in/about',
+  },
+  {
+    id: 7,
+    icon: TKSettingsIcon,
+    name: 'Privacy Policy',
+    routeName: 'PRIVACY_POLICY',
+    url: 'https://www.dealzhub.co.in/privacy',
+  },
+  {
+    id: 8,
+    icon: TKSettingsIcon,
+    name: 'Cancellation & Refund Policy',
+    routeName: 'REFUND_POLICY',
+    url: 'https://www.dealzhub.co.in/cancellation-refund',
+  },
+  {
     id: 5,
     icon: TKSettingsIcon, // using the same icon as a placeholder, can be replaced
     name: 'Delete Account',
@@ -53,6 +75,7 @@ interface ScreenName {
   icon: React.FC<any>;
   name: string;
   routeName: string;
+  url?: string;
   textColor?: string;
 }
 const ProfileOptions = () => {
@@ -61,6 +84,12 @@ const ProfileOptions = () => {
   const handleNavigate = (item: ScreenName) => {
     if (item.routeName === 'DELETE_ACCOUNT') {
       setIsDeleteModalVisible(true);
+      return;
+    }
+    if (item.url) {
+      Linking.openURL(item.url).catch(() => {
+        Alert.alert('Error', 'Unable to open link.');
+      });
       return;
     }
     navigation.navigate(item.routeName as any);
