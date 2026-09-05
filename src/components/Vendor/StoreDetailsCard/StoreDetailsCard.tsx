@@ -30,6 +30,8 @@ const StoreDetailsCard: React.FC<Props> = ({
   const handleAddProduct = () => {
     navigation.navigate(navigationStrings.PRODUCT_UPDATE);
   };
+  const isPendingStatus = storeDetails?.vendorStatus?.toLowerCase() === 'pending';
+
   return (
     <View style={styles.container}>
       <Text style={styles.detailText}>{VendorService.getStoreAddressInfo(storeDetails)}</Text>
@@ -38,15 +40,22 @@ const StoreDetailsCard: React.FC<Props> = ({
           <TKButton
             title={strings('button.edit')}
             type={'secondary'}
-            style={styles.button}
+            style={isPendingStatus ? styles.fullWidthButton : styles.button}
             onPress={handleEditStore}
           />
-          <TKButton
-            title={strings('button.addProduct')}
-            style={styles.button}
-            onPress={handleAddProduct}
-          />
+          <TKRenderIf isRender={!isPendingStatus}>
+            <TKButton
+              title={strings('button.addProduct')}
+              style={styles.button}
+              onPress={handleAddProduct}
+            />
+          </TKRenderIf>
         </View>
+        <TKRenderIf isRender={isPendingStatus}>
+          <View style={styles.pendingContainer}>
+            <Text style={styles.pendingText}>Wait for approval to add product</Text>
+          </View>
+        </TKRenderIf>
       </TKRenderIf>
     </View>
   );
@@ -72,5 +81,24 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '48%',
+  },
+  fullWidthButton: {
+    width: '100%',
+  },
+  pendingContainer: {
+    backgroundColor: '#FEF3C7',
+    paddingVertical: moderateScale(10),
+    paddingHorizontal: moderateScale(16),
+    borderRadius: moderateScale(8),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  pendingText: {
+    color: '#92400E',
+    fontFamily: fontFamily.medium,
+    fontSize: fontScale(13),
+    textAlign: 'center',
   },
 });

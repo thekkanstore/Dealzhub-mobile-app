@@ -167,6 +167,26 @@ const ProductUpdateForm = () => {
         }
     };
 
+    if (!isUpdate && storeDetails?.vendorStatus?.toLowerCase() === 'pending') {
+        return (
+            <View style={{flex: 1, backgroundColor: colors.primaryBackgroundColor}}>
+                <TKHeader
+                    header={strings('labels.addProduct')}
+                    containerStyle={styles.headerContainerStyle}
+                />
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30}}>
+                    <Text style={{fontSize: 18, fontWeight: 'bold', color: colors.primaryTextColor, marginBottom: 10}}>
+                        Store Pending Approval
+                    </Text>
+                    <Text style={{fontSize: 14, color: colors.secondaryTextColor, textAlign: 'center', marginBottom: 20}}>
+                        Wait for approval to add product
+                    </Text>
+                    <TKButton title="Go Back" onPress={() => navigation.goBack()} type="primary" style={{width: '100%'}} />
+                </View>
+            </View>
+        );
+    }
+
     return (
         <>
             <TKHeader
