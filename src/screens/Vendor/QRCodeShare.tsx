@@ -1,5 +1,5 @@
 import React, {useCallback, useRef} from 'react';
-import {Alert, Platform, StyleSheet, Text, View} from 'react-native';
+import {Alert, Image, Platform, StyleSheet, Text, View} from 'react-native';
 import QRCodeSVG from 'react-native-qrcode-svg';
 import {captureRef} from 'react-native-view-shot';
 import Share from 'react-native-share';
@@ -19,29 +19,17 @@ interface Props {
 }
 
 const QRCodeShare: React.FC<Props> = ({route}) => {
-  const {qrValue, storeName} = route.params;
+  const {qrValue, storeName, storeLogo} = route.params;
   const qrRef = useRef<View>(null);
   const qrCodeRef = useRef<any>(null);
 
   const captureQRCode = useCallback(async (): Promise<string | null> => {
     try {
-      if (qrCodeRef.current && typeof qrCodeRef.current.toDataURL === 'function') {
-        return new Promise(resolve => {
-          qrCodeRef.current.toDataURL((dataURL: string) => {
-            if (dataURL) {
-              resolve(dataURL);
-            } else {
-              resolve(null);
-            }
-          });
-        });
-      }
-
       if (!qrRef.current) {
         return null;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
 
       return await captureRef(qrRef.current, {
         format: 'png',
@@ -232,13 +220,42 @@ const QRCodeShare: React.FC<Props> = ({route}) => {
       <View style={styles.content}>
         <View style={styles.qrContainer}>
           <View style={styles.qrWrapper} ref={qrRef} collapsable={false}>
-            <QRCodeSVG
-              value={qrValue || 'https://example.com'}
-              size={240}
-              getRef={ref => (qrCodeRef.current = ref)}
-            />
+            {/* Store Logo */}
+            <View style={styles.logoWrapper}>
+              {!!storeLogo ? (
+                <Image source={{uri: storeLogo}} style={styles.storeLogo} resizeMode="cover" />
+              ) : (
+                <View style={styles.storeLogoFallback}>
+                  <Text style={styles.storeLogoFallbackText}>
+                    {storeName ? storeName.charAt(0).toUpperCase() : 'S'}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            {/* Store Name & Subtitle */}
+            <Text style={styles.storeName}>{storeName || strings('labels.myStore')}</Text>
+            <Text style={styles.scanSubtitle}>Scan to visit our store</Text>
+
+            {/* QR Code SVG */}
+            <View style={styles.qrInnerBox}>
+              <QRCodeSVG
+                value={qrValue || 'https://dealzhub.co.in'}
+                size={moderateScale(190)}
+                getRef={ref => (qrCodeRef.current = ref)}
+              />
+            </View>
+
+            {/* DealzHub Footer Badge */}
+            <View style={styles.dealzhubBadge}>
+              <Image
+                source={require('../../assets/images/appLogo.png')}
+                style={styles.dealzhubLogo}
+                resizeMode="contain"
+              />
+              <Text style={styles.dealzhubText}>DealzHub</Text>
+            </View>
           </View>
-          <Text style={styles.storeName}>{storeName || strings('labels.myStore')}</Text>
         </View>
 
         <View style={styles.buttonContainer}>
@@ -269,33 +286,98 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: moderateScale(32),
+    paddingVertical: moderateScale(20),
   },
   qrContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingHorizontal: moderateScale(24),
+    paddingHorizontal: moderateScale(20),
   },
   qrWrapper: {
-    backgroundColor: colors.neutralButtonBackgroundColor,
-    padding: moderateScale(24),
-    borderRadius: moderateScale(16),
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: moderateScale(24),
+    paddingTop: moderateScale(20),
+    paddingBottom: moderateScale(16),
+    borderRadius: moderateScale(20),
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 6,
+    width: '90%',
+    maxWidth: moderateScale(320),
+  },
+  logoWrapper: {
+    marginBottom: moderateScale(10),
+  },
+  storeLogo: {
+    width: moderateScale(56),
+    height: moderateScale(56),
+    borderRadius: moderateScale(16),
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+  },
+  storeLogoFallback: {
+    width: moderateScale(56),
+    height: moderateScale(56),
+    borderRadius: moderateScale(16),
+    backgroundColor: '#ECFDF5',
+    borderWidth: 2,
+    borderColor: '#A7F3D0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  storeLogoFallbackText: {
+    color: '#064E3B',
+    fontFamily: fontFamily.bold,
+    fontSize: fontScale(24),
   },
   storeName: {
-    marginTop: moderateScale(24),
-    fontSize: fontScale(20),
+    fontSize: fontScale(18),
     fontFamily: fontFamily.bold,
     color: colors.primaryTextColor,
     textAlign: 'center',
+    marginBottom: moderateScale(2),
+  },
+  scanSubtitle: {
+    fontSize: fontScale(12),
+    fontFamily: fontFamily.regular,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: moderateScale(16),
+  },
+  qrInnerBox: {
+    backgroundColor: '#FFFFFF',
+    padding: moderateScale(8),
+    borderRadius: moderateScale(12),
+  },
+  dealzhubBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(6),
+    marginTop: moderateScale(16),
+    paddingTop: moderateScale(12),
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  dealzhubLogo: {
+    width: moderateScale(18),
+    height: moderateScale(18),
+  },
+  dealzhubText: {
+    fontSize: fontScale(12),
+    fontFamily: fontFamily.semiBold,
+    color: '#064E3B',
+    letterSpacing: 0.5,
   },
   buttonContainer: {
     paddingHorizontal: moderateScale(16),

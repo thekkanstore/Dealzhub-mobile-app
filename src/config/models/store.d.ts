@@ -7,12 +7,28 @@ export interface IStoreTable {
   phoneNumber: number | string;
   address: string;
   categories?: string[];
-  city: string;
+  city: any;
   state: string;
   vendorStatus: TVendorStatus;
-  createdAt?: FieldValue;
-  updatedAt?: FieldValue;
+  paymentStatus?: string;
+  paymentOrderId?: string;
+  subscriptionPlan?: string;
+  subscriptionAmount?: number;
+  subscriptionStartDate?: any;
+  subscriptionEndDate?: any;
+  logoUrl?: string;
+  logo?: string;
+  slug?: string;
+  storeUrl?: string;
+  bio?: string;
+  createdAt?: any;
+  updatedAt?: any;
 }
 export type TVendorStatus = 'pending' | 'approved' | 'rejected' | 'inactive' | 'private';
 export interface IStoreRequestBody
-  extends Omit<IStoreTable, 'id' | 'userId' | 'created_at' | 'updated_at'> {}
+  extends Omit<IStoreTable, 'id' | 'userId' | 'createdAt' | 'updatedAt'> {
+  id?: string;
+  userId?: string;
+  createdAt?: any;
+  updatedAt?: any;
+}
