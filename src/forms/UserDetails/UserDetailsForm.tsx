@@ -26,6 +26,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
 import authService from '../../services/auth/authService';
+import {updateNewUserStatus} from '../../redux/userSlice';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
@@ -33,15 +34,30 @@ const UserDetailsForm = () => {
   const {isEdit = false} = route.params || {};
   const {mutate: createUser, isPending: isLoading} = useCreateUser(isEdit);
   const user = useAppSelector(state => state.user.user);
-  const {data: userDetails = {}} = useGetUserDetails(true);
+  const {data: userDetails} = useGetUserDetails(true);
+
+  React.useEffect(() => {
+    const details = userDetails as IUserTable | undefined;
+    if (
+      !isEdit &&
+      details &&
+      (details.phoneNumber ||
+        (details.role && details.role.length > 0) ||
+        (details as any).address)
+    ) {
+      updateNewUserStatus(false);
+    }
+  }, [isEdit, userDetails]);
+
   const initialValues: IUserTable = useMemo(() => {
-    return userDetailsInitialValues({...user?.user, ...userDetails});
+    return userDetailsInitialValues({...user?.user, ...(userDetails || {})});
   }, [userDetails, user?.user]);
 
   const appConfig = useAppSelector(state => state.sessionStates.appConfig);
   const handleSubmit = (values: IUserTable) => {
+    const cityValue = (typeof values.city === 'object' && values.city !== null ? (values.city as any).value : values.city) ?? '';
     createUser(
-      {...values, city: values.city.value ?? ''},
+      {...values, city: cityValue},
       {
         onSuccess: () => {
           if (isEdit) {
@@ -160,7 +176,7 @@ const UserDetailsForm = () => {
                 isVisible={false}
                 onPress={data => setFieldValue('city', data)}
                 selectedItem={values.city as any}
-                error={touched.city && errors.city ? errors.city : undefined}
+                error={touched.city && errors.city ? (typeof errors.city === 'string' ? errors.city : (errors.city as any)?.name || 'City is required') : undefined}
                 placeholder={strings('placeholder.city')}
               />
               <TKSecondaryTextInput

@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "298300377700-a80gise79e8aukjuqd1plk0jtlpn58g7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thekkanvendor",
+            "certificate_hash": "3bdee8985c9ee42052d64c364835bdde5c55c21a"
+          }
+        },
+        {
           "client_id": "298300377700-mgctatje07b0rdrqlh0gtdjkctmbh0sv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -79,6 +87,14 @@
           "android_info": {
             "package_name": "com.thekkanvendor.prod",
             "certificate_hash": "dc985cbe4e0b4289f9d802e67dae5b8b0416fe71"
+          }
+        },
+        {
+          "client_id": "298300377700-a80gise79e8aukjuqd1plk0jtlpn58g7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thekkanvendor.prod",
+            "certificate_hash": "3bdee8985c9ee42052d64c364835bdde5c55c21a"
           }
         },
         {

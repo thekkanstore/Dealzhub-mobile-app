@@ -4,7 +4,7 @@ export interface IUserTable {
   email: string;
   phoneNumber: number | string;
   address: string;
-  city: string;
+  city: any;
   state: string;
   role?: Array<string>; // default user, vendor
   notification?: string;
@@ -16,6 +16,8 @@ export interface IUserTable {
 
   isAgreeTermsAndCondition?: boolean;
   photo?: string;
-  created_at?: FieldValue;
-  updated_at?: FieldValue;
+  created_at?: any;
+  updated_at?: any;
+  createdAt?: any;
+  updatedAt?: any;
 }

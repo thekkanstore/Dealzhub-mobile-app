@@ -13,6 +13,7 @@ import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
 import {updateNewUserStatus, updateUserInfo, updateGuestStatus} from '../../redux/userSlice';
 import {
+  getUserDocument,
   checkIsUserRegistrationCompleted,
   updateNotificationStatus,
 } from '../firestore/userFirestoreService';
@@ -25,32 +26,78 @@ const onGoogleButtonPress = async () => {
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
     // Get the users ID token
-    const signInResult = (await GoogleSignin.signIn())?.data;
+    const signInResponse = await GoogleSignin.signIn();
 
-    console.log('signInResult', signInResult);
-    if (!signInResult.idToken || !signInResult.user.id) {
-      throw new Error('No ID token found');
+    // If user cancelled the dialog, cleanly return without showing error toast
+    if (signInResponse.type === 'cancelled') {
+      console.log('Google Sign-In cancelled by user');
+      return;
     }
+
+    const userData =
+      (signInResponse.type === 'success' ? signInResponse.data : (signInResponse as any)?.data) ||
+      signInResponse;
+
+    // Retrieve idToken (from response or fallback to getTokens)
+    let idToken = userData?.idToken;
+    if (!idToken) {
+      try {
+        const tokens = await GoogleSignin.getTokens();
+        idToken = tokens?.idToken;
+      } catch (tokenErr) {
+        console.warn('Could not get tokens from GoogleSignin.getTokens():', tokenErr);
+      }
+    }
+
+    if (!idToken) {
+      throw new Error('No ID token found from Google Sign-In');
+    }
+
     // Create a Google credential with the token
-    const googleCredential = GoogleAuthProvider.credential(signInResult.idToken);
+    const googleCredential = GoogleAuthProvider.credential(idToken);
     const data = await signInWithCredential(getAuth(), googleCredential);
+    const firebaseUid = data.user.uid;
+
+    let activeUserId = userData.user?.id || firebaseUid;
+    let isUserRegistered = false;
     try {
-      const userExists = await checkIsUserRegistrationCompleted(signInResult.user.id ?? '');
-      updateNewUserStatus(!userExists);
+      const userDoc = await getUserDocument(userData.user?.id || firebaseUid);
+      if (userDoc.exists()) {
+        const dbData = userDoc.data();
+        if (dbData?.id) activeUserId = dbData.id;
+        else if (userDoc.id) activeUserId = userDoc.id;
+        if (dbData?.name || dbData?.phoneNumber || (dbData?.role && dbData.role.length > 0)) {
+          isUserRegistered = true;
+        }
+      }
     } catch (error) {
-      /* empty */
-    } finally {
-      updateUserInfo(signInResult);
+      console.log('Error checking user registration in onGoogleButtonPress:', error);
     }
+
+    updateNewUserStatus(!isUserRegistered);
+
+    const formattedUser = {
+      ...userData,
+      idToken,
+      user: {
+        ...userData.user,
+        id: activeUserId,
+      },
+    };
+    updateUserInfo(formattedUser);
+
     try {
       const token = await messaging().getToken();
-      updateNotificationStatus(signInResult.user.id ?? '', token);
+      updateNotificationStatus(activeUserId, token);
     } catch (error) {
       // Handle error if needed
     }
     return data;
-  } catch (error) {
-    console.error('Google Sign-In Error: ', error);
+  } catch (error: any) {
+    if (error?.code === '12501' || error?.message?.includes('CANCELLED')) {
+      return;
+    }
+    console.error('Google Sign-In Error: ', error?.code, error?.message, error);
     showErrorToast(strings('login.failedSignIn'));
   }
 };

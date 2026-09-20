@@ -5,33 +5,67 @@ import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {Roles} from '../../config/common/constants';
 import {getStoreBasedOnUserIdData} from './storeFirestoreService';
 
-// Helper function to resolve user document by UID or by email field fallback
+// Helper function to resolve user document by UID, document ID, userId field, or email
 async function getUserDocument(userId: string) {
-  let userDoc = await firestore().collection(FireStoreCollections.USERS).doc(userId).get();
-  
-  if (!userDoc.exists() && !userId.includes('@')) {
-    // Try querying by the 'id' field matching the UID first
-    const idSnapshot = await firestore()
-      .collection(FireStoreCollections.USERS)
-      .where('id', '==', userId)
-      .get();
-    if (!idSnapshot.empty) {
-      userDoc = idSnapshot.docs[0] as any;
-    } else {
-      // Fallback: Query by current user's email
-      const email = getAuth().currentUser?.email;
-      if (email) {
-        const emailSnapshot = await firestore()
-          .collection(FireStoreCollections.USERS)
-          .where('email', '==', email)
-          .get();
-        if (!emailSnapshot.empty) {
-          userDoc = emailSnapshot.docs[0] as any;
-        }
-      }
+  const usersCollection = firestore().collection(FireStoreCollections.USERS);
+  const currentAuth = getAuth().currentUser;
+  const authEmail = currentAuth?.email ? currentAuth.email.trim() : null;
+  const authUid = currentAuth?.uid || null;
+
+  // 1. Try direct doc ID lookup by userId
+  if (userId) {
+    const directDoc = await usersCollection.doc(userId).get();
+    if (directDoc.exists()) {
+      return directDoc;
     }
   }
-  return userDoc;
+
+  // 2. Try direct doc ID lookup by auth UID or auth email
+  if (authUid && authUid !== userId) {
+    const uidDoc = await usersCollection.doc(authUid).get();
+    if (uidDoc.exists()) {
+      return uidDoc;
+    }
+  }
+
+  if (authEmail) {
+    const emailDoc = await usersCollection.doc(authEmail).get();
+    if (emailDoc.exists()) {
+      return emailDoc;
+    }
+    const lowerEmailDoc = await usersCollection.doc(authEmail.toLowerCase()).get();
+    if (lowerEmailDoc.exists()) {
+      return lowerEmailDoc;
+    }
+  }
+
+  // 3. Query by 'id' or 'userId' field matching userId or authUid
+  const idCandidates = Array.from(new Set([userId, authUid].filter(Boolean))) as string[];
+  for (const idToTry of idCandidates) {
+    const idSnap = await usersCollection.where('id', '==', idToTry).limit(1).get();
+    if (!idSnap.empty && idSnap.docs[0].exists()) {
+      return idSnap.docs[0];
+    }
+    const userIdSnap = await usersCollection.where('userId', '==', idToTry).limit(1).get();
+    if (!userIdSnap.empty && userIdSnap.docs[0].exists()) {
+      return userIdSnap.docs[0];
+    }
+  }
+
+  // 4. Query by email field
+  const emailCandidates = Array.from(
+    new Set([authEmail, authEmail?.toLowerCase(), userId.includes('@') ? userId : null, userId.includes('@') ? userId.toLowerCase() : null].filter(Boolean)),
+  ) as string[];
+
+  for (const emailToTry of emailCandidates) {
+    const emailSnap = await usersCollection.where('email', '==', emailToTry).limit(1).get();
+    if (!emailSnap.empty && emailSnap.docs[0].exists()) {
+      return emailSnap.docs[0];
+    }
+  }
+
+  // If not found, return empty doc reference
+  return await usersCollection.doc(userId || authUid || 'unknown').get();
 }
 
 // Helper function to update user document (supporting UID vs email resolution)
@@ -53,20 +87,21 @@ async function checkUserExists(userId: string): Promise<boolean> {
     return false;
   }
 }
+
 async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean> {
   try {
     const userDoc = await getUserDocument(userId);
-    if (!userDoc.exists) return false;
-    const data = userDoc.data();
-    const {role = []} = data as IUserTable;
-    if (role.length === 0) return false;
-    if (role.includes(Roles.VENDOR)) {
-      const storeDetails = await getStoreBasedOnUserIdData(userDoc.id);
-      return !!storeDetails;
+    if (!userDoc.exists()) return false;
+    const data = userDoc.data() as IUserTable | undefined;
+    if (!data) return false;
+
+    // If user has basic required profile info (name/phoneNumber/role), registration is complete
+    if (data.name || data.phoneNumber || (data as any).mobileNumber || (data.role && data.role.length > 0)) {
+      return true;
     }
-    return true;
+    return false;
   } catch (error) {
-    console.error('Error checking user existence:', error);
+    console.error('Error checking user registration completion:', error);
     return false;
   }
 }
@@ -416,7 +451,27 @@ async function updateNotificationStatus(
   }
 }
 
+export async function updateUserRole(userId: string, roleToAdd: string, email?: string) {
+  try {
+    const userDocSnap = await getUserDocument(userId || email || '');
+    if (userDocSnap && userDocSnap.exists()) {
+      const currentData = userDocSnap.data() || {};
+      const roles: string[] = Array.isArray(currentData.role) ? [...currentData.role] : ['user'];
+      if (!roles.includes(roleToAdd)) {
+        roles.push(roleToAdd);
+        await firestore().collection(FireStoreCollections.USERS).doc(userDocSnap.id).update({
+          role: roles,
+          updatedAt: serverTimestamp(),
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Error updating user role:', e);
+  }
+}
+
 export {
+  getUserDocument,
   checkUserExists,
   checkIsUserRegistrationCompleted,
   getUserData,
