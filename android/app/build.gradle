@@ -101,7 +101,7 @@ android {
         applicationId "com.thekkanvendor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 21
+        versionCode 22
         versionName "1.1.6"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
@@ -111,7 +111,7 @@ android {
     productFlavors {
         dev {
             dimension 'default'
-            versionCode 21
+            versionCode 22
             versionName "1.1.6"
             testBuildType "debug"
             applicationId "com.thekkanvendor"
@@ -120,7 +120,7 @@ android {
         prod {
             dimension 'default'
             applicationIdSuffix ".prod"
-            versionCode 21
+            versionCode 22
             versionName "1.1.6"
             targetSdkVersion rootProject.ext.targetSdkVersion
             resValue "string", "build_config_package", "com.thekkanvendor"
