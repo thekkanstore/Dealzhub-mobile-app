@@ -36,14 +36,14 @@ export interface IProduct extends IProductTable {
 export interface IProductFormValue
   extends Omit<
     IProductTable,
-    'id' | 'createdAt' | 'updatedAt' | 'image' | 'categoryId' | 'images'
+    'id' | 'createdAt' | 'updatedAt' | 'image' | 'categoryId' | 'images' | 'category'
   > {
   city: any;
   state: string | undefined;
   category: {
     value: ICategoryTable;
     name: string;
-  };
+  } | null;
   images: ImageSourcePropType[];
 }
 

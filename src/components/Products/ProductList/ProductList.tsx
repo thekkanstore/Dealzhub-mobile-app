@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 import {
+  Animated,
   FlatList,
   View,
   Text,
@@ -29,11 +30,13 @@ interface ProductListProps {
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
   selectedSubCategoryId?: string | null;
-
   location?: string;
+  onScroll?: any;
+  scrollEventThrottle?: number;
+  contentContainerStyle?: any;
 }
 
-const ProductList: React.FC<ProductListProps> = ({
+const ProductList = React.forwardRef<any, ProductListProps>(({
   storeId,
   categoryId,
   limit = 10,
@@ -44,7 +47,10 @@ const ProductList: React.FC<ProductListProps> = ({
   isVendor,
   selectedSubCategoryId,
   location,
-}) => {
+  onScroll,
+  scrollEventThrottle = 16,
+  contentContainerStyle,
+}, ref) => {
   const {
     data,
     fetchNextPage,
@@ -60,11 +66,26 @@ const ProductList: React.FC<ProductListProps> = ({
     let allProducts = data?.pages.flatMap(page => page.products) || [];
     if (!isVendor) {
       allProducts = allProducts.filter(p => {
-        const status = p.store?.vendorStatus?.toLowerCase();
-        if (storeId) {
-          return status === 'approved' || status === 'private';
+        const store = p.store;
+        if (!store) return true;
+
+        const status = store.vendorStatus?.toLowerCase();
+        const isStatusValid = storeId ? (status === 'approved' || status === 'private') : status === 'approved';
+        if (!isStatusValid) return false;
+
+        if (store.paymentStatus && store.paymentStatus.toLowerCase() !== 'paid') {
+          return false;
         }
-        return status === 'approved';
+
+        if (store.subscriptionEndDate) {
+          // @ts-ignore
+          const endDate = store.subscriptionEndDate.toDate ? store.subscriptionEndDate.toDate() : new Date(store.subscriptionEndDate);
+          if (new Date() > endDate) {
+            return false; // Expired subscription
+          }
+        }
+
+        return true;
       });
     }
     if (selectedSubCategoryId) {
@@ -97,7 +118,7 @@ const ProductList: React.FC<ProductListProps> = ({
           style={styles.loader}
         />
       </TKRenderIf>
-      <TKRenderIf isRender={!hasNextPage && products.length > 0}>
+      <TKRenderIf isRender={!hasNextPage && products.length > 0 && !isLoading}>
         <Text style={styles.endText}>No more products</Text>
       </TKRenderIf>
       {ListFooterComponent && typeof ListFooterComponent === 'function' && <ListFooterComponent />}
@@ -115,18 +136,10 @@ const ProductList: React.FC<ProductListProps> = ({
     refetch();
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
-        <Text style={styles.loadingText}>Loading products...</Text>
-      </View>
-    );
-  }
-
   return (
-    <FlatList
-      data={products}
+    <Animated.FlatList
+      ref={ref}
+      data={isLoading ? [] : products}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item.id}-${index}`}
       onEndReached={handleLoadMore}
@@ -134,11 +147,18 @@ const ProductList: React.FC<ProductListProps> = ({
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={
-        <TKNoProductFound
-          title={
-            error ? strings('labels.failedToLoadProducts') : strings('labels.sorryNoResultFound')
-          }
-        />
+        isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
+            <Text style={styles.loadingText}>Loading products...</Text>
+          </View>
+        ) : (
+          <TKNoProductFound
+            title={
+              error ? strings('labels.failedToLoadProducts') : strings('labels.sorryNoResultFound')
+            }
+          />
+        )
       }
       numColumns={2}
       columnWrapperStyle={styles.row}
@@ -150,11 +170,12 @@ const ProductList: React.FC<ProductListProps> = ({
         />
       }
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.contentContainer}
-      // style={{flex: 1, backgroundColor: 'red'}}
+      onScroll={onScroll}
+      scrollEventThrottle={scrollEventThrottle}
+      contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
     />
   );
-};
+});
 
 export default ProductList;
 

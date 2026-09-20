@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Formik, FormikProps } from 'formik';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -94,8 +94,8 @@ const ProductUpdateForm = () => {
                     name: removeExtraWhitespace(name),
                     image: updatedImages[0]?.url ?? '', // need to remove this code in future versions
                     images: updatedImages.map(item => item.url ?? ''),
-                    categoryId: category.value?.id,
-                    category: category.value,
+                    categoryId: category?.value?.id ?? '',
+                    category: category?.value as any,
                     imagePath,
                 },
                 {
@@ -144,8 +144,8 @@ const ProductUpdateForm = () => {
                     id: productDetails?.id ?? '',
                     image: finalImages[0],
                     images: finalImages,
-                    categoryId: category.value?.id,
-                    category: category.value,
+                    categoryId: category?.value?.id ?? '',
+                    category: category?.value as any,
                 },
                 {
                     onSuccess: async () => {
@@ -222,7 +222,7 @@ const ProductUpdateForm = () => {
                                 onFilesPicked={handleOnAddImage}
                                 error={
                                     shouldShowError<IProductFormValue>(initialValues, 'images', touched, errors)
-                                        ? errors.images
+                                        ? (typeof errors.images === 'string' ? errors.images : undefined)
                                         : undefined
                                 }
                                 onDelete={handleOnDeleteImage}
@@ -297,7 +297,7 @@ const ProductUpdateForm = () => {
                                     setFieldValue('subcategoryIds', []);
                                 }}
                                 selectedItem={values.category as any}
-                                error={touched.category && errors.category ? errors.category : undefined}
+                                error={touched.category && errors.category ? (typeof errors.category === 'string' ? errors.category : (errors.category as any)?.name || 'Category is required') : undefined}
                                 placeholder={strings('placeholder.productCategory')}
                             />
                             {values.category?.value?.id && values.storeId && (

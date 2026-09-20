@@ -37,7 +37,7 @@ const CustomerAction: React.FC<Props> = ({productDetails}) => {
 
   const executeBuyNow = () => {
     const message = `Hi! I'm interested in ${productDetails.name}, priced at ${productDetails.discountPrice}. Can you tell me more?`;
-    const rawPhone = productDetails.store.phoneNumber || '';
+    const rawPhone = String(productDetails.store.phoneNumber || '');
     const cleanPhone = rawPhone.replace(/\D/g, ''); // Remove non-digit characters
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 

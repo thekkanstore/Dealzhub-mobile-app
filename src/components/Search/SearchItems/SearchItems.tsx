@@ -65,9 +65,25 @@ const SearchItems: React.FC<Props> = ({productName}) => {
 
   const filteredProductList = useMemo(() => {
     return (productList || []).filter(p => {
-      const status = p.store?.vendorStatus?.toLowerCase();
-      // Only approved stores should show up in public search results
-      return status === 'approved';
+      const store = p.store;
+      if (!store) return false;
+      const status = store.vendorStatus?.toLowerCase();
+      // Only approved and validly subscribed stores should show up in public search results
+      if (status !== 'approved') return false;
+
+      if (store.paymentStatus && store.paymentStatus.toLowerCase() !== 'paid') {
+        return false;
+      }
+
+      if (store.subscriptionEndDate) {
+        // @ts-ignore
+        const endDate = store.subscriptionEndDate.toDate ? store.subscriptionEndDate.toDate() : new Date(store.subscriptionEndDate);
+        if (new Date() > endDate) {
+          return false;
+        }
+      }
+
+      return true;
     });
   }, [productList]);
 

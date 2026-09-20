@@ -37,10 +37,13 @@ export const productDetailsInitalValues = (
     isActive: productDetails?.isActive ?? true,
     isSoldOut: productDetails?.isSoldOut ?? false,
     isOutOfStock: productDetails?.isOutOfStock ?? false,
-    storeId: productDetails?.store?.id ?? storeDetails?.id,
-    store: productDetails?.store ?? storeDetails,
-    userId: productDetails?.store?.userId ?? storeDetails?.userId,
+    storeId: productDetails?.store?.id ?? storeDetails?.id ?? '',
+    store: (productDetails?.store ?? storeDetails) as any,
+    userId: productDetails?.store?.userId ?? storeDetails?.userId ?? '',
     imagePath,
+    city: (productDetails as any)?.city ?? productDetails?.store?.city ?? storeDetails?.city ?? '',
+    state: (productDetails as any)?.state ?? productDetails?.store?.state ?? storeDetails?.state ?? '',
+    nameLower: (productDetails?.name ?? '').toLowerCase(),
     subcategoryIds: productDetails?.subcategoryIds ?? [],
   };
 };

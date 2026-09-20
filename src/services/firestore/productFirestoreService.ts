@@ -1,4 +1,5 @@
 import firestore, {serverTimestamp} from '@react-native-firebase/firestore';
+import {getAuth} from '@react-native-firebase/auth';
 import {FireStoreCollections} from '../../config/common/firestoreCollections';
 import {
   IGetProductsParams,
@@ -35,6 +36,15 @@ async function createNewProduct(
   productData: IProductRequestBody,
 ): Promise<{success: boolean; productId: string | null; message: string}> {
   try {
+    const authUser = getAuth().currentUser;
+    if (!authUser) {
+      return Promise.reject({
+        success: false,
+        userId: null,
+        message: 'Your login session has expired. Please sign out and sign in again.',
+      });
+    }
+
     const storeCollection = firestore().collection(FireStoreCollections.PRODUCTS);
     const newProductRef = storeCollection.doc();
     const productId = newProductRef.id;
@@ -60,11 +70,11 @@ async function createNewProduct(
     } else {
       return Promise.reject('Product creation failed');
     }
-  } catch (error) {
+  } catch (error: any) {
     return Promise.reject({
       success: false,
       userId: null,
-      message: `Error creating Product: ${error}`,
+      message: `Error creating Product: ${error?.message || error}`,
     });
   }
 }
@@ -74,6 +84,15 @@ async function updateProductDetails(
   productData: IProductRequestBody,
 ): Promise<{success: boolean; productId: string | null; message: string}> {
   try {
+    const authUser = getAuth().currentUser;
+    if (!authUser) {
+      return Promise.reject({
+        success: false,
+        userId: null,
+        message: 'Your login session has expired. Please sign out and sign in again.',
+      });
+    }
+
     const newProductData = {
       ...productData,
       id: productId,
@@ -96,11 +115,11 @@ async function updateProductDetails(
     } else {
       return Promise.reject('Product creation failed');
     }
-  } catch (error) {
+  } catch (error: any) {
     return Promise.reject({
       success: false,
       userId: null,
-      message: `Error creating Product: ${error}`,
+      message: `Error updating Product: ${error?.message || error}`,
     });
   }
 }
@@ -145,7 +164,7 @@ async function getProductsList({
     const snapshot = await query.get();
 
     const products: IProductTable[] = snapshot.docs.map(
-      doc =>
+      (doc: any) =>
         ({
           ...doc.data(),
           id: doc.id,
@@ -257,7 +276,7 @@ async function searchProductsByName(productName: string): Promise<IProductTable[
     const snapshot = await query.limit(100).get();
 
     const products: IProductTable[] = snapshot.docs.map(
-      doc =>
+      (doc: any) =>
         ({
           ...doc.data(),
           id: doc.id,
