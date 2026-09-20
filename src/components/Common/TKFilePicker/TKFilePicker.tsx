@@ -29,7 +29,7 @@ import FastImage from 'react-native-fast-image';
 import TKRenderIf from '../TKRenderIf/TKRenderIf';
 
 interface LXFilePickerProps {
-  onFilePicked: (file: FilePickerResult) => void;
+  onFilePicked?: (file: FilePickerResult) => void;
   onFilesPicked?: (files: FilePickerResult[]) => void; // optional multi-select callback
   allowedTypes?: ('image' | 'pdf' | 'document')[];
   maxSizeInMB?: number;
@@ -104,7 +104,11 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
     setActiveOption(type);
 
     const onSuccess = (file: FilePickerResult) => {
-      onFilesPicked?.([file]);
+      if (onFilesPicked) {
+        onFilesPicked([file]);
+      } else {
+        onFilePicked?.(file);
+      }
       setIsShowOptionModal(false);
       setActiveOption(null);
     };
@@ -123,7 +127,7 @@ const TKFilePicker: React.FC<LXFilePickerProps> = ({
             if (onFilesPicked) {
               onFilesPicked(files);
             } else {
-              onFilePicked(files[0]);
+              onFilePicked?.(files[0]);
             }
             setIsShowOptionModal(false);
             setActiveOption(null);

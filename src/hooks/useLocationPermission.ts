@@ -19,7 +19,7 @@ Geolocation.setRNConfiguration({
 // Custom hook for location permissions
 export const useLocationPermission = () => {
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus | null>(null);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGpsEnabled, setIsGpsEnabled] = useState<boolean | null>(null);
@@ -143,7 +143,7 @@ export const useLocationPermission = () => {
             'Location permission is blocked. Please enable it in settings to use this feature.',
             [
               {text: 'Cancel', style: 'cancel', onPress: onPermissionDenied},
-              {text: 'Open Settings', onPress: openSettings},
+              {text: 'Open Settings', onPress: () => { openSettings(); }},
             ],
           );
           return false;
@@ -200,7 +200,7 @@ export const useLocationPermission = () => {
                   {text: 'Cancel', style: 'cancel'},
                   {
                     text: 'Grant Permission',
-                    onPress: requestLocationPermission,
+                    onPress: () => { requestLocationPermission(); },
                   },
                 ],
               );

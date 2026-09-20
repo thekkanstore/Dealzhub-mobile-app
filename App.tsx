@@ -21,21 +21,28 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
+import {getAuth} from '@react-native-firebase/auth';
+import {colors} from './src/config/styles/colors';
 
-if (!Config.GOOGLE_CLIENT_ID) {
-  console.error('GOOGLE_CLIENT_ID is not set in the environment file.');
-} else {
-  console.log('GOOGLE_CLIENT_ID', Config.GOOGLE_CLIENT_ID);
-  GoogleSignin.configure({
-    webClientId: Config.GOOGLE_CLIENT_ID,
-    scopes: ['https://www.googleapis.com/auth/user.phonenumbers.read'],
-  });
-}
+const WEB_CLIENT_ID =
+  Config.GOOGLE_CLIENT_ID ||
+  '298300377700-4hrlh6u6v192i4qm6h5upkrems99sasf.apps.googleusercontent.com';
+
+GoogleSignin.configure({
+  webClientId: WEB_CLIENT_ID,
+});
 
 export const queryClient = new QueryClient();
 
 function App(): React.JSX.Element {
   console.log('Firebase initialized:', firebase.apps.length > 0);
+
+  React.useEffect(() => {
+    const unsubscribe = getAuth().onAuthStateChanged(authUser => {
+      console.log('Firebase Auth State Changed:', authUser ? authUser.uid : 'null');
+    });
+    return () => unsubscribe();
+  }, []);
 
   firestore()
     .collection('test')
@@ -54,7 +61,7 @@ function App(): React.JSX.Element {
         <PersistGate loading={null} persistor={persistor}>
           <SafeAreaProvider initialMetrics={initialWindowMetrics}>
             <GlobalSafeAreaProvider>
-              <View style={{flex: 1}}>
+              <View style={{flex: 1, backgroundColor: colors.primaryBackgroundColor}}>
                 <TKGlobalModalManager>
                   <KeyboardProvider>
                     <TKStatusBar />

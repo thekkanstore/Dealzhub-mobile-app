@@ -32,7 +32,15 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   const {user, isGuest} = useAppSelector(state => state.user);
 
   const isStoreOwner = useMemo(() => {
-    return !!user?.user?.id && storeDetails?.userId === user.user.id;
+    if (!storeDetails) return false;
+    const currentUserId = user?.user?.id;
+    const currentUserEmail = user?.user?.email?.trim().toLowerCase();
+    const storeEmail = storeDetails.email?.trim().toLowerCase();
+    const storeUserId = storeDetails.userId;
+
+    if (currentUserId && storeUserId && currentUserId === storeUserId) return true;
+    if (currentUserEmail && storeEmail && currentUserEmail === storeEmail) return true;
+    return false;
   }, [user, storeDetails]);
 
   const isStoreInactive = useMemo(() => {
@@ -72,11 +80,27 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
     });
   };
 
+  const storeShareUrl = useMemo(() => {
+    if (!storeDetails?.id) return '';
+    if (storeDetails.storeUrl) return storeDetails.storeUrl;
+    if (storeDetails.slug) return `https://dealzhub.co.in/shop/${storeDetails.slug}`;
+    return `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`;
+  }, [storeDetails]);
+
+  const storeLogoUri =
+    (storeDetails as any)?.logoUrl ||
+    (storeDetails as any)?.logo ||
+    (storeDetails as any)?.storeLogo ||
+    (storeDetails as any)?.imageUrl ||
+    (storeDetails as any)?.image;
+  const storeInitial = storeDetails?.storeName ? storeDetails.storeName.charAt(0) : '';
+
   const handleQRPress = () => {
     if (storeDetails?.id) {
       navigation.navigate(navigationStrings.QR_CODE_SHARE, {
-        qrValue: `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`,
+        qrValue: storeShareUrl,
         storeName: storeDetails.storeName || 'Store',
+        storeLogo: storeLogoUri || undefined,
       });
     }
   };
@@ -108,6 +132,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
             id: category?.id,
             title: category?.name,
             key: category?.id,
+            image: category?.image || null,
           };
         })
         ?.filter(item => !!item) ?? [];
@@ -116,6 +141,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         id: CategoryListHeaderTabs.ALL_PRODUCTS,
         title: strings('labels.allProducts'),
         key: 'all',
+        image: null,
       },
       ...headerList,
     ];
@@ -127,27 +153,34 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         header={storeDetails?.storeName ?? strings('labels.storeDetails')}
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
-        showBackButton={isFromProductDetails}
-        qrValue={
-          storeDetails?.id
-            ? `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`
-            : undefined
-        }
+        showBackButton={Boolean(isFromProductDetails && navigation.canGoBack())}
+        onBackPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never);
+          }
+        }}
+        qrValue={storeShareUrl || undefined}
         onQRPress={handleQRPress}
+        logoUri={storeLogoUri || undefined}
+        storeInitial={storeInitial || undefined}
       />
       <TKRenderIf isRender={!isGuest || isFromProductDetails}>
         <TKRenderIf
           isRender={!!storeDetails && !!headerList?.length && (!isStoreInactive || isStoreOwner)}>
-          <StoreDetailsCard
-            // @ts-expect-error TS2322
-            storeDetails={storeDetails}
-            navigation={navigation}
-            isFromProductDetails={isFromProductDetails}
-          />
           <CategoryHeaderTabBar
             headerTabItems={headerList}
             storeDetails={storeDetails}
             isFromProductDetails={isFromProductDetails}
+            renderStoreDetailsCard={() => (
+              <StoreDetailsCard
+                // @ts-expect-error TS2322
+                storeDetails={storeDetails}
+                navigation={navigation}
+                isFromProductDetails={isFromProductDetails}
+              />
+            )}
           />
         </TKRenderIf>
       </TKRenderIf>

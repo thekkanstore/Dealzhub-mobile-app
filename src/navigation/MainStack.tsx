@@ -14,6 +14,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {RegisterUserStack} from './RegisterStack';
 import {useGetAppConfig} from '../react-queries/appConfig/appConfigQuery';
 import {linkingConfiguration} from './linkingConfiguration';
+import {colors} from '../config/styles/colors';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -56,6 +57,7 @@ export default function MainStack() {
       <View
         style={{
           flex: 1,
+          backgroundColor: colors.primaryBackgroundColor,
           paddingTop: isUserDetails || isGuest ? insets.top : 0,
           paddingBottom: isUserDetails || isGuest ? insets.bottom : 0,
         }}>

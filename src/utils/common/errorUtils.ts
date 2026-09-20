@@ -1,11 +1,13 @@
+import {FormikErrors, FormikTouched} from 'formik';
+
 export const shouldShowError = <T extends object>(
   initialParamValues: T,
   fieldName: keyof T,
-  touched: Partial<Record<keyof T, boolean>>,
-  errors: Partial<Record<keyof T, string>>,
+  touched: FormikTouched<T> | any,
+  errors: FormikErrors<T> | any,
 ) => {
-  const isFieldTouched = touched[fieldName];
-  const hasError = errors[fieldName];
+  const isFieldTouched = touched ? Boolean((touched as any)[fieldName]) : false;
+  const hasError = errors ? (errors as any)[fieldName] : undefined;
 
-  return hasError && isFieldTouched;
+  return Boolean(hasError && isFieldTouched);
 };

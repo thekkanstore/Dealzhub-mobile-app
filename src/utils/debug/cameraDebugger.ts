@@ -1,11 +1,11 @@
 import {Alert, Platform} from 'react-native';
-import {launchCamera, MediaType} from 'react-native-image-picker';
+import {launchCamera, MediaType, PhotoQuality} from 'react-native-image-picker';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 
 export const testCameraDirectly = () => {
   const options = {
     mediaType: 'photo' as MediaType,
-    quality: 0.8,
+    quality: 0.8 as PhotoQuality,
     maxWidth: 1920,
     maxHeight: 1920,
     includeBase64: false,

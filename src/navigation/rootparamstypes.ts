@@ -54,6 +54,11 @@ export type VendorStackParamList = {
   QRCodeShare: {
     qrValue: string;
     storeName: string;
+    storeLogo?: string;
+  };
+  PaymentStatus?: {
+    linkId?: string;
+    orderId?: string;
   };
 };
 export type RegisterUserStackParamList = {

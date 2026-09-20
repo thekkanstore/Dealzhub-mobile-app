@@ -47,7 +47,7 @@ const TKCustomBottomTabBar = ({state, descriptors, navigation}: BottomTabBarProp
       });
       updateIsFromProductDetails(false);
       if (!isFocused && !event.defaultPrevented) {
-        navigation.navigate({name: route.name, merge: true});
+        (navigation.navigate as any)({name: route.name, merge: true});
       }
     },
     [navigation],

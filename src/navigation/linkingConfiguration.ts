@@ -10,6 +10,7 @@ export const linkingConfiguration: LinkingOptions<any> = {
             screens: {
               VendorStack: {
                 screens: {
+                  PaymentStatus: 'payment-status',
                   Vendor: {
                     path: 'vendor/:storeId',
                     parse: {
@@ -24,11 +25,56 @@ export const linkingConfiguration: LinkingOptions<any> = {
       },
     },
   },
-  /** When /vendor/:storeId is opened, we need to set isFromProductDetails to true */
+  /** Deep link handler */
   getStateFromPath: (path, options) => {
-    const state = getStateFromPath(path, options);
-
     try {
+      if (path.startsWith('payment-status')) {
+        let linkId = '';
+        let orderId = '';
+        const queryIndex = path.indexOf('?');
+        if (queryIndex !== -1) {
+          const queryString = path.slice(queryIndex + 1);
+          const pairs = queryString.split('&');
+          for (const pair of pairs) {
+            const [key, value] = pair.split('=');
+            if (key === 'link_id') linkId = decodeURIComponent(value || '');
+            if (key === 'order_id') orderId = decodeURIComponent(value || '');
+          }
+        }
+        return {
+          routes: [
+            {
+              name: 'BottomTabStack',
+              state: {
+                routes: [
+                  {
+                    name: 'HomeTab',
+                    state: {
+                      routes: [
+                        {
+                          name: 'VendorStack',
+                          state: {
+                            routes: [
+                              {
+                                name: 'PaymentStatus',
+                                params: {
+                                  linkId: linkId || orderId,
+                                  orderId: orderId || linkId,
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        };
+      }
+
       const parts = path.split('/');
       if (parts[0] === 'vendor' && parts[1]) {
         const storeId = parts[1];
@@ -50,7 +96,7 @@ export const linkingConfiguration: LinkingOptions<any> = {
                                 name: 'Vendor',
                                 params: {
                                   storeId,
-                                  isFromProductDetails: true,
+                                  isFromProductDetails: false,
                                 },
                               },
                             ],
@@ -69,6 +115,6 @@ export const linkingConfiguration: LinkingOptions<any> = {
       console.warn('Error parsing deep link:', e);
     }
 
-    return state;
+    return getStateFromPath(path, options);
   },
 };

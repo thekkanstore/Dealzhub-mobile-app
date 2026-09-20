@@ -27,6 +27,7 @@ export const navigationStrings = {
   PRODUCT_UPDATE: 'ProductUpdate',
   PRODUCT_DETAILS: 'ProductDetails',
   QR_CODE_SHARE: 'QRCodeShare',
+  PAYMENT_STATUS: 'PaymentStatus',
 
   // Register stack screens
   USER_DETAILS: 'UserDetails',

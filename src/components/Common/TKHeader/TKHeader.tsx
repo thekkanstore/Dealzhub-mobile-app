@@ -1,6 +1,6 @@
 // src/components/Common/TKHeader/TKHeader.tsx
 import React from 'react';
-import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {Image, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {colors} from '../../../config/styles/colors';
@@ -18,6 +18,8 @@ type Props = {
   containerStyle?: StyleProp<ViewStyle>;
   qrValue?: string;
   onQRPress?: () => void;
+  logoUri?: string;
+  storeInitial?: string;
 };
 
 const TKHeader: React.FC<Props> = ({
@@ -28,14 +30,18 @@ const TKHeader: React.FC<Props> = ({
   containerStyle,
   qrValue,
   onQRPress,
+  logoUri,
+  storeInitial,
 }) => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
     if (onBackPress) {
       onBackPress();
-    } else {
+    } else if (navigation.canGoBack()) {
       navigation.goBack();
+    } else {
+      (navigation as any).navigate('BottomTabStack', {screen: 'HomeTab'});
     }
   };
 
@@ -69,11 +75,20 @@ const TKHeader: React.FC<Props> = ({
         </TKRenderIf>
 
         <View style={[styles.headerContainer, !showBackButton && {marginLeft: moderateScale(16)}]}>
-          {renderHeader()}
+          <View style={styles.titleRow}>
+            {!!logoUri ? (
+              <Image source={{uri: logoUri}} style={styles.logoImage} resizeMode="cover" />
+            ) : !!storeInitial ? (
+              <View style={styles.logoFallback}>
+                <Text style={styles.logoFallbackText}>{storeInitial.toUpperCase()}</Text>
+              </View>
+            ) : null}
+            <View style={styles.titleTextWrapper}>{renderHeader()}</View>
+          </View>
         </View>
       </View>
 
-      <TKRenderIf isRender={!!rightComponent}>
+      <TKRenderIf isRender={!!rightComponent || !!qrValue}>
         <View style={styles.rightContainer}>
           {renderRightChild()}
 
@@ -115,6 +130,36 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20),
   },
   headerContainer: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(10),
+  },
+  logoImage: {
+    width: moderateScale(28),
+    height: moderateScale(28),
+    borderRadius: moderateScale(8),
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  logoFallback: {
+    width: moderateScale(28),
+    height: moderateScale(28),
+    borderRadius: moderateScale(8),
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoFallbackText: {
+    color: '#064E3B',
+    fontFamily: fontFamily.bold,
+    fontSize: fontScale(13),
+  },
+  titleTextWrapper: {
     flex: 1,
   },
   headerText: {
