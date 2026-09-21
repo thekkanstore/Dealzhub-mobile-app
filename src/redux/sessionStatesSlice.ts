@@ -8,7 +8,7 @@ interface ISessionStatesState {
 }
 
 const initialState: ISessionStatesState = {
-  selectedLocation: '',
+  selectedLocation: 'Ernakulam',
   appConfig: null,
 };
 

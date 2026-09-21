@@ -56,6 +56,15 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
   const flatListRef = useRef<FlatList>(null);
   const productListRef = useRef<any>(null);
 
+  useEffect(() => {
+    if (headerTabItems && headerTabItems.length > 0) {
+      const exists = headerTabItems.some(item => item?.id === activeTab?.id);
+      if (!exists) {
+        setActiveTab(headerTabItems[0]);
+      }
+    }
+  }, [headerTabItems]);
+
   const scrollY = useRef(new Animated.Value(0)).current;
   const [headerCardHeight, setHeaderCardHeight] = useState(0);
   const [categoryBarHeight, setCategoryBarHeight] = useState(0);
@@ -212,7 +221,34 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
   };
 
   if (!isFromProductDetails && storeDetails.vendorStatus !== 'approved' && storeDetails.vendorStatus !== 'private') {
-    return null;
+    const status = (storeDetails.vendorStatus || '').toLowerCase();
+    const isPending = status === 'pending' || !status;
+    const isRejected = status === 'rejected';
+
+    return (
+      <ScrollView
+        style={styles.mainContainer}
+        contentContainerStyle={{paddingBottom: moderateScale(40)}}
+        showsVerticalScrollIndicator={false}>
+        {renderStoreDetailsCard && renderStoreDetailsCard()}
+
+        <View style={styles.pendingReviewContainer}>
+          <View style={[styles.pendingIconCircle, isRejected && styles.rejectedIconCircle]}>
+            <Text style={styles.pendingIconEmoji}>{isRejected ? '❌' : isPending ? '⏳' : '🔒'}</Text>
+          </View>
+          <Text style={styles.pendingReviewTitle}>
+            {isRejected ? 'Store Rejected' : isPending ? 'Store Under Review' : 'Store Inactive'}
+          </Text>
+          <Text style={styles.pendingReviewSubtitle}>
+            {isRejected
+              ? 'Your store registration was not approved. Please tap "Edit" above to review and update your store details.'
+              : isPending
+              ? 'Your store registration has been submitted and is currently being reviewed by our team. Once approved, you can start adding products and publishing deals.'
+              : 'Your store is currently inactive and hidden from shoppers. Please contact support or update your store information.'}
+          </Text>
+        </View>
+      </ScrollView>
+    );
   }
 
   const totalHeaderHeight = headerCardHeight + categoryBarHeight;
@@ -275,6 +311,7 @@ const CategoryHeaderTabBar: React.FC<Props> = ({
 
       <ProductList
         ref={productListRef}
+        key={`${storeDetails?.id}-${activeTab?.id}-${selectedSubCategoryId ?? 'all'}`}
         storeId={storeDetails?.id ?? ''}
         categoryId={
           activeTab?.id === CategoryListHeaderTabs.ALL_PRODUCTS ? undefined : activeTab?.id
@@ -423,5 +460,54 @@ const styles = StyleSheet.create({
   subCategoryChipTextActive: {
     color: '#FFFFFF',
     fontFamily: fontFamily.bold,
+  },
+  pendingReviewContainer: {
+    marginHorizontal: moderateScale(16),
+    marginTop: moderateScale(12),
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: moderateScale(12),
+    padding: moderateScale(24),
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  pendingIconCircle: {
+    width: moderateScale(64),
+    height: moderateScale(64),
+    borderRadius: moderateScale(32),
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: moderateScale(16),
+  },
+  rejectedIconCircle: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FCA5A5',
+  },
+  pendingIconEmoji: {
+    fontSize: fontScale(28),
+  },
+  pendingReviewTitle: {
+    fontSize: fontScale(18),
+    fontFamily: fontFamily.bold,
+    color: '#1F2937',
+    marginBottom: moderateScale(8),
+    textAlign: 'center',
+  },
+  pendingReviewSubtitle: {
+    fontSize: fontScale(13),
+    fontFamily: fontFamily.regular,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: fontScale(20),
+    paddingHorizontal: moderateScale(6),
   },
 });

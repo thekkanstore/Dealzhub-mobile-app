@@ -12,6 +12,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import StoreDetailsCard from '../../components/Vendor/StoreDetailsCard/StoreDetailsCard';
 import {VendorScreenNavigationProp, VendorStackParamList} from '../../navigation/rootparamstypes';
 import CategoryHeaderTabBar from '../../components/Vendor/CategoryHeaderTabBar/CategoryHeaderTabBar';
+import {VendorHeaderSkeleton} from '../../components/Common/Skeleton';
 import {useGetCategoriesList} from '../../react-queries/categories/categoriesQuery';
 import {CategoryListHeaderTabs} from '../../config/common/constants';
 import {RouteProp} from '@react-navigation/native';
@@ -123,8 +124,14 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
   };
 
   const headerList = useMemo(() => {
-    if (!categoryList) return [];
-    const headerList =
+    const allProductsTab = {
+      id: CategoryListHeaderTabs.ALL_PRODUCTS,
+      title: strings('labels.allProducts'),
+      key: 'all',
+      image: null,
+    };
+    if (!categoryList) return [allProductsTab];
+    const categoriesTabs =
       storeDetails?.categories
         ?.map(item => {
           const category = categoryList.find(cat => cat.id === item);
@@ -136,15 +143,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
           };
         })
         ?.filter(item => !!item) ?? [];
-    return [
-      {
-        id: CategoryListHeaderTabs.ALL_PRODUCTS,
-        title: strings('labels.allProducts'),
-        key: 'all',
-        image: null,
-      },
-      ...headerList,
-    ];
+    return [allProductsTab, ...categoriesTabs];
   }, [categoryList, storeDetails]);
 
   return (
@@ -166,6 +165,9 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         logoUri={storeLogoUri || undefined}
         storeInitial={storeInitial || undefined}
       />
+      <TKRenderIf isRender={isPending && !storeDetails}>
+        <VendorHeaderSkeleton />
+      </TKRenderIf>
       <TKRenderIf isRender={!isGuest || isFromProductDetails}>
         <TKRenderIf
           isRender={!!storeDetails && !!headerList?.length && (!isStoreInactive || isStoreOwner)}>

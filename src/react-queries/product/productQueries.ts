@@ -115,7 +115,7 @@ export const useUpdateProduct = () => {
 export const useGetProductsList = ({
   storeId,
   categoryId,
-  limit = 10,
+  limit = 20,
   isActive,
   location,
 }: IGetProductsParams) => {
