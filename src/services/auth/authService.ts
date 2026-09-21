@@ -58,10 +58,10 @@ const onGoogleButtonPress = async () => {
     const data = await signInWithCredential(getAuth(), googleCredential);
     const firebaseUid = data.user.uid;
 
-    let activeUserId = userData.user?.id || firebaseUid;
+    let activeUserId = firebaseUid;
     let isUserRegistered = false;
     try {
-      const userDoc = await getUserDocument(userData.user?.id || firebaseUid);
+      const userDoc = await getUserDocument(firebaseUid);
       if (userDoc.exists()) {
         const dbData = userDoc.data();
         if (dbData?.id) activeUserId = dbData.id;
