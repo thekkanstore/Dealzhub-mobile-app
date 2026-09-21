@@ -42,7 +42,7 @@ export const createCashfreeMobileOrder = async (params: CreateOrderParams) => {
       customer_phone: cleanPhone.length === 10 ? cleanPhone : '9999999999',
     },
     order_meta: {
-      return_url: returnUrl || `https://dealzhub.co.in/payment-status?order_id={order_id}`,
+      return_url: returnUrl || `dealszhub://payment-status?order_id={order_id}`,
     },
   };
 
@@ -77,6 +77,39 @@ export const getCashfreeCheckoutUrl = (orderId: string, paymentSessionId?: strin
     return `https://payments-test.cashfree.com/order/#${paymentSessionId}`;
   }
   return `https://sandbox.cashfree.com/pg/orders/${orderId}/checkout`;
+};
+
+/**
+ * Creates a Cashfree payment order and returns the web checkout URL.
+ * Automatically falls back to Links API if Orders API fails.
+ */
+export const initiateCashfreeWebPayment = async (params: CreateOrderParams): Promise<string> => {
+  const returnUrl = params.returnUrl || `dealszhub://payment-status?order_id=${params.orderId}`;
+
+  // 1. Try Cashfree Orders API first (standard web PG checkout, works in production)
+  try {
+    const orderData = await createCashfreeMobileOrder({
+      ...params,
+      returnUrl,
+    });
+    if (orderData?.payment_session_id) {
+      return getCashfreeCheckoutUrl(params.orderId, orderData.payment_session_id);
+    }
+  } catch (orderErr: any) {
+    console.warn('Cashfree Orders API error, trying Links API fallback:', orderErr);
+    // 2. Fallback to Links API if Orders API is unavailable
+    try {
+      const linkData = await createCashfreePaymentLink(params);
+      if (linkData?.link_url) {
+        return linkData.link_url;
+      }
+    } catch (linkErr: any) {
+      console.error('Cashfree Links API fallback error:', linkErr);
+      throw orderErr || linkErr;
+    }
+  }
+
+  throw new Error('Cashfree did not return a valid payment session.');
 };
 
 export const createCashfreePaymentLink = async (params: CreateOrderParams) => {

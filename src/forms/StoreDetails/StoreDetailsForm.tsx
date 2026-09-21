@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {Alert, Image, Linking, StyleSheet, Text, View} from 'react-native';
+import {Alert, Linking, StyleSheet, Text, View} from 'react-native';
 import {Formik} from 'formik';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
@@ -27,7 +27,7 @@ import {useAppSelector} from '../../redux/hooks';
 import {fontFamily} from '../../config/styles/fontFamily';
 
 import SubscriptionPlanModal, { PlanItem } from '../../components/Vendor/SubscriptionPlanModal/SubscriptionPlanModal';
-import { createCashfreePaymentLink } from '../../services/vendor/cashfreeService';
+import { initiateCashfreeWebPayment } from '../../services/vendor/cashfreeService';
 import { TouchableOpacity } from 'react-native';
 
 const StoreDetailsForm = () => {
@@ -40,7 +40,6 @@ const StoreDetailsForm = () => {
   const initialValues: IStoreRequestBody = useMemo(() => {
     return storeDetailsInitialValues(storeDetails ?? undefined);
   }, [storeDetails]);
-  const appConfig = useAppSelector(state => state.sessionStates.appConfig);
 
   const isPendingStatus = storeDetails?.vendorStatus?.toLowerCase() === 'pending';
   const isPaymentPending = storeDetails?.paymentStatus === 'pending' || storeDetails?.paymentStatus === 'FAILED' || (isPendingStatus && storeDetails?.paymentStatus !== 'PAID');
@@ -64,15 +63,6 @@ const StoreDetailsForm = () => {
   });
   const [isPlanModalVisible, setIsPlanModalVisible] = useState(false);
   const [isCashfreeLoading, setIsCashfreeLoading] = useState(false);
-
-  const handelMessage = (storeName: string) => {
-    const message = `Vendor request for ${storeName} has been submitted. Kindly review the store details and proceed with the approval.`;
-    const url =
-      'whatsapp://send?text=' + encodeURIComponent(message) + '&phone=' + appConfig?.adminNo;
-    Linking.openURL(url)
-      .then(() => {})
-      .catch(() => Alert.alert('Error', 'Make sure WhatsApp installed on your device'));
-  };
 
   const handleSubmit = (values: IStoreRequestBody) => {
     const normalizedEmail = values.email ? values.email.trim().toLowerCase() : '';
@@ -109,7 +99,7 @@ const StoreDetailsForm = () => {
         onSuccess: async () => {
           updateNewUserStatus(false);
           try {
-            const cfLink = await createCashfreePaymentLink({
+            const checkoutUrl = await initiateCashfreeWebPayment({
               orderId,
               orderAmount: selectedPlan.price,
               customerName: values.storeName,
@@ -117,20 +107,18 @@ const StoreDetailsForm = () => {
               customerPhone: values.phoneNumber?.toString() || '9999999999',
             });
 
-            if (cfLink?.link_url) {
-              Linking.openURL(cfLink.link_url).catch(() => {
-                Alert.alert('Payment Link', 'Opening payment link...');
-              });
+            if (checkoutUrl) {
+              await Linking.openURL(checkoutUrl);
             }
           } catch (err: any) {
-            console.error('Cashfree payment link creation error:', err);
-            Alert.alert('Payment Error', err?.message || 'Could not create payment link. Please try again.');
+            console.error('Cashfree payment error:', err);
+            Alert.alert(
+              'Payment Notice',
+              'Your store was registered, but the payment page could not be opened automatically. Please tap "Edit Store" to complete payment.',
+            );
           } finally {
             setIsCashfreeLoading(false);
             navigation.goBack();
-            setTimeout(() => {
-              handelMessage(values.storeName);
-            }, 300);
           }
         },
         onError: () => {
@@ -256,20 +244,21 @@ const StoreDetailsForm = () => {
                     title={`Complete Payment (₹${storeDetails?.subscriptionAmount || 2999})`}
                     type="primary"
                     style={{marginTop: moderateScale(10)}}
+                    isLoading={isCashfreeLoading}
                     onPress={async () => {
                       if (!storeDetails?.id) return;
                       const orderId = `order_${Date.now()}_${storeDetails.id.slice(0, 5)}`;
                       setIsCashfreeLoading(true);
                       try {
-                        const cfLink = await createCashfreePaymentLink({
+                        const checkoutUrl = await initiateCashfreeWebPayment({
                           orderId,
                           orderAmount: storeDetails.subscriptionAmount || 2999,
                           customerName: storeDetails.storeName || 'Store',
                           customerEmail: storeDetails.email || 'vendor@dealzhub.co.in',
                           customerPhone: storeDetails.phoneNumber?.toString() || '9999999999',
                         });
-                        if (cfLink?.link_url) {
-                          Linking.openURL(cfLink.link_url);
+                        if (checkoutUrl) {
+                          await Linking.openURL(checkoutUrl);
                         }
                       } catch (e: any) {
                         console.error('Payment launch error:', e);
@@ -327,17 +316,7 @@ const StoreDetailsForm = () => {
             </KeyboardAwareScrollView>
 
             <TKButton
-              title={
-                <View style={styles.buttonTitleContainer}>
-                  <Image
-                    source={require('../../assets/images/whatsapp-icon.png')}
-                    style={styles.whatsappIcon}
-                  />
-                  <Text style={styles.buttonText}>
-                    {isEdit ? 'Update Store' : `Proceed to Pay (₹${selectedPlan.price})`}
-                  </Text>
-                </View>
-              }
+              title={isEdit ? 'Update Store' : `Proceed to Pay (₹${selectedPlan.price})`}
               onPress={() => handleSubmit()}
               isLoading={createStoreLoader || updateStoreLoader || isCashfreeLoading}
               isDisabled={!isValid || !dirty}
@@ -374,21 +353,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: moderateScale(16),
-  },
-  buttonTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: moderateScale(8),
-  },
-  whatsappIcon: {
-    width: moderateScale(20),
-    height: moderateScale(20),
-    resizeMode: 'contain',
-  },
-  buttonText: {
-    fontSize: fontScale(14),
-    fontFamily: fontFamily.semiBold,
-    color: colors.secondaryTextColor,
   },
   planCard: {
     backgroundColor: '#064E3B',
