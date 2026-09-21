@@ -18,6 +18,7 @@ import {fontFamily} from '../../../config/styles/fontFamily';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 import ProductCard from '../ProductCard/ProductCard';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
+import {ProductGridSkeleton} from '../../Common/Skeleton';
 import {strings} from '../../../utils/language/langauageUtils';
 
 interface ProductListProps {
@@ -39,7 +40,7 @@ interface ProductListProps {
 const ProductList = React.forwardRef<any, ProductListProps>(({
   storeId,
   categoryId,
-  limit = 10,
+  limit = 20,
   onProductPress,
   ListHeaderComponent,
   ListFooterComponent,
@@ -94,6 +95,20 @@ const ProductList = React.forwardRef<any, ProductListProps>(({
     return allProducts;
   }, [data?.pages, isVendor, storeId, selectedSubCategoryId]);
 
+  // If in-memory filter eliminated all items in the current page, but more pages exist in Firestore,
+  // auto-fetch next page so the user isn't stuck on an unscrollable empty screen
+  React.useEffect(() => {
+    if (
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !isLoading &&
+      products.length === 0 &&
+      (data?.pages?.length ?? 0) > 0
+    ) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, isLoading, products.length, data?.pages?.length, fetchNextPage]);
+
   const {data: userDetails} = useGetUserDetails(true);
   const favorites = userDetails?.favorites || [];
 
@@ -136,10 +151,14 @@ const ProductList = React.forwardRef<any, ProductListProps>(({
     refetch();
   };
 
+  const isInitialLoading =
+    (isLoading && products.length === 0) ||
+    (hasNextPage && products.length === 0 && (data?.pages?.length ?? 0) > 0);
+
   return (
     <Animated.FlatList
       ref={ref}
-      data={isLoading ? [] : products}
+      data={products}
       renderItem={renderProduct}
       keyExtractor={(item, index) => `${item.id}-${index}`}
       onEndReached={handleLoadMore}
@@ -147,11 +166,8 @@ const ProductList = React.forwardRef<any, ProductListProps>(({
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={
-        isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
-            <Text style={styles.loadingText}>Loading products...</Text>
-          </View>
+        isInitialLoading ? (
+          <ProductGridSkeleton count={6} />
         ) : (
           <TKNoProductFound
             title={

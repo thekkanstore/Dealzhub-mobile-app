@@ -8,15 +8,21 @@ import ProductDetailsCard from '../../components/ProductDetails/ProductDetailsCa
 import ProductButtonAction from '../../components/ProductDetails/ProductButtonAction/ProductButtonAction';
 import {colors} from '../../config/styles/colors';
 import {useGetProductById} from '../../react-queries/product/productQueries';
+import {ProductDetailsSkeleton} from '../../components/Common/Skeleton';
 
 interface Props {
   route: RouteProp<VendorStackParamList, 'ProductDetails'>;
   navigation: VendorScreenNavigationProp;
 }
 const ProductDetails: React.FC<Props> = ({route, navigation}) => {
-  const {product, isStackChange, isVendor = false} = route.params;
-  const {data: productDetails} = useGetProductById(product?.id);
+  const {product, isStackChange, isVendor = false} = route.params || {};
+  const {data: productDetails, isPending} = useGetProductById(product?.id);
   const finalProductDetails = productDetails ?? product;
+
+  if (isPending && !finalProductDetails?.name && !finalProductDetails?.image) {
+    return <ProductDetailsSkeleton />;
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>

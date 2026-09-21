@@ -15,6 +15,7 @@ import {HomeScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {strings} from '../../../utils/language/langauageUtils';
 import {imagePath} from '../../../assets/imagePath';
 import ProductListingCarousel from '../ProductListingCarousel/ProductListingCarousel';
+import {CategoryBarSkeleton} from '../../Common/Skeleton';
 
 const TabItems: ICategoryTable[] = [
   {
@@ -35,7 +36,7 @@ const HomeProductListing = ({location}: Props) => {
   const [activeTab, setActiveTab] = React.useState<HeaderTabItem>(TabItems[0]);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const flatListRef = useRef<FlatList>(null);
-  const {data: categoriesList} = useGetCategoriesList();
+  const {data: categoriesList, isPending: isCategoriesLoading} = useGetCategoriesList();
   const handleOnPressItem = (item: IProductTable) => {
     navigation.navigate(navigationStrings.VENDOR_TAB as any, {
       screen: navigationStrings.PRODUCT_DETAILS,
@@ -79,28 +80,32 @@ const HomeProductListing = ({location}: Props) => {
     <View>
       <ProductListingCarousel />
       <View style={{height: moderateScale(16)}} />
-      <FlatList
-        ref={flatListRef}
-        data={categoryFinalList ?? []}
-        renderItem={headerTabItem}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.tabContainer}
-        bounces={false}
-        contentContainerStyle={styles.contentContainerStyle}
-        keyExtractor={item => item?.id ?? ''}
-        extraData={activeTab}
-        onScrollToIndexFailed={info => {
-          const wait = new Promise(resolve => setTimeout(resolve, 500));
-          wait.then(() => {
-            flatListRef.current?.scrollToIndex({
-              index: info.index,
-              viewPosition: 0.5,
-              animated: true,
+      {isCategoriesLoading || !categoriesList?.length ? (
+        <CategoryBarSkeleton count={5} />
+      ) : (
+        <FlatList
+          ref={flatListRef}
+          data={categoryFinalList ?? []}
+          renderItem={headerTabItem}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.tabContainer}
+          bounces={false}
+          contentContainerStyle={styles.contentContainerStyle}
+          keyExtractor={item => item?.id ?? ''}
+          extraData={activeTab}
+          onScrollToIndexFailed={info => {
+            const wait = new Promise(resolve => setTimeout(resolve, 500));
+            wait.then(() => {
+              flatListRef.current?.scrollToIndex({
+                index: info.index,
+                viewPosition: 0.5,
+                animated: true,
+              });
             });
-          });
-        }}
-      />
+          }}
+        />
+      )}
       <View style={{height: moderateScale(16)}} />
     </View>
   );
@@ -108,7 +113,7 @@ const HomeProductListing = ({location}: Props) => {
   return (
     <View style={styles.container}>
       <ProductList
-        key={activeTab?.id}
+        key={`${activeTab?.id}-${location || 'default'}`}
         categoryId={activeTab?.id === 'ALL' ? undefined : activeTab?.id}
         onProductPress={handleOnPressItem}
         location={location}

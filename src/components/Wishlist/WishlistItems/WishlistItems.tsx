@@ -9,6 +9,7 @@ import ProductCard from '../../Products/ProductCard/ProductCard';
 import {useGetFavoritesProductList} from '../../../react-queries/user/userQueries';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
+import {ProductGridSkeleton} from '../../Common/Skeleton';
 import {strings} from '../../../utils/language/langauageUtils';
 
 const WishlistItems = () => {
@@ -34,9 +35,8 @@ const WishlistItems = () => {
 
   if (isPending) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
-        <Text style={styles.loadingText}>Loading products...</Text>
+      <View style={styles.contentContainer}>
+        <ProductGridSkeleton count={6} />
       </View>
     );
   }

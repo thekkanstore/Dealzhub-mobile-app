@@ -11,6 +11,7 @@ import {navigationStrings} from '../../../navigation/navigationStrings';
 import {useGetSearchProductList} from '../../../react-queries/product/productQueries';
 import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import TKNoProductFound from '../../Common/TKNoProductFound/TKNoProductFound';
+import {ProductGridSkeleton} from '../../Common/Skeleton';
 import {strings} from '../../../utils/language/langauageUtils';
 
 interface Props {
@@ -89,9 +90,8 @@ const SearchItems: React.FC<Props> = ({productName}) => {
 
   if (isPending) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primaryButtonBackgroundColor} />
-        <Text style={styles.loadingText}>Loading products...</Text>
+      <View style={styles.contentContainer}>
+        <ProductGridSkeleton count={6} />
       </View>
     );
   }
