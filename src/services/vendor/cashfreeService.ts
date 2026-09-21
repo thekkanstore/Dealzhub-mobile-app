@@ -69,16 +69,11 @@ export const createCashfreeMobileOrder = async (params: CreateOrderParams) => {
 };
 
 export const getCashfreeCheckoutUrl = (orderId: string, paymentSessionId?: string): string => {
-  if (CASHFREE_CONFIG.ENV === 'production') {
-    if (paymentSessionId) {
-      return `https://payments.cashfree.com/order/#${paymentSessionId}`;
-    }
-    return `https://cashfree.com/pg/orders/${orderId}/checkout`;
-  }
   if (paymentSessionId) {
-    return `https://payments-test.cashfree.com/order/#${paymentSessionId}`;
+    const envParam = CASHFREE_CONFIG.ENV === 'sandbox' ? '&env=sandbox' : '';
+    return `https://dealzhub.co.in/checkout?session_id=${encodeURIComponent(paymentSessionId)}${envParam}`;
   }
-  return `https://sandbox.cashfree.com/pg/orders/${orderId}/checkout`;
+  return `https://dealzhub.co.in/payment-status?order_id=${encodeURIComponent(orderId)}`;
 };
 
 /**
