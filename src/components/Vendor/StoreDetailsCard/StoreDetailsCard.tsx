@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {IStoreTable} from '../../../config/models/store';
 import {colors} from '../../../config/styles/colors';
@@ -10,17 +10,35 @@ import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import {navigationStrings} from '../../../navigation/navigationStrings';
 import {VendorService} from '../../../services/vendor/vendorService';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
+import {useAppSelector} from '../../../redux/hooks';
 
 interface Props {
   storeDetails: IStoreTable;
   navigation: VendorScreenNavigationProp;
   isFromProductDetails?: boolean;
+  isStoreOwner?: boolean;
 }
 const StoreDetailsCard: React.FC<Props> = ({
   storeDetails,
   navigation,
   isFromProductDetails = false,
+  isStoreOwner: propIsStoreOwner,
 }) => {
+  const {user} = useAppSelector(state => state.user);
+
+  const isOwner = useMemo(() => {
+    if (propIsStoreOwner !== undefined) return propIsStoreOwner;
+    if (!storeDetails) return false;
+    const currentUserId = user?.user?.id;
+    const currentUserEmail = user?.user?.email?.trim().toLowerCase();
+    const storeEmail = storeDetails.email?.trim().toLowerCase();
+    const storeUserId = storeDetails.userId;
+
+    if (currentUserId && storeUserId && currentUserId === storeUserId) return true;
+    if (currentUserEmail && storeEmail && currentUserEmail === storeEmail) return true;
+    return false;
+  }, [propIsStoreOwner, user, storeDetails]);
+
   const handleEditStore = () => {
     navigation.navigate(navigationStrings.REGISTER_USER_STACK, {
       screen: navigationStrings.STORE_DETAILS,
@@ -89,7 +107,7 @@ const StoreDetailsCard: React.FC<Props> = ({
         )}
       </View>
 
-      <TKRenderIf isRender={!isFromProductDetails}>
+      <TKRenderIf isRender={isOwner && !isFromProductDetails}>
         <View style={styles.buttonContainer}>
           <TKButton
             title={strings('button.edit')}

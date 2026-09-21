@@ -85,6 +85,16 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
     if (!storeDetails?.id) return '';
     if (storeDetails.storeUrl) return storeDetails.storeUrl;
     if (storeDetails.slug) return `https://dealzhub.co.in/shop/${storeDetails.slug}`;
+    if (storeDetails.storeName) {
+      const fallbackSlug = storeDetails.storeName
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      if (fallbackSlug) {
+        return `https://dealzhub.co.in/shop/${fallbackSlug}`;
+      }
+    }
     return `https://dealzhub.co.in/store-redirect?id=${storeDetails.id}`;
   }, [storeDetails]);
 
@@ -108,6 +118,10 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
 
   const renderHelpButton = () => {
     if (isPending || isFromProductDetails || (isGuest && !isFromProductDetails)) {
+      return null;
+    }
+    // If viewing another vendor's store, do not render vendor status or Add Store
+    if (storeId && !isStoreOwner) {
       return null;
     }
     if (storeDetails && !isFromProductDetails) {
@@ -152,7 +166,7 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
         header={storeDetails?.storeName ?? strings('labels.storeDetails')}
         containerStyle={style.headerContainer}
         rightComponent={renderHelpButton()}
-        showBackButton={Boolean(isFromProductDetails && navigation.canGoBack())}
+        showBackButton={Boolean((isFromProductDetails || !!storeId) && navigation.canGoBack())}
         onBackPress={() => {
           if (navigation.canGoBack()) {
             navigation.goBack();
@@ -177,10 +191,10 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
             isFromProductDetails={isFromProductDetails}
             renderStoreDetailsCard={() => (
               <StoreDetailsCard
-                // @ts-expect-error TS2322
-                storeDetails={storeDetails}
+                storeDetails={storeDetails!}
                 navigation={navigation}
                 isFromProductDetails={isFromProductDetails}
+                isStoreOwner={isStoreOwner}
               />
             )}
           />
