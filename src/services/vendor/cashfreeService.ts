@@ -29,7 +29,9 @@ export const createCashfreeMobileOrder = async (params: CreateOrderParams) => {
 
   const cleanPhone = (customerPhone || '9999999999').toString().replace(/[^0-9]/g, '').slice(-10);
   const cleanEmail =
-    customerEmail && customerEmail.includes('@') ? customerEmail : 'vendor@dealzhub.co.in';
+    customerEmail && customerEmail.includes('@') ? customerEmail.trim().toLowerCase() : 'vendor@dealzhub.co.in';
+  const cleanName =
+    (customerName || 'Dealzhub Vendor').replace(/[^a-zA-Z0-9 ]/g, '').trim().slice(0, 50) || 'Dealzhub Vendor';
 
   const payload = {
     order_id: orderId,
@@ -37,7 +39,7 @@ export const createCashfreeMobileOrder = async (params: CreateOrderParams) => {
     order_currency: 'INR',
     customer_details: {
       customer_id: `cust_${Date.now()}`,
-      customer_name: customerName || 'Dealzhub Vendor',
+      customer_name: cleanName,
       customer_email: cleanEmail,
       customer_phone: cleanPhone.length === 10 ? cleanPhone : '9999999999',
     },

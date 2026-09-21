@@ -31,7 +31,7 @@ import { initiateCashfreeWebPayment } from '../../services/vendor/cashfreeServic
 import { TouchableOpacity } from 'react-native';
 
 const StoreDetailsForm = () => {
-  const {mutate: createStore, isPending: createStoreLoader} = useCreateNewUserStore();
+  const {mutate: createStore, mutateAsync: createStoreAsync, isPending: createStoreLoader} = useCreateNewUserStore();
   const {mutate: updateStore, isPending: updateStoreLoader} = useUpdateUserStore();
   const {data: storeDetails} = useGetStoreDetails();
   // eslint-disable-next-line no-unsafe-optional-chaining
@@ -64,9 +64,12 @@ const StoreDetailsForm = () => {
   const [isPlanModalVisible, setIsPlanModalVisible] = useState(false);
   const [isCashfreeLoading, setIsCashfreeLoading] = useState(false);
 
-  const handleSubmit = (values: IStoreRequestBody) => {
+  const handleSubmit = async (values: IStoreRequestBody) => {
     const normalizedEmail = values.email ? values.email.trim().toLowerCase() : '';
-    const cityValue = (typeof values.city === 'object' && values.city !== null ? (values.city as any).value : values.city) ?? '';
+    const cityValue =
+      (typeof values.city === 'object' && values.city !== null
+        ? (values.city as any).value
+        : values.city) ?? '';
 
     if (isEdit) {
       updateStore(
@@ -80,11 +83,24 @@ const StoreDetailsForm = () => {
       return;
     }
 
-    const orderId = `order_${Date.now()}_${values.storeName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 5)}`;
+    const cleanStoreName = values.storeName
+      ? values.storeName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8)
+      : 'vendor';
+    const orderId = `order_${Date.now()}_${cleanStoreName || 'vendor'}`;
 
     setIsCashfreeLoading(true);
-    createStore(
-      {
+    try {
+      // 1. Create Cashfree payment order & get web checkout URL FIRST
+      const checkoutUrl = await initiateCashfreeWebPayment({
+        orderId,
+        orderAmount: selectedPlan.price,
+        customerName: values.storeName,
+        customerEmail: normalizedEmail || values.email,
+        customerPhone: values.phoneNumber?.toString() || '9999999999',
+      });
+
+      // 2. Save store document in Firestore with pending status and order ID
+      await createStoreAsync({
         ...values,
         email: normalizedEmail,
         city: cityValue,
@@ -94,38 +110,27 @@ const StoreDetailsForm = () => {
         paymentStatus: 'pending',
         paymentOrderId: orderId,
         vendorStatus: 'pending',
-      },
-      {
-        onSuccess: async () => {
-          updateNewUserStatus(false);
-          try {
-            const checkoutUrl = await initiateCashfreeWebPayment({
-              orderId,
-              orderAmount: selectedPlan.price,
-              customerName: values.storeName,
-              customerEmail: values.email,
-              customerPhone: values.phoneNumber?.toString() || '9999999999',
-            });
+      });
 
-            if (checkoutUrl) {
-              await Linking.openURL(checkoutUrl);
-            }
-          } catch (err: any) {
-            console.error('Cashfree payment error:', err);
-            Alert.alert(
-              'Payment Notice',
-              'Your store was registered, but the payment page could not be opened automatically. Please tap "Edit Store" to complete payment.',
-            );
-          } finally {
-            setIsCashfreeLoading(false);
-            navigation.goBack();
-          }
-        },
-        onError: () => {
-          setIsCashfreeLoading(false);
-        },
-      },
-    );
+      // 3. Immediately launch the Cashfree checkout page in the web browser
+      if (checkoutUrl) {
+        await Linking.openURL(checkoutUrl);
+      }
+
+      // 4. Update status and navigate in the background
+      updateNewUserStatus(false);
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+    } catch (err: any) {
+      console.error('Cashfree payment error:', err);
+      Alert.alert(
+        'Payment Error',
+        err?.message || 'Could not initiate Cashfree checkout. Please check your details and try again.',
+      );
+    } finally {
+      setIsCashfreeLoading(false);
+    }
   };
   return (
     <>
