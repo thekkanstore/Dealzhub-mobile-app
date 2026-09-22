@@ -106,8 +106,31 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
     (storeDetails as any)?.image;
   const storeInitial = storeDetails?.storeName ? storeDetails.storeName.charAt(0) : '';
 
+  const canAccessStoreShare = useMemo(() => {
+    if (!storeDetails || !isStoreOwner) return false;
+    const status = storeDetails.vendorStatus?.toLowerCase();
+    const isApprovedOrPrivate = status === 'approved' || status === 'private';
+    const isPendingStatus = status === 'pending';
+    const isPaymentPending =
+      storeDetails.paymentStatus === 'pending' ||
+      storeDetails.paymentStatus === 'FAILED' ||
+      (isPendingStatus && storeDetails.paymentStatus?.toUpperCase() !== 'PAID');
+    const isPaid = storeDetails.paymentStatus?.toUpperCase() === 'PAID';
+
+    let subscriptionEndDate: Date | null = null;
+    if (storeDetails.subscriptionEndDate) {
+      const subEnd: any = storeDetails.subscriptionEndDate;
+      subscriptionEndDate = subEnd?.toDate ? subEnd.toDate() : new Date(subEnd);
+    }
+    const isSubscriptionExpired = subscriptionEndDate ? new Date() > subscriptionEndDate : false;
+
+    return Boolean(
+      isStoreOwner && isPaid && !isPaymentPending && !isSubscriptionExpired && isApprovedOrPrivate,
+    );
+  }, [storeDetails, isStoreOwner]);
+
   const handleQRPress = () => {
-    if (storeDetails?.id) {
+    if (storeDetails?.id && canAccessStoreShare) {
       navigation.navigate(navigationStrings.QR_CODE_SHARE, {
         qrValue: storeShareUrl,
         storeName: storeDetails.storeName || 'Store',
@@ -174,8 +197,8 @@ const Vendor: React.FC<Props> = ({navigation, route}) => {
             navigation.navigate(navigationStrings.BOTTOM_TAB_STACK as never);
           }
         }}
-        qrValue={storeShareUrl || undefined}
-        onQRPress={handleQRPress}
+        qrValue={canAccessStoreShare && storeShareUrl ? storeShareUrl : undefined}
+        onQRPress={canAccessStoreShare ? handleQRPress : undefined}
         logoUri={storeLogoUri || undefined}
         storeInitial={storeInitial || undefined}
       />

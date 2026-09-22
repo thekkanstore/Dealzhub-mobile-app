@@ -14,5 +14,7 @@ export const storeDetailsInitialValues = (storeDetails?: IStoreTable) => {
     isActive: storeDetails?.isActive ?? true,
     vendorStatus: storeDetails?.vendorStatus ?? 'pending',
     bio: storeDetails?.bio ?? '',
+    logoUrl: storeDetails?.logoUrl || storeDetails?.logo || '',
+    logo: storeDetails?.logo || storeDetails?.logoUrl || '',
   };
 };

@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {Alert, Image, Platform, StyleSheet, Text, View} from 'react-native';
 import QRCodeSVG from 'react-native-qrcode-svg';
 import {captureRef} from 'react-native-view-shot';
@@ -11,7 +11,7 @@ import {colors} from '../../config/styles/colors';
 import {fontScale, moderateScale} from '../../config/styles/responsiveSize';
 import {fontFamily} from '../../config/styles/fontFamily';
 import {strings} from '../../utils/language/langauageUtils';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useNavigation} from '@react-navigation/native';
 import {VendorStackParamList} from '../../navigation/rootparamstypes';
 
 interface Props {
@@ -20,8 +20,19 @@ interface Props {
 
 const QRCodeShare: React.FC<Props> = ({route}) => {
   const {qrValue, storeName, storeLogo} = route.params;
+  const navigation = useNavigation();
   const qrRef = useRef<View>(null);
   const qrCodeRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!qrValue) {
+      Alert.alert(
+        strings('labels.error') || 'Error',
+        'Store QR Code and sharing are strictly available for registered stores with completed payment.',
+        [{text: 'OK', onPress: () => navigation.goBack()}],
+      );
+    }
+  }, [qrValue, navigation]);
 
   const captureQRCode = useCallback(async (): Promise<string | null> => {
     try {
@@ -49,7 +60,7 @@ const QRCodeShare: React.FC<Props> = ({route}) => {
       if (Platform.OS === 'android') {
         if (Number(Platform.Version) < 33) {
           const permission = PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-          
+
           const result = await check(permission);
           if (result !== RESULTS.GRANTED) {
             const requestResult = await request(permission);
@@ -222,7 +233,7 @@ const QRCodeShare: React.FC<Props> = ({route}) => {
           <View style={styles.qrWrapper} ref={qrRef} collapsable={false}>
             {/* Store Logo */}
             <View style={styles.logoWrapper}>
-              {!!storeLogo ? (
+              {storeLogo ? (
                 <Image source={{uri: storeLogo}} style={styles.storeLogo} resizeMode="cover" />
               ) : (
                 <View style={styles.storeLogoFallback}>

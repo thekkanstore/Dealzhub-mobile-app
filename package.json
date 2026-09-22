@@ -1,6 +1,6 @@
 {
   "name": "dealzhub",
-  "version": "0.0.1",
+  "version": "1.1.8",
   "private": true,
   "scripts": {
     "android": "cross-env ENVFILE=.env.dev react-native run-android --mode=devDebug --appId=\"com.thekkanvendor\" --main-activity=\".MainActivity\"",

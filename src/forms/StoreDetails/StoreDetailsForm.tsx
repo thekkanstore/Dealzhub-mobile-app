@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {Alert, Linking, StyleSheet, Text, View} from 'react-native';
+import React, {useMemo, useState, useEffect} from 'react';
+import {Alert, Linking, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
@@ -23,35 +23,110 @@ import {
 import {updateNewUserStatus} from '../../redux/userSlice';
 import {colors} from '../../config/styles/colors';
 import {useAppSelector} from '../../redux/hooks';
-
 import {fontFamily} from '../../config/styles/fontFamily';
-
-import SubscriptionPlanModal, { PlanItem } from '../../components/Vendor/SubscriptionPlanModal/SubscriptionPlanModal';
-import { initiateCashfreeWebPayment } from '../../services/vendor/cashfreeService';
-import { TouchableOpacity } from 'react-native';
+import SubscriptionPlanModal, {
+  PlanItem,
+} from '../../components/Vendor/SubscriptionPlanModal/SubscriptionPlanModal';
+import {initiateCashfreeWebPayment} from '../../services/vendor/cashfreeService';
+import {pickImageFromCamera, pickImageFromGallery, FilePickerResult} from '../../utils/filePicker';
+import {uploadFilePickerResult} from '../../services/firestore/imageUploadService';
+import {showErrorToast} from '../../utils/common/toastUtils';
+import TKModal from '../../components/Common/TKModal/TKModal';
 
 const StoreDetailsForm = () => {
-  const {mutate: createStore, mutateAsync: createStoreAsync, isPending: createStoreLoader} = useCreateNewUserStore();
+  const {mutateAsync: createStoreAsync, isPending: createStoreLoader} = useCreateNewUserStore();
   const {mutate: updateStore, isPending: updateStoreLoader} = useUpdateUserStore();
   const {data: storeDetails} = useGetStoreDetails();
   // eslint-disable-next-line no-unsafe-optional-chaining
   const {isEdit = false} = (useRoute()?.params as any) || {};
   const navigation = useNavigation();
+  const user = useAppSelector(state => state.user.user);
+
+  const [logoUri, setLogoUri] = useState<string | null>(
+    storeDetails?.logoUrl || storeDetails?.logo || null,
+  );
+  const [newLogoPicked, setNewLogoPicked] = useState<FilePickerResult | null>(null);
+  const [isLogoRemoved, setIsLogoRemoved] = useState<boolean>(false);
+  const [isPhotoOptionModalVisible, setIsPhotoOptionModalVisible] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+  useEffect(() => {
+    if (storeDetails && !newLogoPicked && !isLogoRemoved) {
+      setLogoUri(storeDetails.logoUrl || storeDetails.logo || null);
+    }
+  }, [storeDetails, newLogoPicked, isLogoRemoved]);
+
+  const handlePickFromCamera = async () => {
+    setIsPhotoOptionModalVisible(false);
+    try {
+      await pickImageFromCamera(
+        {
+          allowedTypes: ['image'],
+          maxSizeInMB: 5,
+          imageQuality: 0.8 as any,
+        },
+        (file: FilePickerResult) => {
+          setNewLogoPicked(file);
+          setLogoUri(file.uri || file.path || null);
+          setIsLogoRemoved(false);
+        },
+        (error: string) => {
+          showErrorToast(error);
+        },
+      );
+    } catch (e) {
+      showErrorToast('Failed to open camera');
+    }
+  };
+
+  const handlePickFromGallery = async () => {
+    setIsPhotoOptionModalVisible(false);
+    try {
+      await pickImageFromGallery(
+        {
+          allowedTypes: ['image'],
+          maxSizeInMB: 5,
+          imageQuality: 0.8 as any,
+        },
+        (file: FilePickerResult) => {
+          setNewLogoPicked(file);
+          setLogoUri(file.uri || file.path || null);
+          setIsLogoRemoved(false);
+        },
+        (error: string) => {
+          showErrorToast(error);
+        },
+      );
+    } catch (e) {
+      showErrorToast('Failed to open gallery');
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setNewLogoPicked(null);
+    setLogoUri(null);
+    setIsLogoRemoved(true);
+  };
+
   const initialValues: IStoreRequestBody = useMemo(() => {
     return storeDetailsInitialValues(storeDetails ?? undefined);
   }, [storeDetails]);
 
   const isPendingStatus = storeDetails?.vendorStatus?.toLowerCase() === 'pending';
-  const isPaymentPending = storeDetails?.paymentStatus === 'pending' || storeDetails?.paymentStatus === 'FAILED' || (isPendingStatus && storeDetails?.paymentStatus !== 'PAID');
+  const isPaymentPending =
+    storeDetails?.paymentStatus === 'pending' ||
+    storeDetails?.paymentStatus === 'FAILED' ||
+    (isPendingStatus && storeDetails?.paymentStatus !== 'PAID');
 
   const subscriptionEndDate = storeDetails?.subscriptionEndDate?.toDate
     ? storeDetails.subscriptionEndDate.toDate()
     : storeDetails?.subscriptionEndDate
-    ? new Date(storeDetails.subscriptionEndDate)
-    : null;
+      ? new Date(storeDetails.subscriptionEndDate)
+      : null;
 
   const isExpired = subscriptionEndDate ? subscriptionEndDate < new Date() : false;
-  const isSubscriptionActive = isEdit && !isPaymentPending && !isExpired && storeDetails?.paymentStatus === 'PAID';
+  const isSubscriptionActive =
+    isEdit && !isPaymentPending && !isExpired && storeDetails?.paymentStatus === 'PAID';
 
   const [selectedPlan, setSelectedPlan] = useState<PlanItem>({
     id: '12_months',
@@ -67,13 +142,45 @@ const StoreDetailsForm = () => {
   const handleSubmit = async (values: IStoreRequestBody) => {
     const normalizedEmail = values.email ? values.email.trim().toLowerCase() : '';
     const cityValue =
-      (typeof values.city === 'object' && values.city !== null
-        ? (values.city as any).value
-        : values.city) ?? '';
+      (typeof values.city === 'object' && values.city !== null ? values.city.value : values.city) ??
+      '';
+
+    let finalLogoUrl = logoUri || '';
+    if (newLogoPicked) {
+      setIsUploadingLogo(true);
+      try {
+        const currentUserId = user?.user?.id || 'vendor';
+        const uploadRes = await uploadFilePickerResult(
+          newLogoPicked,
+          `images/stores/${currentUserId}`,
+        );
+        if (uploadRes.success && uploadRes.url) {
+          finalLogoUrl = uploadRes.url;
+        } else {
+          Alert.alert('Upload Error', uploadRes.error || 'Failed to upload store logo');
+          setIsUploadingLogo(false);
+          return;
+        }
+      } catch (err: any) {
+        Alert.alert('Upload Error', err?.message || 'Failed to upload store logo');
+        setIsUploadingLogo(false);
+        return;
+      } finally {
+        setIsUploadingLogo(false);
+      }
+    } else if (isLogoRemoved) {
+      finalLogoUrl = '';
+    }
 
     if (isEdit) {
       updateStore(
-        {...values, email: normalizedEmail, city: cityValue},
+        {
+          ...values,
+          email: normalizedEmail,
+          city: cityValue,
+          logoUrl: finalLogoUrl,
+          logo: finalLogoUrl,
+        },
         {
           onSuccess: () => {
             navigation.goBack();
@@ -104,7 +211,8 @@ const StoreDetailsForm = () => {
         ...values,
         email: normalizedEmail,
         city: cityValue,
-        // @ts-ignore
+        logoUrl: finalLogoUrl,
+        logo: finalLogoUrl,
         subscriptionPlan: selectedPlan.id,
         subscriptionAmount: selectedPlan.price,
         paymentStatus: 'pending',
@@ -126,7 +234,8 @@ const StoreDetailsForm = () => {
       console.error('Cashfree payment error:', err);
       Alert.alert(
         'Payment Error',
-        err?.message || 'Could not initiate Cashfree checkout. Please check your details and try again.',
+        err?.message ||
+          'Could not initiate Cashfree checkout. Please check your details and try again.',
       );
     } finally {
       setIsCashfreeLoading(false);
@@ -155,6 +264,37 @@ const StoreDetailsForm = () => {
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps={'handled'}
               bounces={false}>
+              {/* Store Profile Picture / Logo Section */}
+              <View style={styles.logoSectionContainer}>
+                <Text style={styles.logoSectionLabel}>Store Logo / Profile Picture</Text>
+                <View style={styles.logoRow}>
+                  <View style={styles.logoAvatarWrapper}>
+                    {logoUri ? (
+                      <Image source={{uri: logoUri}} style={styles.logoImage} resizeMode="cover" />
+                    ) : (
+                      <View style={styles.logoPlaceholder}>
+                        <Text style={styles.logoPlaceholderIcon}>🏪</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.logoActionsContainer}>
+                    <TouchableOpacity
+                      style={styles.uploadLogoButton}
+                      onPress={() => setIsPhotoOptionModalVisible(true)}>
+                      <Text style={styles.uploadLogoButtonText}>
+                        {logoUri ? 'Change Photo' : 'Upload Store Logo'}
+                      </Text>
+                    </TouchableOpacity>
+                    {!!logoUri && (
+                      <TouchableOpacity style={styles.removeLogoButton} onPress={handleRemoveLogo}>
+                        <Text style={styles.removeLogoButtonText}>Remove Photo</Text>
+                      </TouchableOpacity>
+                    )}
+                    <Text style={styles.logoHelpText}>PNG, JPG, WEBP up to 5MB</Text>
+                  </View>
+                </View>
+              </View>
+
               <TKSecondaryTextInput
                 label={strings('labels.storeName')}
                 isRequired
@@ -222,8 +362,14 @@ const StoreDetailsForm = () => {
                 labelKey={'name'}
                 isVisible={false}
                 onPress={data => setFieldValue('city', data)}
-                selectedItem={values.city as any}
-                error={touched.city && errors.city ? (typeof errors.city === 'string' ? errors.city : (errors.city as any)?.name || 'City is required') : undefined}
+                selectedItem={values.city}
+                error={
+                  touched.city && errors.city
+                    ? typeof errors.city === 'string'
+                      ? errors.city
+                      : (errors.city as any)?.name || 'City is required'
+                    : undefined
+                }
                 placeholder={strings('placeholder.storeCity')}
               />
               <TKSecondaryTextInput
@@ -244,7 +390,9 @@ const StoreDetailsForm = () => {
               {isEdit && isPaymentPending && (
                 <View style={styles.pendingPayBox}>
                   <Text style={styles.warningTitle}>Payment Required</Text>
-                  <Text style={styles.warningSubText}>Your shop registration payment is pending.</Text>
+                  <Text style={styles.warningSubText}>
+                    Your shop registration payment is pending.
+                  </Text>
                   <TKButton
                     title={`Complete Payment (₹${storeDetails?.subscriptionAmount || 2999})`}
                     type="primary"
@@ -295,7 +443,9 @@ const StoreDetailsForm = () => {
                 <View style={styles.activePlanBox}>
                   <Text style={styles.activePlanTitle}>ACTIVE SUBSCRIPTION</Text>
                   <Text style={styles.activePlanText}>
-                    {storeDetails?.subscriptionPlan === '3_months' ? '3 Months (₹899)' : '12 Months (₹2,999)'}
+                    {storeDetails?.subscriptionPlan === '3_months'
+                      ? '3 Months (₹899)'
+                      : '12 Months (₹2,999)'}
                   </Text>
                   <Text style={styles.activePlanSub}>
                     Valid until: {subscriptionEndDate?.toLocaleDateString('en-IN') || 'N/A'}
@@ -323,8 +473,10 @@ const StoreDetailsForm = () => {
             <TKButton
               title={isEdit ? 'Update Store' : `Proceed to Pay (₹${selectedPlan.price})`}
               onPress={() => handleSubmit()}
-              isLoading={createStoreLoader || updateStoreLoader || isCashfreeLoading}
-              isDisabled={!isValid || !dirty}
+              isLoading={
+                createStoreLoader || updateStoreLoader || isCashfreeLoading || isUploadingLogo
+              }
+              isDisabled={!isValid || (!dirty && !newLogoPicked && !isLogoRemoved)}
             />
 
             <SubscriptionPlanModal
@@ -336,6 +488,35 @@ const StoreDetailsForm = () => {
               }}
               initialPlanId={selectedPlan.id}
             />
+
+            <TKModal
+              isVisible={isPhotoOptionModalVisible}
+              onClose={() => setIsPhotoOptionModalVisible(false)}
+              header="Select Store Logo"
+              showCloseButton>
+              <View style={styles.modalContent}>
+                <TouchableOpacity style={styles.modalOption} onPress={handlePickFromCamera}>
+                  <View style={styles.modalOptionIcon}>
+                    <Text style={styles.modalIconText}>📷</Text>
+                  </View>
+                  <View style={styles.modalOptionTextWrapper}>
+                    <Text style={styles.modalOptionTitle}>Take Photo</Text>
+                    <Text style={styles.modalOptionSubtitle}>Use your device camera</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalOption, styles.lastModalOption]}
+                  onPress={handlePickFromGallery}>
+                  <View style={styles.modalOptionIcon}>
+                    <Text style={styles.modalIconText}>🖼️</Text>
+                  </View>
+                  <View style={styles.modalOptionTextWrapper}>
+                    <Text style={styles.modalOptionTitle}>Choose from Gallery</Text>
+                    <Text style={styles.modalOptionSubtitle}>Select an existing image</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </TKModal>
           </View>
         )}
       </Formik>
@@ -443,6 +624,121 @@ const styles = StyleSheet.create({
     fontSize: fontScale(12),
     fontFamily: fontFamily.medium,
     color: '#ECFDF5',
+    marginTop: moderateScale(2),
+  },
+  logoSectionContainer: {
+    marginVertical: moderateScale(12),
+    backgroundColor: '#F9FAFB',
+    borderRadius: moderateScale(16),
+    padding: moderateScale(14),
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  logoSectionLabel: {
+    fontSize: fontScale(13),
+    fontFamily: fontFamily.bold,
+    color: colors.primaryTextColor,
+    marginBottom: moderateScale(10),
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoAvatarWrapper: {
+    width: moderateScale(76),
+    height: moderateScale(76),
+    borderRadius: moderateScale(16),
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: moderateScale(14),
+  },
+  logoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  logoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+  },
+  logoPlaceholderIcon: {
+    fontSize: fontScale(28),
+  },
+  logoActionsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  uploadLogoButton: {
+    backgroundColor: colors.primaryButtonBackgroundColor || '#528E6B',
+    paddingVertical: moderateScale(7),
+    paddingHorizontal: moderateScale(14),
+    borderRadius: moderateScale(18),
+    alignSelf: 'flex-start',
+  },
+  uploadLogoButtonText: {
+    color: '#FFFFFF',
+    fontSize: fontScale(12),
+    fontFamily: fontFamily.medium,
+  },
+  removeLogoButton: {
+    marginTop: moderateScale(6),
+    alignSelf: 'flex-start',
+  },
+  removeLogoButtonText: {
+    color: '#EF4444',
+    fontSize: fontScale(12),
+    fontFamily: fontFamily.medium,
+  },
+  logoHelpText: {
+    fontSize: fontScale(11),
+    fontFamily: fontFamily.regular,
+    color: colors.secondaryTextColor || '#6B7280',
+    marginTop: moderateScale(4),
+  },
+  modalContent: {
+    paddingVertical: moderateScale(10),
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: moderateScale(14),
+    paddingHorizontal: moderateScale(16),
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  lastModalOption: {
+    borderBottomWidth: 0,
+  },
+  modalOptionIcon: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(20),
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: moderateScale(12),
+  },
+  modalIconText: {
+    fontSize: fontScale(20),
+  },
+  modalOptionTextWrapper: {
+    flex: 1,
+  },
+  modalOptionTitle: {
+    fontSize: fontScale(14),
+    fontFamily: fontFamily.medium,
+    color: colors.primaryTextColor,
+  },
+  modalOptionSubtitle: {
+    fontSize: fontScale(12),
+    fontFamily: fontFamily.regular,
+    color: colors.secondaryTextColor,
     marginTop: moderateScale(2),
   },
 });
