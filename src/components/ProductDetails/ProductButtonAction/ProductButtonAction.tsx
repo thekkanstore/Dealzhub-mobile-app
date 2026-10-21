@@ -6,21 +6,44 @@ import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 import CustomerAction from '../CustomerAction/CustomerAction';
 import VendorAction from '../VendorAction/VendorAction';
 import {colors} from '../../../config/styles/colors';
-import {moderateScale} from '../../../config/styles/responsiveSize';
+import {moderateScale, verticalScale} from '../../../config/styles/responsiveSize';
 
 interface Props {
   productDetails: IProduct;
   navigation: VendorScreenNavigationProp;
   isVendor?: boolean;
+  quantity?: number;
+  selectedSize?: string;
+  selectedWeight?: string;
+  unitPrice?: number;
+  scaledDiscountPrice?: number;
 }
-const ProductButtonAction: React.FC<Props> = ({productDetails, navigation, isVendor = false}) => {
+const ProductButtonAction: React.FC<Props> = ({
+  productDetails,
+  navigation,
+  isVendor = false,
+  quantity = 1,
+  selectedSize,
+  selectedWeight,
+  unitPrice,
+  scaledDiscountPrice,
+}) => {
   return (
     <View style={styles.container}>
       <TKRenderIf isRender={!isVendor}>
-        <CustomerAction productDetails={productDetails} />
+        <CustomerAction
+          productDetails={productDetails}
+          quantity={quantity}
+          selectedSize={selectedSize}
+          selectedWeight={selectedWeight}
+          unitPrice={unitPrice}
+          scaledDiscountPrice={scaledDiscountPrice}
+        />
       </TKRenderIf>
       <TKRenderIf isRender={isVendor}>
-        <VendorAction productDetails={productDetails} navigation={navigation} />
+        <View style={styles.vendorRow}>
+          <VendorAction productDetails={productDetails} navigation={navigation} />
+        </View>
       </TKRenderIf>
     </View>
   );
@@ -30,11 +53,17 @@ export default ProductButtonAction;
 
 const styles = StyleSheet.create({
   container: {
+    paddingHorizontal: moderateScale(16),
+    paddingTop: verticalScale(10),
+    paddingBottom: verticalScale(16),
+    backgroundColor: colors.primaryBackgroundColor,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  vendorRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(16),
-    backgroundColor: colors.primaryBackgroundColor,
+    width: '100%',
   },
 });

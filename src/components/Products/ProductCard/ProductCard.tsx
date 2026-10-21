@@ -72,7 +72,12 @@ const ProductCard: React.FC<ProductItemProps> = ({product, onPress, isVendor, is
           </Text>
           <View style={styles.priceContainer}>
             <Text style={styles.actualPrice}>₹ {product?.actualPrice}</Text>
-            <Text style={styles.discountPrice}>₹ {product?.discountPrice}</Text>
+            <Text style={styles.discountPrice}>
+              ₹ {product?.discountPrice}
+              {product?.unit && product?.unit.toLowerCase() !== 'pcs'
+                ? ` / ${product?.unitValue && product.unitValue !== 1 ? `${product.unitValue} ` : ''}${product.unit}`
+                : ''}
+            </Text>
           </View>
         </View>
       </Pressable>

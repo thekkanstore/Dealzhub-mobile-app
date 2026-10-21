@@ -13,12 +13,14 @@ import {IProductTable} from '../../../config/models/product';
 import FastImage from 'react-native-fast-image';
 import {fontScale, moderateScale, width} from '../../../config/styles/responsiveSize';
 import {TKArrowIcon} from '../../Common/Icons/TKArrowIcon';
+import {TKCartIcon} from '../../Common/Icons/TKCartIcon';
 import {colors} from '../../../config/styles/colors';
 import {VendorScreenNavigationProp} from '../../../navigation/rootparamstypes';
 import Favorite from '../Favorite/Favourite';
 import {useGetUserDetails} from '../../../react-queries/user/userQueries';
 import TKRenderIf from '../../Common/TKRenderIf/TKRenderIf';
 import {fontFamily} from '../../../config/styles/fontFamily';
+import {navigationStrings} from '../../../navigation/navigationStrings';
 
 type ProductImageItem = string | {uri?: string};
 
@@ -42,6 +44,18 @@ const ImageHeaderCard: React.FC<Props> = ({
   };
   const {data: userDetails} = useGetUserDetails(true);
   const isFavorites = !!userDetails?.favorites?.includes(productDetails.id);
+
+  const totalCartCount = useMemo(() => {
+    let count = 0;
+    Object.values((userDetails as any)?.storeCarts || {}).forEach((items: any) => {
+      if (Array.isArray(items)) {
+        items.forEach((it: any) => {
+          count += it.quantity || it.cartQuantity || 1;
+        });
+      }
+    });
+    return count;
+  }, [userDetails?.storeCarts]);
 
   const flatListRef = useRef<FlatList<ProductImageItem>>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -176,11 +190,25 @@ const ImageHeaderCard: React.FC<Props> = ({
           <TKArrowIcon width={16} height={16} color={colors.primaryTextColor} direction="left" />
         </Pressable>
         <TKRenderIf isRender={!isVendor}>
-          <Favorite
-            containerStyle={styles.backButton}
-            productId={productDetails.id}
-            isFavorite={isFavorites}
-          />
+          <View style={styles.headerRightActions}>
+            <Pressable
+              onPress={() => (navigation as any)?.navigate(navigationStrings.CART_TAB as any)}
+              style={styles.backButton}>
+              <TKCartIcon width={19} height={19} color={colors.primaryTextColor} />
+              {totalCartCount > 0 && (
+                <View style={styles.headerCartBadge}>
+                  <Text style={styles.headerCartBadgeText}>
+                    {totalCartCount > 99 ? '99+' : totalCartCount}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+            <Favorite
+              containerStyle={styles.backButton}
+              productId={productDetails.id}
+              isFavorite={isFavorites}
+            />
+          </View>
         </TKRenderIf>
       </View>
     </View>
@@ -253,5 +281,27 @@ const styles = StyleSheet.create({
     height: moderateScale(8),
     borderRadius: moderateScale(20),
     backgroundColor: colors.neutralButtonBackgroundColor,
+  },
+  headerRightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(10),
+  },
+  headerCartBadge: {
+    position: 'absolute',
+    top: -moderateScale(4),
+    right: -moderateScale(4),
+    backgroundColor: colors.primaryButtonBackgroundColor || '#1E3A2F',
+    borderRadius: moderateScale(9),
+    minWidth: moderateScale(18),
+    height: moderateScale(18),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: moderateScale(3),
+  },
+  headerCartBadgeText: {
+    fontSize: fontScale(10),
+    fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
   },
 });
