@@ -12,6 +12,7 @@ export interface IUserTable {
   vendorApprovalStatus?: string | null; // null, Pending, Approved, Rejected
 
   cartItems?: Array<string>; // array of products id
+  storeCarts?: Record<string, any[]>; // shop-level cart items map for cross-platform parity
   favorites?: Array<string>; // array of products id
 
   isAgreeTermsAndCondition?: boolean;

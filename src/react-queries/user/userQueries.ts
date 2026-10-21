@@ -12,21 +12,90 @@ import {
   removeFromFavorite,
   removeFromCart,
   addToCart,
+  updateCartItemQuantity,
+  clearStoreCart,
+  updateUserStoreCarts,
   updateNotificationStatus,
 } from '../../services/firestore/userFirestoreService';
 import {IUserTable} from '../../config/models/users';
 import {useAppSelector} from '../../redux/hooks';
 import {CartItemsLimit, FavoritesLimit} from '../../config/common/constants';
 import {getProductById} from '../../services/firestore/productFirestoreService';
+import {
+  getLocalStoreCarts,
+  saveLocalStoreCarts,
+  addLocalCartItem,
+  updateLocalCartQuantity,
+  clearLocalStoreCart,
+  removeLocalCartItem,
+  mergeLocalCartsWithCloud,
+} from '../../utils/cart/cartCacheUtils';
 
-const useGetUserDetails = (enabled = false) => {
+const useGetUserDetails = (enabled = true) => {
   const user = useAppSelector(state => state.user.user);
+  const userId = user?.user?.id;
 
   return useQuery({
-    queryKey: ['getUserDetails', user?.user.id],
+    queryKey: ['getUserDetails', userId || 'guest'],
     queryFn: async () => {
       try {
-        const data = await getUserData(user?.user.id ?? '');
+        if (!userId) {
+          // Guest mode: load cart items from local cache (AsyncStorage)
+          const localCarts = await getLocalStoreCarts();
+          const allItems = Object.values(localCarts).flat();
+          const cartItemIds = Array.from(
+            new Set(allItems.map((i: any) => i.productId || i.id).filter(Boolean)),
+          );
+          const guestData: IUserTable = {
+            id: 'guest',
+            name: 'Guest',
+            email: '',
+            phoneNumber: '',
+            address: '',
+            city: '',
+            state: '',
+            role: ['user'],
+            favorites: [],
+            cartItems: cartItemIds as string[],
+            storeCarts: localCarts as any,
+          };
+          return guestData;
+        }
+
+        // Logged-in mode: fetch user document from Firestore
+        let data = await getUserData(userId);
+        if (!data) {
+          return null;
+        }
+
+        // Merge any existing local cache store carts with cloud carts upon login/fetch
+        try {
+          const localCarts = await getLocalStoreCarts();
+          if (localCarts && Object.keys(localCarts).length > 0) {
+            const {mergedCarts, hasChanges} = mergeLocalCartsWithCloud(
+              (data as any).storeCarts || {},
+              localCarts,
+            );
+            if (hasChanges) {
+              await updateUserStoreCarts(userId, mergedCarts);
+              const flatIds = Object.values(mergedCarts).flatMap((items: any) =>
+                Array.isArray(items) ? items.map((i: any) => i.productId || i.id).filter(Boolean) : [],
+              );
+              data = {
+                ...data,
+                storeCarts: mergedCarts,
+                cartItems: Array.from(new Set(flatIds)) as string[],
+              };
+            } else {
+              await saveLocalStoreCarts((data as any).storeCarts || {});
+            }
+          } else if ((data as any).storeCarts) {
+            await saveLocalStoreCarts((data as any).storeCarts);
+          }
+        } catch (mergeErr) {
+          console.warn('Error merging local cart with cloud in useGetUserDetails:', mergeErr);
+        }
+
         return data as IUserTable;
       } catch (error) {
         errorHandler(error as Error);
@@ -181,26 +250,71 @@ export const useGetFavoritesProductList = () => {
   });
 };
 
+export interface UpdateCartParams {
+  id: string;
+  updateStatus: 'add' | 'remove';
+  quantity?: number;
+  selectedSize?: string | null;
+  selectedWeight?: string | null;
+  unitPrice?: number;
+  productData?: any;
+}
+
 export const useUpdateCartItemsList = () => {
   const user = useAppSelector(state => state.user.user);
+  const userId = user?.user?.id;
   const userDetails = useGetUserDetails();
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['updateCartItemsList'],
-    mutationFn: async ({id, updateStatus}: {id: string; updateStatus: 'add' | 'remove'}) => {
+    mutationFn: async ({
+      id,
+      updateStatus,
+      quantity,
+      selectedSize,
+      selectedWeight,
+      unitPrice,
+      productData,
+    }: UpdateCartParams) => {
       try {
         if (updateStatus === 'remove') {
-          const data = await removeFromCart(user?.user.id ?? '', id);
-          showSuccessToast('Item Removed from the Cart');
-          return data;
+          if (userId) {
+            const data = await removeFromCart(userId, id);
+            showSuccessToast('Item Removed from the Cart');
+            return data;
+          } else {
+            const updatedCarts = await removeLocalCartItem(id);
+            showSuccessToast('Item Removed from the Cart');
+            return {success: true, storeCarts: updatedCarts};
+          }
         }
+
         if ((userDetails.data?.cartItems?.length || 0) >= CartItemsLimit) {
-          showErrorToast('You can not add more than 20 favorites');
+          showErrorToast('You cannot add more than 20 items to cart');
           return;
         }
-        const data = await addToCart(user?.user.id ?? '', id);
-        showSuccessToast('Cart updated successfully');
-        return data;
+
+        if (userId) {
+          const data = await addToCart(userId, id, {
+            quantity,
+            selectedSize,
+            selectedWeight,
+            unitPrice,
+            productData,
+          });
+          showSuccessToast('Cart updated successfully');
+          return data;
+        } else {
+          const updatedCarts = await addLocalCartItem(id, {
+            quantity,
+            selectedSize,
+            selectedWeight,
+            unitPrice,
+            productData,
+          });
+          showSuccessToast('Cart updated successfully');
+          return {success: true, storeCarts: updatedCarts};
+        }
       } catch (error) {
         return Promise.reject(error);
       }
@@ -210,6 +324,73 @@ export const useUpdateCartItemsList = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+  });
+};
+
+export const useUpdateCartQuantity = () => {
+  const user = useAppSelector(state => state.user.user);
+  const userId = user?.user?.id;
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['updateCartQuantity'],
+    mutationFn: async ({
+      storeId,
+      itemMatch,
+      newQuantity,
+    }: {
+      storeId: string;
+      itemMatch: {id: string; selectedSize?: string | null; selectedWeight?: string | null};
+      newQuantity: number;
+    }) => {
+      if (userId) {
+        const data = await updateCartItemQuantity(
+          userId,
+          storeId,
+          itemMatch,
+          newQuantity,
+        );
+        return data;
+      } else {
+        const updatedCarts = await updateLocalCartQuantity(
+          storeId,
+          itemMatch,
+          newQuantity,
+        );
+        return {success: true, storeCarts: updatedCarts};
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+    onError: error => {
+      errorHandler(error);
+    },
+  });
+};
+
+export const useClearStoreCart = () => {
+  const user = useAppSelector(state => state.user.user);
+  const userId = user?.user?.id;
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['clearStoreCart'],
+    mutationFn: async ({storeId}: {storeId: string}) => {
+      if (userId) {
+        const data = await clearStoreCart(userId, storeId);
+        showSuccessToast('Store cart cleared');
+        return data;
+      } else {
+        const updatedCarts = await clearLocalStoreCart(storeId);
+        showSuccessToast('Store cart cleared');
+        return {success: true, storeCarts: updatedCarts};
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['getUserDetails']});
+    },
+    onError: error => {
+      errorHandler(error);
     },
   });
 };
@@ -243,6 +424,10 @@ export const useMoveCartToWishlist = () => {
     mutationKey: ['moveCartToWishlist'],
     mutationFn: async ({id}: {id: string}) => {
       try {
+        if (!user?.user?.id) {
+          showErrorToast('Please login to move items to wishlist');
+          return;
+        }
         const isFavorite = userDetails.data?.favorites?.some(item => item === id);
         if (!isFavorite) {
           await updateFavoriteStatus({id: id, updateStatus: 'add'});
