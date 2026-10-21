@@ -16,6 +16,26 @@ export const generateBaseSlug = (storeName: string): string => {
 };
 
 /**
+ * Checks if a store slug is already registered in Firestore (O(1) point query).
+ */
+export const isStoreSlugTaken = async (
+  slug: string,
+  currentStoreId: string | null = null,
+): Promise<boolean> => {
+  if (!slug) return false;
+  const normalizedSlug = slug.toLowerCase().trim();
+  const snapshot = await firestore()
+    .collection(FireStoreCollections.STORES)
+    .where('slug', '==', normalizedSlug)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) return false;
+  if (currentStoreId && snapshot.docs[0].id === currentStoreId) return false;
+  return true;
+};
+
+/**
  * Generates a unique store slug matching the web collision handling.
  * If the base slug is already used by another store, appends a random 4-digit number (e.g. -4829).
  */
@@ -25,41 +45,18 @@ export const generateUniqueStoreSlug = async (
 ): Promise<string> => {
   const baseSlug = generateBaseSlug(storeName);
   try {
-    const snapshot = await firestore().collection(FireStoreCollections.STORES).get();
-
-    const usedSlugs = new Set<string>();
-    const storeList: Array<{id: string; slug?: string; storeName?: string}> = [];
-
-    snapshot.forEach(docSnap => {
-      if (currentStoreId && docSnap.id === currentStoreId) {
-        return; // Exclude current store
-      }
-      const data = docSnap.data();
-      storeList.push({id: docSnap.id, ...data});
-      if (data.slug) {
-        usedSlugs.add(data.slug.toLowerCase().trim());
-      }
-    });
-
-    const assignedSlugs = new Set(usedSlugs);
-    for (const s of storeList) {
-      if (!s.slug && s.storeName) {
-        const sBase = generateBaseSlug(s.storeName);
-        assignedSlugs.add(sBase);
-      }
-    }
-
-    // If baseSlug is not taken by any other store, use it cleanly without numbers
-    if (!assignedSlugs.has(baseSlug)) {
+    const isTaken = await isStoreSlugTaken(baseSlug, currentStoreId);
+    if (!isTaken) {
       return baseSlug;
     }
 
-    // If already in use, append a random 4-digit number (e.g., -4829)
     let candidateSlug = '';
+    let attempts = 0;
     do {
       const randomNum = Math.floor(1000 + Math.random() * 9000);
       candidateSlug = `${baseSlug}-${randomNum}`;
-    } while (assignedSlugs.has(candidateSlug));
+      attempts++;
+    } while (attempts < 5 && (await isStoreSlugTaken(candidateSlug, currentStoreId)));
 
     return candidateSlug;
   } catch (error) {

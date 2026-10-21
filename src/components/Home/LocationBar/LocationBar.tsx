@@ -10,8 +10,6 @@ import {
 } from '../../../config/styles/responsiveSize';
 import {TKFrameIcon} from '../../Common/Icons/TKFrameIcon';
 import {strings} from '../../../utils/language/langauageUtils';
-// import {useLocationPermission} from '../../../hooks/useLocationPermission';
-// import locationService from '../../../services/location/locationService';
 import {colors} from '../../../config/styles/colors';
 import {fontFamily} from '../../../config/styles/fontFamily';
 import {TKUserIcon} from '../../Common/Icons/TKUserIcon';
@@ -24,25 +22,8 @@ interface LocationBarProps {
   location: string;
 }
 const LocationBar = ({onPress, location}: LocationBarProps) => {
-  // const {getCurrentLocation, requestLocationPermission} = useLocationPermission();
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [isDropdownVisible, setDropdownVisible] = useState<boolean>(false);
-
-  // const getUserLocationInformation = async () => {
-  //   // const isLocationEnabled = await requestLocationPermission();
-  //   // if (isLocationEnabled) {
-  //   //   try {
-  //   //     // const location = await getCurrentLocation();
-  //   //     // const response = await locationService.getCurrentLocationDetails(
-  //   //     //   location?.latitude as number,
-  //   //     //   location?.longitude as number,
-  //   //     // );
-  //   //     // setLocation(response?.display_name ?? '');
-  //   //   } catch (error) {
-  //   //     //
-  //   //   }
-  //   // }
-  // };
 
   // useEffect(() => {
   //   setTimeout(() => {

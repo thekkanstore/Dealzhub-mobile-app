@@ -1,7 +1,7 @@
 import {LinkingOptions, getStateFromPath} from '@react-navigation/native';
 
 export const linkingConfiguration: LinkingOptions<any> = {
-  prefixes: ['dealszhub://'],
+  prefixes: ['dealzhub://', 'dealszhub://', 'https://dealzhub.co.in', 'https://dealzhub.in'],
   config: {
     screens: {
       BottomTabStack: {
