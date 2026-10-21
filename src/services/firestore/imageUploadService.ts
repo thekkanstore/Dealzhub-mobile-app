@@ -24,8 +24,10 @@ export const firestoreImageUploadService = async (
     const filename = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
     const reference = storage().ref(`${folder}/${filename}`);
 
-    // Upload the file
-    const uploadTask = reference.putFile(imageUri);
+    // Upload the file with 1-year CDN caching headers
+    const uploadTask = reference.putFile(imageUri, {
+      cacheControl: 'public, max-age=31536000',
+    });
 
     // Wait for upload to complete
     await uploadTask;

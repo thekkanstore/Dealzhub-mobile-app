@@ -43,9 +43,9 @@ export const pickImageFromCamera = async (
     }
     const pickerOptions = {
       mediaType: 'photo' as MediaType,
-      quality: options.imageQuality ?? 1,
-      maxWidth: options.maxImageWidth ?? 1920,
-      maxHeight: options.maxImageHeight ?? 1920,
+      quality: options.imageQuality ?? 0.8,
+      maxWidth: options.maxImageWidth ?? 1200,
+      maxHeight: options.maxImageHeight ?? 1200,
       includeBase64: false,
     };
 
@@ -114,9 +114,9 @@ export const pickImageFromGallery = async (
 
     const pickerOptions = {
       mediaType: 'photo' as MediaType,
-      quality: options.imageQuality ?? 0.9,
-      maxWidth: options.maxImageWidth ?? 1920,
-      maxHeight: options.maxImageHeight ?? 1920,
+      quality: options.imageQuality ?? 0.8,
+      maxWidth: options.maxImageWidth ?? 1200,
+      maxHeight: options.maxImageHeight ?? 1200,
       includeBase64: false,
       // Enable multi-select in gallery when allowed
       selectionLimit: options.allowMultiple ? Math.max(1, options.maxSelectable ?? 1) : 1,
