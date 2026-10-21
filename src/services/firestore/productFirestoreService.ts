@@ -11,25 +11,19 @@ import {
 } from '../../config/models/product';
 
 function generateSearchTokens(text: string): string[] {
+  if (!text) return [];
   const tokens = new Set<string>();
   const normalizedText = text.toLowerCase().trim();
-
-  // Split by spaces and create tokens
-  const words = normalizedText.split(/\s+/);
+  const words = normalizedText.split(/\s+/).filter(Boolean);
 
   words.forEach(word => {
-    // Add full word
     tokens.add(word);
-
-    // Add n-grams (substrings) for partial matching
-    for (let i = 0; i < word.length; i++) {
-      for (let j = i + 2; j <= word.length; j++) {
-        tokens.add(word.substring(i, j));
-      }
+    for (let j = 2; j <= word.length; j++) {
+      tokens.add(word.substring(0, j));
     }
   });
 
-  return Array.from(tokens);
+  return Array.from(tokens).slice(0, 40);
 }
 
 async function createNewProduct(
@@ -49,11 +43,16 @@ async function createNewProduct(
     const newProductRef = storeCollection.doc();
     const productId = newProductRef.id;
 
+    const isOutOfStock = Boolean(productData.isOutOfStock || (productData as any).status === 'outofstock');
+    const status = isOutOfStock ? 'outofstock' : 'instock';
+
     const newProductData = {
       ...productData,
       id: productId,
       nameLower: productData.name?.toLowerCase(),
       searchTokens: generateSearchTokens(productData.name.toLowerCase() || ''),
+      isOutOfStock,
+      status,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       isActive: true,
@@ -93,13 +92,24 @@ async function updateProductDetails(
       });
     }
 
-    const newProductData = {
+    const isOutOfStock = productData.isOutOfStock !== undefined
+      ? Boolean(productData.isOutOfStock)
+      : ((productData as any).status !== undefined ? (productData as any).status === 'outofstock' : undefined);
+    const status = isOutOfStock !== undefined ? (isOutOfStock ? 'outofstock' : 'instock') : undefined;
+
+    const newProductData: any = {
       ...productData,
       id: productId,
       nameLower: productData.name?.toLowerCase(),
-      searchTokens: generateSearchTokens(productData.name.toLowerCase() || ''),
+      searchTokens: generateSearchTokens(productData.name?.toLowerCase() || ''),
       updatedAt: serverTimestamp(),
     };
+
+    if (isOutOfStock !== undefined) {
+      newProductData.isOutOfStock = isOutOfStock;
+      newProductData.status = status;
+    }
+
     await firestore()
       .collection(FireStoreCollections.PRODUCTS)
       .doc(productId)
@@ -384,25 +394,38 @@ async function batchGetStores(storeIds: string[]): Promise<Record<string, any>> 
     if (storeIds.length === 0) return {};
 
     const storesMap: Record<string, any> = {};
-
-    // Firestore batch read limit is 500, but we'll use smaller chunks for better performance
-    const chunks = chunkArray(storeIds, 100);
+    const chunks = chunkArray(storeIds, 30);
 
     for (const chunk of chunks) {
-      const storePromises = chunk.map(storeId =>
-        firestore().collection(FireStoreCollections.STORES).doc(storeId).get(),
-      );
+      try {
+        const snapshot = await firestore()
+          .collection(FireStoreCollections.STORES)
+          .where(firestore.FieldPath.documentId(), 'in', chunk)
+          .get();
 
-      const storeSnapshots = await Promise.all(storePromises);
-
-      storeSnapshots.forEach((snapshot, index) => {
-        if (snapshot.exists()) {
-          storesMap[chunk[index]] = {
-            id: snapshot.id,
-            ...snapshot.data(),
-          };
-        }
-      });
+        snapshot.docs.forEach(docSnap => {
+          if (docSnap.exists()) {
+            storesMap[docSnap.id] = {
+              id: docSnap.id,
+              ...docSnap.data(),
+            };
+          }
+        });
+      } catch (inErr) {
+        // Fallback to individual document gets if required
+        const storePromises = chunk.map(storeId =>
+          firestore().collection(FireStoreCollections.STORES).doc(storeId).get(),
+        );
+        const storeSnapshots = await Promise.all(storePromises);
+        storeSnapshots.forEach((snapshot, index) => {
+          if (snapshot.exists()) {
+            storesMap[chunk[index]] = {
+              id: snapshot.id,
+              ...snapshot.data(),
+            };
+          }
+        });
+      }
     }
 
     return storesMap;
@@ -417,25 +440,37 @@ async function batchGetCategories(categoryIds: string[]): Promise<Record<string,
     if (categoryIds.length === 0) return {};
 
     const categoriesMap: Record<string, any> = {};
-
-    // Firestore batch read limit is 500, but we'll use smaller chunks for better performance
-    const chunks = chunkArray(categoryIds, 100);
+    const chunks = chunkArray(categoryIds, 30);
 
     for (const chunk of chunks) {
-      const categoryPromises = chunk.map(categoryId =>
-        firestore().collection(FireStoreCollections.CATEGORIES).doc(categoryId).get(),
-      );
+      try {
+        const snapshot = await firestore()
+          .collection(FireStoreCollections.CATEGORIES)
+          .where(firestore.FieldPath.documentId(), 'in', chunk)
+          .get();
 
-      const categorySnapshots = await Promise.all(categoryPromises);
-
-      categorySnapshots.forEach((snapshot, index) => {
-        if (snapshot.exists()) {
-          categoriesMap[chunk[index]] = {
-            id: snapshot.id,
-            ...snapshot.data(),
-          };
-        }
-      });
+        snapshot.docs.forEach(docSnap => {
+          if (docSnap.exists()) {
+            categoriesMap[docSnap.id] = {
+              id: docSnap.id,
+              ...docSnap.data(),
+            };
+          }
+        });
+      } catch (inErr) {
+        const categoryPromises = chunk.map(categoryId =>
+          firestore().collection(FireStoreCollections.CATEGORIES).doc(categoryId).get(),
+        );
+        const categorySnapshots = await Promise.all(categoryPromises);
+        categorySnapshots.forEach((snapshot, index) => {
+          if (snapshot.exists()) {
+            categoriesMap[chunk[index]] = {
+              id: snapshot.id,
+              ...snapshot.data(),
+            };
+          }
+        });
+      }
     }
 
     return categoriesMap;

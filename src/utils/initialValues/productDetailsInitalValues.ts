@@ -32,11 +32,13 @@ export const productDetailsInitalValues = (
     discountPrice: productDetails?.discountPrice ?? '',
     category: null,
     images,
-    status: productDetails?.status ?? 'instock',
+    status: ((productDetails?.isOutOfStock || productDetails?.status === 'outofstock')
+      ? 'outofstock'
+      : 'instock') as 'outofstock' | 'instock',
     isSecondHand: productDetails?.isSecondHand ?? false,
     isActive: productDetails?.isActive ?? true,
     isSoldOut: productDetails?.isSoldOut ?? false,
-    isOutOfStock: productDetails?.isOutOfStock ?? false,
+    isOutOfStock: Boolean(productDetails?.isOutOfStock || productDetails?.status === 'outofstock'),
     storeId: productDetails?.store?.id ?? storeDetails?.id ?? '',
     store: (productDetails?.store ?? storeDetails) as any,
     userId: productDetails?.store?.userId ?? storeDetails?.userId ?? '',
@@ -45,5 +47,9 @@ export const productDetailsInitalValues = (
     state: (productDetails as any)?.state ?? productDetails?.store?.state ?? storeDetails?.state ?? '',
     nameLower: (productDetails?.name ?? '').toLowerCase(),
     subcategoryIds: productDetails?.subcategoryIds ?? [],
+    unit: productDetails?.unit ?? 'pcs',
+    unitValue: productDetails?.unitValue ?? 1,
+    sizes: (productDetails && Array.isArray(productDetails.sizes)) ? productDetails.sizes : [],
+    weightOptions: (productDetails && Array.isArray(productDetails.weightOptions)) ? productDetails.weightOptions : [],
   };
 };

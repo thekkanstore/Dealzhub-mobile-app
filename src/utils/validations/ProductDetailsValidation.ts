@@ -10,7 +10,7 @@ export const productValidationsSchema = () => {
       .max(50, 'Maximum 50 characters allowed'),
     description: Yup.string()
       .transform(value => value?.trim())
-      .required('Address is required')
+      .required('Description is required')
       .min(10, 'Minimum 10 characters required')
       .max(500, 'Maximum 500 characters allowed'),
     actualPrice: amountValidation,
@@ -24,5 +24,9 @@ export const productValidationsSchema = () => {
     isSecondHand: Yup.boolean().required('Please choose any of the option'),
     isSoldOut: Yup.boolean().required('Please confirm the Sold Out status'),
     isOutOfStock: Yup.boolean().required('Please confirm the Out of Stock status'),
+    unit: Yup.string().optional(),
+    unitValue: Yup.number().optional(),
+    sizes: Yup.array().of(Yup.string()).optional(),
+    weightOptions: Yup.array().of(Yup.string()).optional(),
   });
 };

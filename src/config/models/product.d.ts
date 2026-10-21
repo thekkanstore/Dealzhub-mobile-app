@@ -26,6 +26,11 @@ export interface IProductTable {
   createdAt: Date;
   updatedAt: Date;
   subcategoryIds?: string[];
+  unit?: string;
+  unitValue?: number;
+  sizes?: string[];
+  weightOptions?: string[] | any[];
+  price?: string;
 }
 
 export interface IProduct extends IProductTable {
