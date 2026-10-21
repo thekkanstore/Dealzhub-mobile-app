@@ -50,14 +50,26 @@ const UserDetailsForm = () => {
   }, [isEdit, userDetails]);
 
   const initialValues: IUserTable = useMemo(() => {
-    return userDetailsInitialValues({...user?.user, ...(userDetails || {})});
+    const existingPhoto =
+      userDetails?.photo ||
+      (userDetails as any)?.photoURL ||
+      user?.user?.photo ||
+      (user?.user as any)?.photoURL ||
+      '';
+    return userDetailsInitialValues({...user?.user, ...(userDetails || {}), photo: existingPhoto});
   }, [userDetails, user?.user]);
 
   const appConfig = useAppSelector(state => state.sessionStates.appConfig);
   const handleSubmit = (values: IUserTable) => {
     const cityValue = (typeof values.city === 'object' && values.city !== null ? (values.city as any).value : values.city) ?? '';
+    const photoToSave =
+      values.photo ||
+      userDetails?.photo ||
+      (userDetails as any)?.photoURL ||
+      user?.user?.photo ||
+      '';
     createUser(
-      {...values, city: cityValue},
+      {...values, city: cityValue, photo: photoToSave},
       {
         onSuccess: () => {
           if (isEdit) {

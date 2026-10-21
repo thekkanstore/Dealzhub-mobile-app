@@ -60,6 +60,7 @@ const onGoogleButtonPress = async () => {
 
     let activeUserId = firebaseUid;
     let isUserRegistered = false;
+    let existingDocPhoto: string | null = null;
     try {
       const userDoc = await getUserDocument(firebaseUid);
       if (userDoc.exists()) {
@@ -69,6 +70,9 @@ const onGoogleButtonPress = async () => {
         if (dbData?.name || dbData?.phoneNumber || (dbData?.role && dbData.role.length > 0)) {
           isUserRegistered = true;
         }
+        if (dbData?.photo) {
+          existingDocPhoto = dbData.photo;
+        }
       }
     } catch (error) {
       console.log('Error checking user registration in onGoogleButtonPress:', error);
@@ -76,15 +80,33 @@ const onGoogleButtonPress = async () => {
 
     updateNewUserStatus(!isUserRegistered);
 
+    const resolvedPhoto =
+      existingDocPhoto ||
+      userData.user?.photo ||
+      data.user?.photoURL ||
+      null;
+
     const formattedUser = {
       ...userData,
       idToken,
       user: {
         ...userData.user,
         id: activeUserId,
+        photo: resolvedPhoto,
       },
     };
     updateUserInfo(formattedUser);
+
+    if (resolvedPhoto && activeUserId) {
+      try {
+        await firestore()
+          .collection(FireStoreCollections.USERS)
+          .doc(activeUserId)
+          .set({photo: resolvedPhoto}, {merge: true});
+      } catch (photoErr) {
+        console.warn('Could not sync photo to Firestore user doc:', photoErr);
+      }
+    }
 
     try {
       const token = await messaging().getToken();
