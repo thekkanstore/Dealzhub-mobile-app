@@ -96,11 +96,10 @@ async function checkIsUserRegistrationCompleted(userId: string): Promise<boolean
     const data = userDoc.data() as IUserTable | undefined;
     if (!data) return false;
 
-    // If user has basic required profile info (name/phoneNumber/role), registration is complete
-    if (data.name || data.phoneNumber || (data as any).mobileNumber || (data.role && data.role.length > 0)) {
-      return true;
-    }
-    return false;
+    // Registration is complete if user has phone/personal details AND has chosen a role
+    const hasPhone = Boolean(data.phoneNumber || (data as any).mobileNumber);
+    const hasRole = Boolean(data.role && Array.isArray(data.role) && data.role.length > 0);
+    return hasPhone && hasRole;
   } catch (error) {
     console.error('Error checking user registration completion:', error);
     return false;

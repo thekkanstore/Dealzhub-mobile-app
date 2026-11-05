@@ -26,7 +26,7 @@ import TKRenderIf from '../../components/Common/TKRenderIf/TKRenderIf';
 import {colors} from '../../config/styles/colors';
 import {fontFamily} from '../../config/styles/fontFamily';
 import authService from '../../services/auth/authService';
-import {updateNewUserStatus} from '../../redux/userSlice';
+import {updateNewUserStatus, updateInitialRegistrationRoute} from '../../redux/userSlice';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation<UserRegisterScreenNavigationProp>();
@@ -36,18 +36,7 @@ const UserDetailsForm = () => {
   const user = useAppSelector(state => state.user.user);
   const {data: userDetails} = useGetUserDetails(true);
 
-  React.useEffect(() => {
-    const details = userDetails as IUserTable | undefined;
-    if (
-      !isEdit &&
-      details &&
-      (details.phoneNumber ||
-        (details.role && details.role.length > 0) ||
-        (details as any).address)
-    ) {
-      updateNewUserStatus(false);
-    }
-  }, [isEdit, userDetails]);
+
 
   const initialValues: IUserTable = useMemo(() => {
     const existingPhoto =
@@ -76,6 +65,7 @@ const UserDetailsForm = () => {
             navigation.goBack();
             return;
           }
+          updateInitialRegistrationRoute('ChooseUserType');
           navigation.navigate('ChooseUserType');
         },
       },

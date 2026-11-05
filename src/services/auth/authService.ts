@@ -11,7 +11,7 @@ import {appleAuth} from '@invertase/react-native-apple-authentication';
 import messaging from '@react-native-firebase/messaging';
 import {showErrorToast} from '../../utils/common/toastUtils';
 import {strings} from '../../utils/language/langauageUtils';
-import {updateNewUserStatus, updateUserInfo, updateGuestStatus} from '../../redux/userSlice';
+import {updateNewUserStatus, updateUserInfo, updateGuestStatus, updateInitialRegistrationRoute} from '../../redux/userSlice';
 import {
   getUserDocument,
   checkIsUserRegistrationCompleted,
@@ -60,6 +60,7 @@ const onGoogleButtonPress = async () => {
 
     let activeUserId = firebaseUid;
     let isUserRegistered = false;
+    let hasDetails = false;
     let existingDocPhoto: string | null = null;
     try {
       const userDoc = await getUserDocument(firebaseUid);
@@ -67,7 +68,14 @@ const onGoogleButtonPress = async () => {
         const dbData = userDoc.data();
         if (dbData?.id) activeUserId = dbData.id;
         else if (userDoc.id) activeUserId = userDoc.id;
-        if (dbData?.name || dbData?.phoneNumber || (dbData?.role && dbData.role.length > 0)) {
+
+        const hasPhone = Boolean(dbData?.phoneNumber || (dbData as any)?.mobileNumber);
+        const hasRole = Boolean(dbData?.role && Array.isArray(dbData.role) && dbData.role.length > 0);
+
+        if (hasPhone) {
+          hasDetails = true;
+        }
+        if (hasPhone && hasRole) {
           isUserRegistered = true;
         }
         if (dbData?.photo) {
@@ -78,6 +86,7 @@ const onGoogleButtonPress = async () => {
       console.log('Error checking user registration in onGoogleButtonPress:', error);
     }
 
+    updateInitialRegistrationRoute(hasDetails ? 'ChooseUserType' : 'UserDetails');
     updateNewUserStatus(!isUserRegistered);
 
     const resolvedPhoto =
@@ -153,12 +162,27 @@ const onAppleButtonPress = async () => {
       'Apple User';
 
     // Check if the user has completed registration
+    let isAppleRegistered = false;
+    let hasAppleDetails = false;
     try {
-      const userExists = await checkIsUserRegistrationCompleted(firebaseUid);
-      updateNewUserStatus(!userExists);
+      const userDoc = await getUserDocument(firebaseUid);
+      if (userDoc.exists()) {
+        const dbData = userDoc.data();
+        const hasPhone = Boolean(dbData?.phoneNumber || (dbData as any)?.mobileNumber);
+        const hasRole = Boolean(dbData?.role && Array.isArray(dbData.role) && dbData.role.length > 0);
+        if (hasPhone) {
+          hasAppleDetails = true;
+        }
+        if (hasPhone && hasRole) {
+          isAppleRegistered = true;
+        }
+      }
     } catch (error) {
       /* empty */
     }
+
+    updateInitialRegistrationRoute(hasAppleDetails ? 'ChooseUserType' : 'UserDetails');
+    updateNewUserStatus(!isAppleRegistered);
 
     // Map to the same shape as Google sign-in for Redux consistency
     const appleUser = {
@@ -201,12 +225,27 @@ async function onEmailLogin(email: string, password: string) {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    let isEmailRegistered = false;
+    let hasEmailDetails = false;
     try {
-      const userExists = await checkIsUserRegistrationCompleted(user.uid);
-      updateNewUserStatus(!userExists);
+      const userDoc = await getUserDocument(user.uid);
+      if (userDoc.exists()) {
+        const dbData = userDoc.data();
+        const hasPhone = Boolean(dbData?.phoneNumber || (dbData as any)?.mobileNumber);
+        const hasRole = Boolean(dbData?.role && Array.isArray(dbData.role) && dbData.role.length > 0);
+        if (hasPhone) {
+          hasEmailDetails = true;
+        }
+        if (hasPhone && hasRole) {
+          isEmailRegistered = true;
+        }
+      }
     } catch (error) {
       /* empty */
     }
+
+    updateInitialRegistrationRoute(hasEmailDetails ? 'ChooseUserType' : 'UserDetails');
+    updateNewUserStatus(!isEmailRegistered);
 
     const idToken = await user.getIdToken();
     const mockGoogleUser = {
@@ -262,6 +301,7 @@ async function logout() {
     updateUserInfo(null);
     updateNewUserStatus(false);
     updateGuestStatus(false);
+    updateInitialRegistrationRoute('UserDetails');
   }
   return {success: true};
 }

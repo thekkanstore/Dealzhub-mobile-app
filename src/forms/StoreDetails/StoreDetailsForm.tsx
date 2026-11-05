@@ -243,7 +243,19 @@ const StoreDetailsForm = () => {
   };
   return (
     <>
-      <TKHeader header={strings('labels.storeDetails')} containerStyle={styles.headerContainer} />
+      <TKHeader
+        header={strings('labels.storeDetails')}
+        containerStyle={styles.headerContainer}
+        rightComponent={
+          !isEdit ? (
+            <TouchableOpacity onPress={() => updateNewUserStatus(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+              <Text style={{color: colors.primaryTextColor, fontSize: fontScale(14), fontFamily: fontFamily.medium}}>
+                Skip
+              </Text>
+            </TouchableOpacity>
+          ) : undefined
+        }
+      />
       <Formik<IStoreRequestBody>
         initialValues={initialValues}
         validationSchema={storeDetailsValidationsSchema}

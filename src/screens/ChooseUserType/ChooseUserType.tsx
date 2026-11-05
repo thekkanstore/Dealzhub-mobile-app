@@ -32,26 +32,44 @@ const ChooseUserType: React.FC<Props> = ({navigation}) => {
   const bottomPadding = useSafeAreaBottom(10);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const {mutate: updateUserRole} = useUpdateUserRoles();
+  const {mutate: updateUserRole, isPending: isUpdatingRole} = useUpdateUserRoles();
+  const [selectedType, setSelectedType] = useState<'user' | 'vendor' | null>(null);
 
   const onScroll = Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {
     useNativeDriver: false,
   });
 
   const handleOnPressIamUser = () => {
+    setSelectedType('user');
     updateUserRole([Roles.USER], {
       onSuccess: () => {
         updateNewUserStatus(false);
+      },
+      onError: () => {
+        setSelectedType(null);
       },
     });
   };
 
   const handleOnPressVendor = () => {
+    setSelectedType('vendor');
     updateUserRole([Roles.USER, Roles.VENDOR], {
       onSuccess: () => {
+        setSelectedType(null);
         navigation.navigate('StoreDetails');
       },
+      onError: () => {
+        setSelectedType(null);
+      },
     });
+  };
+
+  const handleBackPress = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('UserDetails' as any);
+    }
   };
 
   const renderItem = ({item}: {item: (typeof steps)[0]}) => (
@@ -63,7 +81,7 @@ const ChooseUserType: React.FC<Props> = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <TKHeader header={undefined} />
+      <TKHeader header={undefined} onBackPress={handleBackPress} />
       <Image source={imagePath.appLogo} style={[styles.appLogo]} />
       <FlatList
         ref={flatListRef}
@@ -116,15 +134,20 @@ const ChooseUserType: React.FC<Props> = ({navigation}) => {
         </View>
 
         <TKButton
-          title={strings('ChooseUserType.vendorButtonText')}
+          title={strings('ChooseUserType.userButtonText')}
           style={{marginHorizontal: 30}}
-          onPress={handleOnPressVendor}
+          type={'primary'}
+          onPress={handleOnPressIamUser}
+          isLoading={isUpdatingRole && selectedType === 'user'}
+          isDisabled={isUpdatingRole}
         />
         <TKButton
-          title={strings('ChooseUserType.userButtonText')}
+          title={strings('ChooseUserType.vendorButtonText')}
           style={{marginBottom: bottomPadding, marginHorizontal: 30}}
           type={'secondary'}
-          onPress={handleOnPressIamUser}
+          onPress={handleOnPressVendor}
+          isLoading={isUpdatingRole && selectedType === 'vendor'}
+          isDisabled={isUpdatingRole}
         />
       </View>
     </View>

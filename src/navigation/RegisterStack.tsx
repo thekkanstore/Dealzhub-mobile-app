@@ -5,12 +5,19 @@ import {RegisterUserStackParamList} from './rootparamstypes';
 import UserDetails from '../screens/UserDetails/UserDetails';
 import ChooseUserType from '../screens/ChooseUserType/ChooseUserType';
 import StoreDetails from '../screens/StoreDetails.tsx/StoreDetails';
+import {useAppSelector} from '../redux/hooks';
 
 const Stack = createStackNavigator<RegisterUserStackParamList>();
 
 export const RegisterUserStack = () => {
+  const initialRoute =
+    useAppSelector(state => state.user.initialRegistrationRoute) ||
+    (navigationStrings.USER_DETAILS as 'UserDetails');
+
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      initialRouteName={initialRoute as keyof RegisterUserStackParamList}
+      screenOptions={{headerShown: false}}>
       <Stack.Screen
         name={navigationStrings.USER_DETAILS as 'UserDetails'}
         component={UserDetails}
